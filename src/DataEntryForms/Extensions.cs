@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-
-namespace ExtenderPropertiesTest
+﻿namespace System.Windows.Forms.DataEntryForms
 {
     public static class Extensions
     {

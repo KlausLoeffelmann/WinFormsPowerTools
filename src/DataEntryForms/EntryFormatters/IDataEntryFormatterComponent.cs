@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows.Forms;
+﻿using System.ComponentModel;
 
-namespace ExtenderPropertiesTest
+namespace System.Windows.Forms.DataEntryForms.EntryFormatters
 {
     public interface IDataEntryFormatterComponent : IComponent, ISupportInitialize
     {

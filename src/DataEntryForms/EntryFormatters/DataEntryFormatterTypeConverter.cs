@@ -1,8 +1,7 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
 
-namespace ExtenderPropertiesTest
+namespace System.Windows.Forms.DataEntryForms.EntryFormatters
 {
     public class DataEntryFormatterTypeConverter : TypeConverter
     {

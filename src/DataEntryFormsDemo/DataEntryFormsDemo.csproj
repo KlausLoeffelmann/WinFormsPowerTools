@@ -6,4 +6,8 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DataEntryForms\DataEntryForms.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace ExtenderPropertiesTest
+namespace System.Windows.Forms.DataEntryForms.EntryFormatters
 {
     [TypeConverter(typeof(DataEntryFormatterTypeConverter))]
     public interface IDataEntryFormatter<T>

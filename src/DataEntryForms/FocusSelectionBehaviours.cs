@@ -1,4 +1,4 @@
-﻿namespace ExtenderPropertiesTest
+﻿namespace System.Windows.Forms.DataEntryForms
 {
     /// <summary>
     /// Defines the behavior of the Cursor when this DataEntry receives focus.	

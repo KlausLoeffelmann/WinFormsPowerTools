@@ -1,8 +1,8 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms.DataEntryForms.EntryFormatters;
 
-namespace ExtenderPropertiesTest
+namespace System.Windows.Forms.DataEntryForms
 {
     /// <summary>
     /// Implementation of <see cref="INotifyPropertyChanged"/> to simplify models.

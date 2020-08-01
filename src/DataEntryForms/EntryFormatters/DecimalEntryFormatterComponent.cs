@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-
-namespace ExtenderPropertiesTest
+﻿namespace System.Windows.Forms.DataEntryForms.EntryFormatters
 {
     public partial class DecimalEntryFormatterComponent : DataEntryFormatterComponent<Decimal>
     {

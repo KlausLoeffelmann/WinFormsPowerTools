@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows.Forms;
 
-namespace ExtenderPropertiesTest
+namespace System.Windows.Forms.DataEntryForms.EntryFormatters
 {
     [ProvideProperty("FormattingProperties", typeof(Control)),
      ProvideProperty("Value", typeof(Control))]

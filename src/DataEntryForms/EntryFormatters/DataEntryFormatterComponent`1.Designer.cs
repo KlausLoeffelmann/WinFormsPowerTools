@@ -1,4 +1,4 @@
-﻿namespace ExtenderPropertiesTest
+﻿namespace System.Windows.Forms.DataEntryForms.EntryFormatters
 {
     partial class DataEntryFormatterComponent<T>
     {

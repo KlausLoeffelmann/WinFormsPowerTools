@@ -1,10 +1,9 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Windows.Forms;
+using System.Windows.Forms.DataEntryForms.EntryFormatters;
 
-namespace ExtenderPropertiesTest
+namespace System.Windows.Forms.DataEntryForms
 {
     [DefaultBindingProperty(nameof(DataEntry.ObjectValue))]
     public class DataEntry : TextBox, ISupportInitialize
