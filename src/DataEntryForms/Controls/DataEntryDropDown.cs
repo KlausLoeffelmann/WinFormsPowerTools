@@ -1,4 +1,4 @@
-﻿namespace System.Windows.Forms.DataEntryForms
+﻿namespace System.Windows.Forms.DataEntryForms.Controls
 {
     class DataEntryDropDown : ContainerControl
     {

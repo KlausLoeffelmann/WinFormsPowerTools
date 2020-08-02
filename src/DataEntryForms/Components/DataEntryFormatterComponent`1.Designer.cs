@@ -1,4 +1,4 @@
-﻿namespace System.Windows.Forms.DataEntryForms.EntryFormatters
+﻿namespace System.Windows.Forms.DataEntryForms.Components
 {
     partial class DataEntryFormatterComponent<T>
     {

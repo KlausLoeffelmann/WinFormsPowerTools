@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Forms.DataEntryForms.Controls;
+using System.Windows.Forms.DataEntryForms.EntryFormatters;
 
-namespace System.Windows.Forms.DataEntryForms.EntryFormatters
+namespace System.Windows.Forms.DataEntryForms.Components
 {
     [ProvideProperty("FormattingProperties", typeof(Control)),
      ProvideProperty("Value", typeof(Control))]

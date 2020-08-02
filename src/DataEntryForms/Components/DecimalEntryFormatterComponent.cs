@@ -1,4 +1,7 @@
-﻿namespace System.Windows.Forms.DataEntryForms.EntryFormatters
+﻿using System.Windows.Forms.DataEntryForms.Controls;
+using System.Windows.Forms.DataEntryForms.EntryFormatters;
+
+namespace System.Windows.Forms.DataEntryForms.Components
 {
     public partial class DecimalEntryFormatterComponent : DataEntryFormatterComponent<Decimal>
     {

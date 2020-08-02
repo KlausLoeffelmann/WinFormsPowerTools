@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Text;
 
-namespace System.Windows.Forms.DataEntryForms.EntryFormatters
+namespace System.Windows.Forms.DataEntryForms.Components
 {
     public partial class DecimalEntryFormatterComponent
     {

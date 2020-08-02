@@ -1,11 +1,15 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Windows.Forms.DataEntryForms.Components;
 using System.Windows.Forms.DataEntryForms.EntryFormatters;
 
-namespace System.Windows.Forms.DataEntryForms
+namespace System.Windows.Forms.DataEntryForms.Controls
 {
-    [DefaultBindingProperty(nameof(DataEntry.ObjectValue))]
+    [
+    DefaultBindingProperty(nameof(DataEntry.ObjectValue)),
+    ToolboxBitmap(typeof(DataEntry),"DataEntry.bmp")
+    ]
     public class DataEntry : TextBox, ISupportInitialize
     {
         public event EventHandler ObjectValueChanged;

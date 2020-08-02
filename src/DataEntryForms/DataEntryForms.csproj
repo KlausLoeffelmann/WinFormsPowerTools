@@ -7,4 +7,33 @@
     <RootNamespace>System.Windows.Forms.DataEntryForms</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Resources\DataEntry.bmp" />
+    <None Remove="Resources\DecimalEntryFormatter.bmp" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <EmbeddedResource Include="Resources\DataEntry.bmp">
+		  <LogicalName>System.Windows.Forms.DataEntryForms.Controls.DataEntry.bmp</LogicalName>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Resources\DecimalEntryFormatter.bmp">
+		  <LogicalName>System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatter.bmp</LogicalName>
+	  </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

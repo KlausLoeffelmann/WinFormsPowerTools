@@ -1,4 +1,4 @@
-﻿namespace System.Windows.Forms.DataEntryForms
+﻿namespace System.Windows.Forms.DataEntryForms.Controls
 {
     /// <summary>
     /// Defines the behavior of the Cursor when this DataEntry receives focus.	

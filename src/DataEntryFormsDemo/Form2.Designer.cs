@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms.DataEntryForms;
+﻿using System.Windows.Forms.DataEntryForms.Controls;
 
 namespace ExtenderPropertiesTest
 {
@@ -30,7 +30,7 @@ namespace ExtenderPropertiesTest
         /// </summary>
         private void InitializeComponent()
         {
-            this.dataEntry1 = new System.Windows.Forms.DataEntryForms.DataEntry();
+            this.dataEntry1 = new System.Windows.Forms.DataEntryForms.Controls.DataEntry();
             ((System.ComponentModel.ISupportInitialize)(this.dataEntry1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -39,7 +39,7 @@ namespace ExtenderPropertiesTest
             this.dataEntry1.ErrorColor = System.Drawing.Color.Red;
             this.dataEntry1.FocusColor = System.Drawing.Color.Yellow;
             this.dataEntry1.FocusEmphasize = true;
-            this.dataEntry1.FocusSelectionBehaviour = System.Windows.Forms.DataEntryForms.FocusSelectionBehaviours.PreSelectInput;
+            this.dataEntry1.FocusSelectionBehaviour = System.Windows.Forms.DataEntryForms.Controls.FocusSelectionBehaviours.PreSelectInput;
             this.dataEntry1.Formatter = null;
             this.dataEntry1.Location = new System.Drawing.Point(12, 12);
             this.dataEntry1.Name = "dataEntry1";
