@@ -24,7 +24,9 @@ namespace System.Windows.Forms.DataEntryForms.Components
 
         bool IExtenderProvider.CanExtend(object extendee)
             => extendee is DataEntry dataEntry 
-                && dataEntry.Formatter is IDataEntryFormatterComponent;
+                && CanExtendProperties(dataEntry);
+
+        protected abstract bool CanExtendProperties(DataEntry dataEntry);
 
         protected T GetValueInternal(DataEntry dataEntry)
         {
@@ -109,6 +111,7 @@ namespace System.Windows.Forms.DataEntryForms.Components
         }
 
         abstract protected IDataEntryFormatter<T> GetDefaultFormatterInstance();
+        
         protected virtual object GetDefaultValue()
         {
             return default(T);

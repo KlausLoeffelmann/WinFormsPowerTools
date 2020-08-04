@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Text;
+using System.Windows.Forms.DataEntryForms.Controls;
 
 namespace System.Windows.Forms.DataEntryForms.Components
 {
@@ -197,5 +198,8 @@ namespace System.Windows.Forms.DataEntryForms.Components
                 return formatString.ToString();
             }
         }
+
+        protected override bool CanExtendProperties(DataEntry dataEntry)
+            => dataEntry.Formatter is DecimalEntryFormatterComponent;
     }
 }

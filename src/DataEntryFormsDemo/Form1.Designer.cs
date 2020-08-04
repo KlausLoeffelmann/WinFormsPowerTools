@@ -34,8 +34,9 @@ namespace DataEntryFormsDemo
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            DecimalEntryFormatterComponent.DecimalDataEntryFormatter decimalDataEntryFormatter2 = new DecimalEntryFormatterComponent.DecimalDataEntryFormatter();
-            DecimalEntryFormatterComponent.DecimalDataEntryFormatter decimalDataEntryFormatter1 = new DecimalEntryFormatterComponent.DecimalDataEntryFormatter();
+            System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter decimalDataEntryFormatter2 = new System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter();
+            System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter decimalDataEntryFormatter1 = new System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter();
+            System.Windows.Forms.DataEntryForms.Components.DateEntryFormatterComponent.DateDataEntryFormatter dateDataEntryFormatter1 = new System.Windows.Forms.DataEntryForms.Components.DateEntryFormatterComponent.DateDataEntryFormatter();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.cancelToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -45,10 +46,11 @@ namespace DataEntryFormsDemo
             this.settingsToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.dataEntry1 = new DataEntry();
-            this.decimalEntryFormatter1 = new DecimalEntryFormatterComponent();
-            this.dataEntry2 = new DataEntry();
-            this.dataEntry3 = new DataEntry();
+            this.dataEntry1 = new System.Windows.Forms.DataEntryForms.Controls.DataEntry();
+            this.decimalEntryFormatterComponent1 = new System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent();
+            this.dataEntry2 = new System.Windows.Forms.DataEntryForms.Controls.DataEntry();
+            this.dataEntry3 = new System.Windows.Forms.DataEntryForms.Controls.DataEntry();
+            this.dateEntryFormatterComponent1 = new System.Windows.Forms.DataEntryForms.Components.DateEntryFormatterComponent();
             this.label3 = new System.Windows.Forms.Label();
             this.btnSetTypesValueDelayed = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -56,13 +58,12 @@ namespace DataEntryFormsDemo
             this.lblObjectValues = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.btnSetObjectValuesDelayed = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataEntry1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.decimalEntryFormatter1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.decimalEntryFormatterComponent1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataEntry2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataEntry3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dateEntryFormatterComponent1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -173,34 +174,42 @@ namespace DataEntryFormsDemo
             this.dataEntry1.ErrorColor = System.Drawing.Color.Red;
             this.dataEntry1.FocusColor = System.Drawing.Color.Yellow;
             this.dataEntry1.FocusEmphasize = true;
-            this.dataEntry1.FocusSelectionBehaviour = FocusSelectionBehaviours.PreSelectInput;
-            this.dataEntry1.Formatter = null;
+            this.dataEntry1.FocusSelectionBehaviour = System.Windows.Forms.DataEntryForms.Controls.FocusSelectionBehaviours.PreSelectInput;
+            this.dataEntry1.Formatter = this.decimalEntryFormatterComponent1;
+            decimalDataEntryFormatter2.CurrencySymbol = null;
+            decimalDataEntryFormatter2.DecimalPlaces = 0;
+            this.decimalEntryFormatterComponent1.SetFormattingProperties(this.dataEntry1, decimalDataEntryFormatter2);
             this.dataEntry1.Location = new System.Drawing.Point(118, 55);
             this.dataEntry1.Name = "dataEntry1";
             this.dataEntry1.Size = new System.Drawing.Size(183, 23);
             this.dataEntry1.TabIndex = 1;
+            this.decimalEntryFormatterComponent1.SetValue(this.dataEntry1, new decimal(new int[] {
+                0,
+                0,
+                0,
+                0}));
             // 
-            // decimalEntryFormatter1
+            // decimalEntryFormatterComponent1
             // 
-            this.decimalEntryFormatter1.BlinkRate = 300;
-            this.decimalEntryFormatter1.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
-            this.decimalEntryFormatter1.ContainerControl = this;
+            this.decimalEntryFormatterComponent1.BlinkRate = 300;
+            this.decimalEntryFormatterComponent1.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
+            this.decimalEntryFormatterComponent1.ContainerControl = this;
             // 
             // dataEntry2
             // 
             this.dataEntry2.ErrorColor = System.Drawing.Color.Red;
             this.dataEntry2.FocusColor = System.Drawing.Color.Yellow;
             this.dataEntry2.FocusEmphasize = true;
-            this.dataEntry2.FocusSelectionBehaviour = FocusSelectionBehaviours.PreSelectInput;
-            this.dataEntry2.Formatter = this.decimalEntryFormatter1;
-            decimalDataEntryFormatter2.CurrencySymbol = null;
-            decimalDataEntryFormatter2.DecimalPlaces = 0;
-            this.decimalEntryFormatter1.SetFormattingProperties(this.dataEntry2, decimalDataEntryFormatter2);
+            this.dataEntry2.FocusSelectionBehaviour = System.Windows.Forms.DataEntryForms.Controls.FocusSelectionBehaviours.PreSelectInput;
+            this.dataEntry2.Formatter = this.decimalEntryFormatterComponent1;
+            decimalDataEntryFormatter1.CurrencySymbol = null;
+            decimalDataEntryFormatter1.DecimalPlaces = 0;
+            this.decimalEntryFormatterComponent1.SetFormattingProperties(this.dataEntry2, decimalDataEntryFormatter1);
             this.dataEntry2.Location = new System.Drawing.Point(118, 84);
             this.dataEntry2.Name = "dataEntry2";
             this.dataEntry2.Size = new System.Drawing.Size(183, 23);
             this.dataEntry2.TabIndex = 3;
-            this.decimalEntryFormatter1.SetValue(this.dataEntry2, new decimal(new int[] {
+            this.decimalEntryFormatterComponent1.SetValue(this.dataEntry2, new decimal(new int[] {
                 0,
                 0,
                 0,
@@ -211,20 +220,18 @@ namespace DataEntryFormsDemo
             this.dataEntry3.ErrorColor = System.Drawing.Color.Red;
             this.dataEntry3.FocusColor = System.Drawing.Color.Yellow;
             this.dataEntry3.FocusEmphasize = true;
-            this.dataEntry3.FocusSelectionBehaviour = FocusSelectionBehaviours.PreSelectInput;
-            this.dataEntry3.Formatter = this.decimalEntryFormatter1;
-            decimalDataEntryFormatter1.CurrencySymbol = null;
-            decimalDataEntryFormatter1.DecimalPlaces = 0;
-            this.decimalEntryFormatter1.SetFormattingProperties(this.dataEntry3, decimalDataEntryFormatter1);
+            this.dataEntry3.FocusSelectionBehaviour = System.Windows.Forms.DataEntryForms.Controls.FocusSelectionBehaviours.PreSelectInput;
+            this.dataEntry3.Formatter = this.dateEntryFormatterComponent1;
+            this.dateEntryFormatterComponent1.SetFormattingProperties(this.dataEntry3, dateDataEntryFormatter1);
             this.dataEntry3.Location = new System.Drawing.Point(118, 113);
             this.dataEntry3.Name = "dataEntry3";
             this.dataEntry3.Size = new System.Drawing.Size(183, 23);
             this.dataEntry3.TabIndex = 5;
-            this.decimalEntryFormatter1.SetValue(this.dataEntry3, new decimal(new int[] {
-                0,
-                0,
-                0,
-                0}));
+            this.dateEntryFormatterComponent1.SetValue(this.dataEntry3, new System.DateTime(2020, 8, 4, 0, 0, 0, 0));
+            // 
+            // dateEntryFormatterComponent1
+            // 
+            this.dateEntryFormatterComponent1.ContainerControl = this;
             // 
             // label3
             // 
@@ -232,9 +239,9 @@ namespace DataEntryFormsDemo
             this.label3.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.label3.Location = new System.Drawing.Point(12, 118);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(93, 15);
+            this.label3.Size = new System.Drawing.Size(71, 15);
             this.label3.TabIndex = 4;
-            this.label3.Text = "Numeric Field 3:";
+            this.label3.Text = "Date Field 1:";
             // 
             // btnSetTypesValueDelayed
             // 
@@ -307,31 +314,12 @@ namespace DataEntryFormsDemo
             this.btnSetObjectValuesDelayed.UseVisualStyleBackColor = true;
             this.btnSetObjectValuesDelayed.Click += new System.EventHandler(this.btnSetObjectValuesDelayed_Click);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(603, 144);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(182, 34);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(12, 169);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(288, 23);
-            this.textBox2.TabIndex = 13;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.btnSetObjectValuesDelayed);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.btnSetTypesValueDelayed);
@@ -348,9 +336,10 @@ namespace DataEntryFormsDemo
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataEntry1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.decimalEntryFormatter1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.decimalEntryFormatterComponent1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataEntry2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataEntry3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dateEntryFormatterComponent1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
@@ -370,9 +359,8 @@ namespace DataEntryFormsDemo
         private System.Windows.Forms.ToolStripButton cancelToolStripButton;
         private System.Windows.Forms.ToolStripButton clearToolStripButton;
         private System.Windows.Forms.ToolStripButton settingsToolStripButton;
-        private DecimalEntryFormatterComponent decimalEntryFormatter1;
+        private DecimalEntryFormatterComponent decimalEntryFormatterComponent1;
         private DataEntry dataEntry2;
-        private DataEntry dataEntry3;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnSetTypesValueDelayed;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
@@ -380,8 +368,8 @@ namespace DataEntryFormsDemo
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label lblTypedValues;
         private System.Windows.Forms.Button btnSetObjectValuesDelayed;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox2;
+        private DataEntry dataEntry3;
+        private DateEntryFormatterComponent dateEntryFormatterComponent1;
     }
 }
 

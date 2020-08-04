@@ -87,9 +87,9 @@ namespace DataEntryFormsDemo
         private void WriteDelayedTypedValues()
         {
             var random = new Random(DateTime.Now.Millisecond);
-            decimalEntryFormatter1.SetValue(dataEntry1, random.Next(10000));
-            decimalEntryFormatter1.SetValue(dataEntry2, random.Next(10000));
-            decimalEntryFormatter1.SetValue(dataEntry3, random.Next(10000));
+            decimalEntryFormatterComponent1.SetValue(dataEntry1, random.Next(10000));
+            decimalEntryFormatterComponent1.SetValue(dataEntry2, random.Next(10000));
+            decimalEntryFormatterComponent1.SetValue(dataEntry3, random.Next(10000));
         }
 
         private void WriteDelayedObjectValues()
@@ -99,12 +99,5 @@ namespace DataEntryFormsDemo
             dataEntry2.ObjectValue = (decimal) random.Next(10000);
             dataEntry3.ObjectValue = (decimal) random.Next(10000);
         }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            var binding = new Binding(nameof(TestProperty), textBox2, nameof(TextBox.Text), false, DataSourceUpdateMode.OnPropertyChanged);
-        }
-
-        public string TestProperty { get; set; }
     }
 }
