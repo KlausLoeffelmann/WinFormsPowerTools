@@ -126,6 +126,10 @@ namespace System.Windows.Forms.DataEntryForms.Controls
                     if (_hasError)
                     {
                         _hasError = false;
+                        if (dataEntryFormatter is ErrorProvider errorProvider)
+                        {
+                            errorProvider.SetError(this, null);
+                        }
                     }
                 }
 
@@ -133,6 +137,15 @@ namespace System.Windows.Forms.DataEntryForms.Controls
                 {
                     _hasError = true;
                     e.Cancel = true;
+
+                    if (dataEntryFormatter is ErrorProvider errorProvider)
+                    {
+                        // TODO: Make Error message configurable via dedicated property.
+                        errorProvider.SetError(
+                            this,
+                            "Wrong input format - please check your input.");
+                    }
+
                     HandleFocusEmphasizing(!_hasFocus);
                 }
             }
@@ -153,9 +166,9 @@ namespace System.Windows.Forms.DataEntryForms.Controls
                     {
                         _changingValueInternally = false;
                     }
-                }
 
-                return true;
+                    return true;
+                }
             }
 
             return false;
