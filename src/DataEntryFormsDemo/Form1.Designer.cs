@@ -1,7 +1,5 @@
-﻿using System.Windows.Forms.DataEntryForms;
-using System.Windows.Forms.DataEntryForms.Components;
+﻿using System.Windows.Forms.DataEntryForms.Components;
 using System.Windows.Forms.DataEntryForms.Controls;
-using System.Windows.Forms.DataEntryForms.EntryFormatters;
 
 namespace DataEntryFormsDemo
 {
