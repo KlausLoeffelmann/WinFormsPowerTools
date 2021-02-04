@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -19,6 +19,12 @@
 	  <EmbeddedResource Include="Resources\DecimalEntryFormatter.bmp">
 		  <LogicalName>System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatter.bmp</LogicalName>
 	  </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WinFormsPowerTools.CodeGen\WinFormsPowerTools.CodeGen.csproj"
+					  ReferenceOutputAssembly="false"
+					  OutputItemType="Analyzer"/>
   </ItemGroup>
 
   <ItemGroup>
