@@ -16,13 +16,48 @@ namespace PowerTools.UnitTests
             string userSource = @"
 namespace MyCode
 {
-    public class Program
+   public class Foo
     {
-        public static void Main(string[] args)
+        public Guid IDContact { get; set; }
+        public string Lastname { get; set; }
+        public string Firstname { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public int NoOfChildren { get; set; }
+    }
+
+    public class AutoLayoutComponent
+    {
+        public AutoLayoutComponent(string name)
         {
+            Name = name;
+        }
+
+        public string Name { get; set; }
+        public string Caption { get; set; }
+        public string ComponentTypename { get; set; }
+        public Padding Margin { get; set; }
+        public PropertyDescriptor Binding { get; set; }
+    }
+
+    public class AutoLayoutViewModelBase<T> where T : class
+    {
+        public AutoLayoutDocument Document { get; set; } = new AutoLayoutDocument(""document1"");
+        public T DataContext { get; set; }
+    }
+
+    public partial class vmOptions : AutoLayoutViewModelBase<Foo>
+    {
+
+        private AutoLayoutComponent _idContactProperty;
+        private AutoLayoutComponent IdContextComponent
+        {
+            get
+            {
+                // Return new Component.
+                return null;
+            }
         }
     }
-}
 ";
             Compilation comp = CreateCompilation(userSource);
             var newComp = RunGenerators(comp, out var generatorDiags, new AutoLayoutGen());
