@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AutoLayout\**" />
+    <EmbeddedResource Remove="AutoLayout\**" />
+    <None Remove="AutoLayout\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\DataEntry.bmp" />
     <None Remove="Resources\DecimalEntryFormatter.bmp" />
   </ItemGroup>
@@ -19,10 +25,6 @@
 	  <EmbeddedResource Include="Resources\DecimalEntryFormatter.bmp">
 		  <LogicalName>System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatter.bmp</LogicalName>
 	  </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\WinFormsPowerTools.CodeGen\WinFormsPowerTools.CodeGen.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
   </ItemGroup>
 
   <ItemGroup>

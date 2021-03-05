@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.8.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WinFormsPowerTools.StandardLib\WinFormsPowerTools.StandardLib.csproj" />
+  </ItemGroup>
+
 </Project>

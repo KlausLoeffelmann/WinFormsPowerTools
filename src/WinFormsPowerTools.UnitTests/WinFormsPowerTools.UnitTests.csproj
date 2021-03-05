@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WinFormsPowerTools.CodeGen\WinFormsPowerTools.CodeGen.csproj" />
+    <ProjectReference Include="..\WinFormsPowerTools.StandardLib\WinFormsPowerTools.StandardLib.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace DataEntryForms.AutoLayout
+namespace WinFormsPowerTools.AutoLayout
 {
     public class AutoLayoutPropertyDescriptor : PropertyDescriptor
     {

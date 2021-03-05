@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms.DataEntryForms.Components;
 using System.Windows.Forms.DataEntryForms.Controls;
 
-namespace DataEntryFormsDemo
+namespace WinFormsPowerToolsDemo
 {
     partial class Form1
     {

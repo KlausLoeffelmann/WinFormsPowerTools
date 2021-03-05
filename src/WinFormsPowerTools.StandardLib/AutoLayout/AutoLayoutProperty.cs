@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
 
-namespace DataEntryForms.AutoLayout
+namespace WinFormsPowerTools.AutoLayout
 {
     public class AutoLayoutProperty<T> where T : class
     {
-        public AutoLayoutProperty(object @object, string propertyname)
+        public AutoLayoutProperty(T @object, string propertyname)
         {
             PropertyName = PropertyName;
         }

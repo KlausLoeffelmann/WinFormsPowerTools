@@ -14,9 +14,67 @@ namespace PowerTools.UnitTests
         public void SimpleCodeGenTest()
         {
             string userSource = @"
+
+using System;
+
+namespace WinFormsPowerTools.AutoLayout
+{
+    public class FormsControllerAttribute : Attribute
+    {
+        public FormsControllerAttribute()
+        {
+        }
+
+        public FormsControllerAttribute(Type modelType)
+        {
+            ModelType = modelType;
+        }
+
+        public FormsControllerAttribute(Type modelType, params string[] excludeProperties)
+        {
+            ModelType = modelType;
+            ExcludeProperties = excludeProperties;
+        }
+
+        public Type ModelType { get; }
+        public string[] ExcludeProperties { get; }
+    }
+}
+
+namespace WinFormsPowerTools.AutoLayout
+{
+    public class FormsControllerPropertyAttribute : Attribute
+    {
+        public FormsControllerPropertyAttribute()
+        {
+        }
+
+        public FormsControllerPropertyAttribute(string propertyName)
+        {
+            PropertyName = propertyName;
+        }
+
+        public string PropertyName { get; }
+
+        // TODO: Implement scope handling.
+        public Scope GetAccessorScope { get; }
+        public Scope SetAccessorScope { get; }
+    }
+
+    public enum Scope
+    {
+        @public,
+        @private,
+        @internal,
+        @protected
+    }
+}
+
 namespace MyCode
 {
-   public class Foo
+    using WinFormsPowerTools.AutoLayout;
+
+    public class Foo
     {
         public Guid IDContact { get; set; }
         public string Lastname { get; set; }
@@ -25,45 +83,24 @@ namespace MyCode
         public int NoOfChildren { get; set; }
     }
 
-    public class AutoLayoutComponent
+    [FormsController(typeof(Foo))]
+    public partial class TestFormsController : FormsControllerBase
     {
-        public AutoLayoutComponent(string name)
-        {
-            Name = name;
-        }
+        private double _foo;
 
-        public string Name { get; set; }
-        public string Caption { get; set; }
-        public string ComponentTypename { get; set; }
-        public Padding Margin { get; set; }
-        public PropertyDescriptor Binding { get; set; }
+        [FormsControllerProperty] private string _firstName;
+        [FormsControllerProperty(""LastName"")] private string _lstName;
+
+        public string FooProperty {get; set;}
     }
-
-    public class AutoLayoutViewModelBase<T> where T : class
-    {
-        public AutoLayoutDocument Document { get; set; } = new AutoLayoutDocument(""document1"");
-        public T DataContext { get; set; }
-    }
-
-    public partial class vmOptions : AutoLayoutViewModelBase<Foo>
-    {
-
-        private AutoLayoutComponent _idContactProperty;
-        private AutoLayoutComponent IdContextComponent
-        {
-            get
-            {
-                // Return new Component.
-                return null;
-            }
-        }
-    }
+}
 ";
             Compilation comp = CreateCompilation(userSource);
             var newComp = RunGenerators(comp, out var generatorDiags, new AutoLayoutGen());
 
             Assert.Empty(generatorDiags);
-            Assert.Empty(newComp.GetDiagnostics());
+            var diagnostic = newComp.GetDiagnostics();
+            Assert.Empty(diagnostic);
         }
 
         private static Compilation CreateCompilation(string source) => CSharpCompilation.Create(

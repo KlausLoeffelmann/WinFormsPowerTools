@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataEntryForms;
 using System.Windows.Forms.DataEntryForms.Controls;
 
-namespace DataEntryFormsDemo
+namespace WinFormsPowerToolsDemo
 {
     public partial class Form1 : Form
     {
