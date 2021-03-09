@@ -76,6 +76,7 @@ namespace WinFormsPowerTools.CodeGen
 
                     StringBuilder viewModelClass = new();
                     viewModelClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
+                    viewModelClass.AppendLine($"using System.ComponentModel;");
                     viewModelClass.AppendLine($"namespace {formsControllerNamespace}");
                     viewModelClass.AppendLine($"{{");
                     viewModelClass.AppendLine($"public partial class {classDeclaration.Identifier.Text}");
@@ -97,8 +98,36 @@ namespace WinFormsPowerTools.CodeGen
                         if (string.IsNullOrEmpty(propertyName))
                             continue;
                         
+                        // TODO: Convert to correct NullableFlowState depending on backing field.
                         viewModelClass.AppendLine();
-                        viewModelClass.AppendLine($"{ind}{ind}public int {propertyName} {{ get; set; }}");
+                        viewModelClass.AppendLine($"{ind}{ind}public {fieldAttributeTuple.field.Type.ToDisplayString(NullableFlowState.None)} {propertyName}");
+                        viewModelClass.AppendLine($"{ind}{ind}{{");
+                        viewModelClass.AppendLine($"{ind}{ind}    get");
+                        viewModelClass.AppendLine($"{ind}{ind}    {{");
+                        viewModelClass.AppendLine($"{ind}{ind}        return {fieldAttributeTuple.field.Name};");
+                        viewModelClass.AppendLine($"{ind}{ind}    }}");
+                        viewModelClass.AppendLine($"{ind}{ind}    set");
+                        viewModelClass.AppendLine($"{ind}{ind}    {{");
+                        viewModelClass.AppendLine($"{ind}{ind}        if (!object.Equals({fieldAttributeTuple.field.Name} ,value))");
+                        viewModelClass.AppendLine($"{ind}{ind}        {{");
+                        viewModelClass.AppendLine($"{ind}{ind}        {fieldAttributeTuple.field.Name} = value;");
+                        viewModelClass.AppendLine($"{ind}{ind}        OnPropertyChanged(__{fieldAttributeTuple.field.Name}PropertyChangedEventArgs);");
+                        viewModelClass.AppendLine($"{ind}{ind}        }}");
+                        viewModelClass.AppendLine($"{ind}{ind}    }}");
+                        viewModelClass.AppendLine($"{ind}{ind}}}");
+                        viewModelClass.AppendLine();
+                        viewModelClass.AppendLine($"{ind}{ind}private PropertyChangedEventArgs ___{fieldAttributeTuple.field.Name}PropertyChangedEventArgs;");
+                        viewModelClass.AppendLine($"{ind}{ind}private PropertyChangedEventArgs __{fieldAttributeTuple.field.Name}PropertyChangedEventArgs");
+                        viewModelClass.AppendLine($"{ind}{ind}{{");
+                        viewModelClass.AppendLine($"{ind}{ind}    get");
+                        viewModelClass.AppendLine($"{ind}{ind}    {{");
+                        viewModelClass.AppendLine($"{ind}{ind}        if (___{fieldAttributeTuple.field.Name}PropertyChangedEventArgs is null)");
+                        viewModelClass.AppendLine($"{ind}{ind}        {{");
+                        viewModelClass.AppendLine($"{ind}{ind}            ___{fieldAttributeTuple.field.Name}PropertyChangedEventArgs = new PropertyChangedEventArgs(nameof({propertyName}));");
+                        viewModelClass.AppendLine($"{ind}{ind}        }}");
+                        viewModelClass.AppendLine($"{ind}{ind}        return ___{fieldAttributeTuple.field.Name}PropertyChangedEventArgs;");
+                        viewModelClass.AppendLine($"{ind}{ind}    }}");
+                        viewModelClass.AppendLine($"{ind}{ind}}}");
                         viewModelClass.AppendLine();
                     }
 
