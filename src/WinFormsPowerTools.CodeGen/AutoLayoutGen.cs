@@ -68,6 +68,7 @@ namespace WinFormsPowerTools.CodeGen
                     StringBuilder extensionClass = new();
                     extensionClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
                     extensionClass.AppendLine($"using System.Collections.Generic;");
+                    extensionClass.AppendLine($"using System.Runtime.CompilerServices;");
                     extensionClass.AppendLine($"");
                     extensionClass.AppendLine($"namespace {formsControllerNamespace}");
                     extensionClass.AppendLine($"{{");
@@ -77,6 +78,7 @@ namespace WinFormsPowerTools.CodeGen
                     StringBuilder viewModelClass = new();
                     viewModelClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
                     viewModelClass.AppendLine($"using System.ComponentModel;");
+                    viewModelClass.AppendLine($"using System.Runtime.CompilerServices;");
                     viewModelClass.AppendLine($"namespace {formsControllerNamespace}");
                     viewModelClass.AppendLine($"{{");
                     viewModelClass.AppendLine($"public partial class {classDeclaration.Identifier.Text}");
@@ -116,8 +118,8 @@ namespace WinFormsPowerTools.CodeGen
                         viewModelClass.AppendLine($"{ind}{ind}    }}");
                         viewModelClass.AppendLine($"{ind}{ind}}}");
                         viewModelClass.AppendLine();
-                        viewModelClass.AppendLine($"{ind}{ind}private PropertyChangedEventArgs ___{fieldAttributeTuple.field.Name}PropertyChangedEventArgs;");
-                        viewModelClass.AppendLine($"{ind}{ind}private PropertyChangedEventArgs __{fieldAttributeTuple.field.Name}PropertyChangedEventArgs");
+                        viewModelClass.AppendLine($"{ind}{ind}[CompilerGenerated] private PropertyChangedEventArgs ___{fieldAttributeTuple.field.Name}PropertyChangedEventArgs;");
+                        viewModelClass.AppendLine($"{ind}{ind}[CompilerGenerated] private PropertyChangedEventArgs __{fieldAttributeTuple.field.Name}PropertyChangedEventArgs");
                         viewModelClass.AppendLine($"{ind}{ind}{{");
                         viewModelClass.AppendLine($"{ind}{ind}    get");
                         viewModelClass.AppendLine($"{ind}{ind}    {{");

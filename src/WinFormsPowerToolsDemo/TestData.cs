@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using WinFormsPowerTools.AutoLayout;
 
 namespace WinFormsPowerToolsDemo
@@ -28,7 +22,7 @@ namespace WinFormsPowerToolsDemo
 
         public OptionFormsController()
         {
-
+            
         }
 
         public string Test { get; set; }

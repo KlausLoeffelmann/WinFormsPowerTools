@@ -7,18 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ObjectModel" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
+	<ProjectReference Include="..\WinFormsPowerTools.CodeGen\WinFormsPowerTools.CodeGen.csproj" 
+						OutputItemType="Analyzer" />
     <ProjectReference Include="..\WinFormsPowerTools.StandardLib\WinFormsPowerTools.StandardLib.csproj" />
     <ProjectReference Include="..\WinFormsPowerTools\WinFormsPowerTools.csproj" />
   </ItemGroup>
-
-    <ItemGroup>
-	    <ProjectReference Include="..\WinFormsPowerTools.CodeGen\WinFormsPowerTools.CodeGen.csproj" 
-						  ReferenceOutputAssembly="false" 
-						  OutputItemType="Analyzer" />
-    </ItemGroup>
 
 </Project>

@@ -16,13 +16,20 @@ namespace WinFormsPowerTools.AutoLayout
         }
     }
 
-    [FormsController]
+    public class TestModelFoo
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+    }
+
+    [FormsController(displayPropertySuffix: "DisplayName")]
     public partial class TestFormsController : FormsControllerBase
     {
         private double _foo;
 
         [FormsControllerProperty] private string _firstName;
-        [FormsControllerProperty("LastName")] private string _lstName;
+        [FormsControllerProperty(propertyName: "LastName", displayName: "Last name:")] private string _lstName;
+        [FormsControllerDisplay("First name", nameof(TestModelFoo.FirstName))] private string _firstNameDisplayName;
     }
 
     public partial class TestFormsController 
