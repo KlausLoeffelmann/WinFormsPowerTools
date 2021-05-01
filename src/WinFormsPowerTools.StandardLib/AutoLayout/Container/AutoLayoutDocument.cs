@@ -1,6 +1,6 @@
 ﻿namespace WinFormsPowerTools.AutoLayout
 {
-    public class AutoLayoutDocument<T> : AutoLayoutContainer<T> where T : IFormsController
+    public class AutoLayoutDocument<T> : AutoLayoutContainer<T> where T : IViewController
     {
         public AutoLayoutDocument(string title) : base(title)
         {

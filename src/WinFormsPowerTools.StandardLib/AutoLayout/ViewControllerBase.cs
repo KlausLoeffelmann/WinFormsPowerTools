@@ -2,11 +2,11 @@
 
 namespace WinFormsPowerTools.AutoLayout
 {
-    public interface IFormsController : INotifyPropertyChanged
+    public interface IViewController : INotifyPropertyChanged
     { 
     }
 
-    public abstract class FormsControllerBase : IFormsController 
+    public abstract class ViewControllerBase : IViewController 
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -22,14 +22,14 @@ namespace WinFormsPowerTools.AutoLayout
         public string LastName { get; set; }
     }
 
-    [FormsController(displayPropertySuffix: "DisplayName")]
-    public partial class TestFormsController : FormsControllerBase
+    [ViewController(displayPropertySuffix: "DisplayName")]
+    public partial class TestFormsController : ViewControllerBase
     {
         private double _foo;
 
-        [FormsControllerProperty] private string _firstName;
-        [FormsControllerProperty(propertyName: "LastName", displayName: "Last name:")] private string _lstName;
-        [FormsControllerDisplay("First name", nameof(TestModelFoo.FirstName))] private string _firstNameDisplayName;
+        [ViewControllerProperty] private string _firstName;
+        [ViewControllerProperty(propertyName: "LastName", displayName: "Last name:")] private string _lstName;
+        [ViewControllerDisplay("First name", nameof(TestModelFoo.FirstName))] private string _firstNameDisplayName;
     }
 
     public partial class TestFormsController 

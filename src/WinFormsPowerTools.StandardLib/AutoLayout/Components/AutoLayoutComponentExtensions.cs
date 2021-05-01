@@ -2,8 +2,20 @@
 
 namespace WinFormsPowerTools.AutoLayout
 {
-    public static class AutoLayoutExtensions
+    public static class AutoLayoutComponentExtensions
     {
+        public static AutoLayoutComponent<T> SetName<T>(this AutoLayoutComponent<T> component, string name) where T : IViewController
+        {
+            component.Name = name;
+            return component;
+        }
+
+        public static AutoLayoutComponent<T> SetTag<T>(this AutoLayoutComponent<T> component, object tag) where T : IViewController
+        {
+            component.Tag = tag;
+            return component;
+        }
+
         //public static AutoLayoutGroup<T> SetPadding<T>(this AutoLayoutGroup<T> group, Padding padding)
         //{
         //    group.Padding = padding;

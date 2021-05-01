@@ -12,7 +12,7 @@ namespace WinFormsPowerTools.CodeGen
     [Generator]
     public class AutoLayoutGen : ISourceGenerator
     {
-        internal const string AutoLayoutFormsControllerBase = nameof(AutoLayoutFormsControllerBase);
+        internal const string AutoLayoutViewControllerBase = nameof(AutoLayoutViewControllerBase);
 
         public void Execute(GeneratorExecutionContext context)
         {
@@ -37,17 +37,17 @@ namespace WinFormsPowerTools.CodeGen
                     var semanticModel = context.Compilation.GetSemanticModel(syntaxTree);
 
                     var formsControllerSymbol = (INamedTypeSymbol)semanticModel.GetDeclaredSymbol(classDeclaration);
-                    var formsControllerNamespace = formsControllerSymbol.ContainingNamespace;
+                    var viewControllerNamespace = formsControllerSymbol.ContainingNamespace;
                     var formsControllerProperties = formsControllerSymbol.GetMembers().OfType<IPropertySymbol>();
 
                     var formsControllerFields = formsControllerSymbol.GetMembers()
                         .OfType<IFieldSymbol>()
                         .SelectMany(field => field.GetAttributes(), (field, attributeData) => (field, attributeData))
-                        .Where(fieldAttributeTuple => fieldAttributeTuple.attributeData.AttributeClass.Name == nameof(FormsControllerPropertyAttribute));
+                        .Where(fieldAttributeTuple => fieldAttributeTuple.attributeData.AttributeClass.Name == nameof(ViewControllerPropertyAttribute));
 
                     var formsControllerAttribute = formsControllerSymbol.GetAttributes()
                         .OfType<AttributeData>()
-                        .Where(attribute => attribute.AttributeClass.Name == nameof(FormsControllerAttribute))
+                        .Where(attribute => attribute.AttributeClass.Name == nameof(ViewControllerAttribute))
                         .FirstOrDefault();
 
                     INamedTypeSymbol modelType;
@@ -70,7 +70,7 @@ namespace WinFormsPowerTools.CodeGen
                     extensionClass.AppendLine($"using System.Collections.Generic;");
                     extensionClass.AppendLine($"using System.Runtime.CompilerServices;");
                     extensionClass.AppendLine($"");
-                    extensionClass.AppendLine($"namespace {formsControllerNamespace}");
+                    extensionClass.AppendLine($"namespace {viewControllerNamespace}");
                     extensionClass.AppendLine($"{{");
                     extensionClass.AppendLine($"public static class {classDeclaration.Identifier.Text}Extensions");
                     extensionClass.AppendLine($"{{");
@@ -79,7 +79,7 @@ namespace WinFormsPowerTools.CodeGen
                     viewModelClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
                     viewModelClass.AppendLine($"using System.ComponentModel;");
                     viewModelClass.AppendLine($"using System.Runtime.CompilerServices;");
-                    viewModelClass.AppendLine($"namespace {formsControllerNamespace}");
+                    viewModelClass.AppendLine($"namespace {viewControllerNamespace}");
                     viewModelClass.AppendLine($"{{");
                     viewModelClass.AppendLine($"public partial class {classDeclaration.Identifier.Text}");
                     viewModelClass.AppendLine($"{{");
@@ -241,7 +241,7 @@ namespace WinFormsPowerTools.CodeGen
                 var attribute = classDeclaration
                     .AttributeLists
                     .SelectMany(lists => lists.Attributes)
-                    .FirstOrDefault(attribute => ((IdentifierNameSyntax)attribute.Name).Identifier.ValueText == "FormsController");
+                    .FirstOrDefault(attribute => ((IdentifierNameSyntax)attribute.Name).Identifier.ValueText == "ViewController");
 
                 if (attribute is not null)
                 {
@@ -255,7 +255,7 @@ namespace WinFormsPowerTools.CodeGen
                             var fieldAttribute = fieldDeclaration
                                 .AttributeLists
                                 .SelectMany(lists => lists.Attributes)
-                                .FirstOrDefault(attribute => ((IdentifierNameSyntax)attribute.Name).Identifier.ValueText == "FormsControllerProperty");
+                                .FirstOrDefault(attribute => ((IdentifierNameSyntax)attribute.Name).Identifier.ValueText == "ViewControllerProperty");
 
                             if (fieldAttribute is not null)
                             {

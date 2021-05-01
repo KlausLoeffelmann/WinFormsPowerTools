@@ -3,9 +3,9 @@
 namespace WinFormsPowerTools.AutoLayout
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-    public class FormsControllerPropertyAttribute : Attribute
+    public class ViewControllerPropertyAttribute : Attribute
     {
-        public FormsControllerPropertyAttribute(
+        public ViewControllerPropertyAttribute(
             string propertyName = default, 
             string displayName = default, 
             Type converter = default, 
@@ -26,31 +26,5 @@ namespace WinFormsPowerTools.AutoLayout
         // TODO: Implement scope handling.
         public Scope GetAccessorScope { get; }
         public Scope SetAccessorScope { get; }
-    }
-
-    public enum Scope
-    {
-        @public,
-        @private,
-        @internal,
-        @protected
-    }
-
-    //public enum FormsControllerPropertyOptions
-    //{
-    //    SupressDisplayProperty
-    //}
-
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property  , AllowMultiple = false, Inherited = true)]
-    public class FormsControllerDisplayAttribute : Attribute
-    {
-        public FormsControllerDisplayAttribute(string displayName, string mapsModelProperty)
-        {
-            DisplayName = displayName;
-            MapsModelProperty = mapsModelProperty;
-        }
-
-        public string DisplayName { get; }
-        public string MapsModelProperty { get; }
     }
 }

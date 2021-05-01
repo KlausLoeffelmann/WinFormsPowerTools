@@ -14,11 +14,11 @@ namespace WinFormsPowerToolsDemo
     }
 
     //[FormsController(typeof(Foo), nameof(Foo.IDContact))]
-    [FormsController]
-    public partial class OptionFormsController : FormsControllerBase
+    [ViewController]
+    public partial class OptionFormsController : ViewControllerBase
     {
-        [FormsControllerProperty] private string _firstName;
-        [FormsControllerProperty] private string _lastName;
+        [ViewControllerProperty] private string _firstName;
+        [ViewControllerProperty] private string _lastName;
 
         public OptionFormsController()
         {

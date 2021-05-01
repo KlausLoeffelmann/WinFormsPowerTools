@@ -3,9 +3,9 @@
 namespace WinFormsPowerTools.AutoLayout
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]
-    public class FormsControllerAttribute : Attribute
+    public class ViewControllerAttribute : Attribute
     {
-        public FormsControllerAttribute(string displayPropertySuffix = "DisplayName", Type modelType = default, params string[] excludeProperties)
+        public ViewControllerAttribute(string displayPropertySuffix = "DisplayName", Type modelType = default, params string[] excludeProperties)
         {
             DisplayPropertySuffix = displayPropertySuffix;
             ModelType = modelType;

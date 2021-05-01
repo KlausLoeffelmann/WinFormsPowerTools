@@ -2,7 +2,8 @@
 
 namespace WinFormsPowerTools.AutoLayout
 {
-    public abstract class AutoLayoutContainer<T> where T : IFormsController
+    public abstract class AutoLayoutContainer<T> : 
+        IAutoLayoutElement where T : IViewController
     {
         public AutoLayoutContainer(string name)
         {
@@ -11,6 +12,11 @@ namespace WinFormsPowerTools.AutoLayout
 
         private List<AutoLayoutComponent<T>> _components;
         private AutoLayoutComponents<T> _chainComponents;
+
+        public string Name { get; set; }
+        public object Tag { get; set; }
+
+        public AutoLayoutPadding Padding { get; set; }
 
         public AutoLayoutComponents<T> BuildComponents()
         {
@@ -24,9 +30,6 @@ namespace WinFormsPowerTools.AutoLayout
             }
             return _chainComponents;
         }
-
-        public string Name { get; }
-        public AutoLayoutPadding Padding { get; set; }
 
         public List<AutoLayoutComponent<T>> Components
         {

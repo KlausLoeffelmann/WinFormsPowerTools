@@ -19,18 +19,18 @@ using System;
 
 namespace WinFormsPowerTools.AutoLayout
 {
-    public class FormsControllerAttribute : Attribute
+    public class ViewControllerAttribute : Attribute
     {
-        public FormsControllerAttribute()
+        public ViewControllerAttribute()
         {
         }
 
-        public FormsControllerAttribute(Type modelType)
+        public ViewControllerAttribute(Type modelType)
         {
             ModelType = modelType;
         }
 
-        public FormsControllerAttribute(Type modelType, params string[] excludeProperties)
+        public ViewControllerAttribute(Type modelType, params string[] excludeProperties)
         {
             ModelType = modelType;
             ExcludeProperties = excludeProperties;
@@ -43,13 +43,13 @@ namespace WinFormsPowerTools.AutoLayout
 
 namespace WinFormsPowerTools.AutoLayout
 {
-    public class FormsControllerPropertyAttribute : Attribute
+    public class ViewControllerPropertyAttribute : Attribute
     {
-        public FormsControllerPropertyAttribute()
+        public ViewControllerPropertyAttribute()
         {
         }
 
-        public FormsControllerPropertyAttribute(string propertyName)
+        public ViewControllerPropertyAttribute(string propertyName)
         {
             PropertyName = propertyName;
         }
@@ -84,12 +84,12 @@ namespace MyCode
     }
 
     [FormsController(typeof(Foo))]
-    public partial class TestFormsController : FormsControllerBase
+    public partial class TestFormsController : ViewControllerBase
     {
         private double _foo;
 
-        [FormsControllerProperty] private string _firstName;
-        [FormsControllerProperty(""LastName"")] private string _lstName;
+        [ViewControllerProperty] private string _firstName;
+        [ViewControllerProperty(""LastName"")] private string _lstName;
 
         public string FooProperty {get; set;}
     }
@@ -124,4 +124,3 @@ namespace MyCode
         }
     }
 }
-
