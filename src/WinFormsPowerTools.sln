@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerToolsDemo", "WinFormsPowerToolsDemo\WinFormsPowerToolsDemo.csproj", "{4C7D9500-0747-4103-B040-6428EB973D1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsPowerTools.StandardLib", "WinFormsPowerTools.StandardLib\WinFormsPowerTools.StandardLib.csproj", "{6E2A19D4-8801-477A-B04C-061162EA0ECB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.StandardLib", "WinFormsPowerTools.StandardLib\WinFormsPowerTools.StandardLib.csproj", "{6E2A19D4-8801-477A-B04C-061162EA0ECB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

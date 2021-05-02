@@ -24,8 +24,9 @@ namespace WinFormsPowerToolsDemo
         private static void GenerateForm()
         {
             var autoForm = new Form();
-            var document = new AutoLayoutDocument<OptionFormsController>("Forms Title");
-            var temp = document.BuildComponents();
+            var view = new OptionFormsController();
+            var document = view.GetAutoLayoutDocument("optionsFormsView", "Forms Title");
+            
 
 
             
