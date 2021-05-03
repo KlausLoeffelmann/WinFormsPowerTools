@@ -40,7 +40,7 @@
 
     public static class AutoLayoutDocumentExtension
     {
-        public static AutoLayoutDocument<T> GetAutoLayoutDocument<T>(
+        public static AutoLayoutDocument<T> GetDocument<T>(
             this T view,
             string name,
             string title = null,
@@ -50,6 +50,20 @@
         {
             return new AutoLayoutDocument<T>(
                 name, title, view, tag, group);
+        }
+    }
+
+    public static class AutoLayoutContentExtensions
+    {
+        public static AutoLayoutGrid<T> SetGridContent<T>(
+            this IAutoLayoutContent<T> contentContainer,
+            string gridName,
+            object tag = null,
+            object group = null) where T : IViewController
+        {
+            var grid = new AutoLayoutGrid<T>(gridName, tag, group);
+            contentContainer.Content = grid;
+            return grid;
         }
     }
 }

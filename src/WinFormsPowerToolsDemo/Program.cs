@@ -25,12 +25,8 @@ namespace WinFormsPowerToolsDemo
         {
             var autoForm = new Form();
             var view = new OptionFormsController();
-            var document = view.GetAutoLayoutDocument("optionsFormsView", "Forms Title");
-            
-
-
-            
+            var document = view.GetDocument("optionsFormsView", "Forms Title");
+            document.SetGridContent("grid1");
         }
-
     }
 }

@@ -11,7 +11,7 @@ namespace WinFormsPowerTools.AutoLayout
         private ObservableCollection<IAutoLayoutElement<T>> _children;
         private Dictionary<(int row, int column), (GridInfo gridInfo, IAutoLayoutElement<T> layoutElement)> _griddedChildren;
 
-        private (int rowMax, int columnMax) maxCellPosition;
+        private (int lastRow, int lastColumn) _maxCellPosition;
 
         public AutoLayoutGrid(string name, object tag, object group)
             : base(name, tag, group)
@@ -40,7 +40,7 @@ namespace WinFormsPowerTools.AutoLayout
                 }
                 else
                 {
-                    gridInfo = new GridInfo(maxCellPosition.rowMax + 1, 0, 1, 1, null);
+                    gridInfo = new GridInfo(_maxCellPosition.lastRow + 1, 0, 1, 1, null);
                 }
 
                 _griddedChildren.Add((gridInfo.Row, gridInfo.Column), (gridInfo, item));
@@ -51,11 +51,11 @@ namespace WinFormsPowerTools.AutoLayout
             => _children;
 
         public void AddChild(
-            int row, 
-            int column, 
-            IAutoLayoutElement<T> child, 
-            int rowSpan=1, 
-            int columnSpan=1)
+            int row,
+            int column,
+            IAutoLayoutElement<T> child,
+            int rowSpan = 1,
+            int columnSpan = 1)
         {
             // Check, if that cell if already occupied:
             if (_griddedChildren.ContainsKey((row, column)))
@@ -71,10 +71,13 @@ namespace WinFormsPowerTools.AutoLayout
             // internal Layout dictionary.
             child.Tag = rowColumnTag;
             _children.Add(child);
-            maxCellPosition = (
-                Math.Max(row, maxCellPosition.rowMax),
-                Math.Max(column, maxCellPosition.columnMax));
+            _maxCellPosition = (
+                Math.Max(row, _maxCellPosition.lastRow),
+                Math.Max(column, _maxCellPosition.lastColumn));
         }
+
+        public int LastRow => _maxCellPosition.lastRow;
+        public int LastColumn => _maxCellPosition.lastColumn;
 
         [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
         public class GridInfo
@@ -96,6 +99,36 @@ namespace WinFormsPowerTools.AutoLayout
 
             private string GetDebuggerDisplay()
                 => $"Row:{Row} Column:{Column} Tag:{Tag ?? "N/D"}";
+        }
+    }
+
+    public static class AutoLayoutGridExtensions
+    {
+        public static AutoLayoutGrid<T> AddRow<T>(
+            this AutoLayoutGrid<T> grid,
+            params IAutoLayoutElement<T>[] children) where T : IViewController
+        {
+            var row = grid.LastRow + 1;
+            int column = 0;
+
+            foreach (var child in children)
+            {
+                grid.AddChild(row, column++, child);
+            }
+
+            return grid;
+        }
+
+        public static AutoLayoutGrid<T> AddChild<T>(
+            this AutoLayoutGrid<T> grid,
+            IAutoLayoutElement<T> child,
+            int row,
+            int column,
+            int rowSpan = 1,
+            int columnSpan = 1) where T : IViewController
+        {
+            grid.AddChild(child, row, column, rowSpan, columnSpan);
+            return grid;
         }
     }
 }
