@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.Documents;
 
 namespace WinFormsPowerToolsDemo
 {
@@ -15,14 +10,19 @@ namespace WinFormsPowerToolsDemo
         public DocumentTestForm()
         {
             InitializeComponent();
+            documentControl1.Document = new Document();
         }
 
         private void DocumentTestForm_Load(object sender, EventArgs e)
         {
-            panel1.BorderStyle = BorderStyle.FixedSingle;
-            panel1.Controls.Add(new Button() { Text = "Test", Width = 100, Height = 25 });
-            panel1.AutoScrollMinSize = new Size(1000, 1000);
-            panel1.AutoScrollMargin = new Size(50, 50);
+        }
+
+        private void documentControl1_Paint(object sender, PaintEventArgs e)
+        {
+            for (int x=0; x< 800; x+=10)
+            {
+                e.Graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(x, 600));
+            }
         }
     }
 }

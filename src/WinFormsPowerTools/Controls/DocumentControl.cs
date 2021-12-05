@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -29,11 +28,13 @@ namespace System.Windows.Forms.Documents
         /// </summary>
         private bool resetRTLHScrollValue;
 
-        protected const int ScrollStateAutoScrolling = 0x0001;
+        protected const int ScrollStateAutoScrolling = 0x0001;      // We no longer use this. What was AutoScroll is default here.
         protected const int ScrollStateHScrollVisible = 0x0002;
         protected const int ScrollStateVScrollVisible = 0x0004;
         protected const int ScrollStateUserHasScrolled = 0x0008;
         protected const int ScrollStateFullDrag = 0x0010;
+
+        public event ScrollEventHandler ScrollEvent;
 
         /// <summary>
         ///  Initializes a new instance of the <see cref='ScrollableControl'/> class.
@@ -45,28 +46,6 @@ namespace System.Windows.Forms.Documents
             Document = new Document();
         }
 
-        /// <summary>
-        ///  Gets or sets a value indicating whether the container will allow the user to
-        ///  scroll to any controls placed outside of its visible boundaries.
-        /// </summary>
-        [Category("Layout")]
-        [Localizable(true)]
-        [DefaultValue(false)]
-        public virtual bool AutoScroll
-        {
-            get => GetScrollState(ScrollStateAutoScrolling);
-            set
-            {
-                if (value)
-                {
-                    UpdateFullDrag();
-                }
-
-                SetScrollState(ScrollStateAutoScrolling, value);
-                PerformLayout(this,nameof(AutoScroll));
-            }
-        }
-
         public Document Document
         {
             get => _document;
@@ -74,8 +53,15 @@ namespace System.Windows.Forms.Documents
             {
                 _document = value;
                 _displayRect = new Rectangle(0, 0, (int)_document.Width, (int)_document.Height);
-                SetDisplayRectLocation(0, 0);
+                PerformLayout();
             }
+        }
+
+        protected override void OnLayout(LayoutEventArgs levent)
+        {
+            base.OnLayout(levent);
+            SetDisplayRectLocation(0, 0);
+            ApplyScrollbarChanges(_displayRect);
         }
 
         /// <summary>
@@ -84,7 +70,7 @@ namespace System.Windows.Forms.Documents
         [Category("Layout")]
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public VDocumentScrollProperties VerticalScroll 
+        public VDocumentScrollProperties VerticalScroll
             => _verticalScroll ??= new VDocumentScrollProperties(this);
 
         /// <summary>
@@ -93,7 +79,7 @@ namespace System.Windows.Forms.Documents
         [Category("Layout")]
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public HDocumentScrollProperties HorizontalScroll 
+        public HDocumentScrollProperties HorizontalScroll
             => _horizontalScroll ??= new HDocumentScrollProperties(this);
 
         /// <summary>
@@ -306,91 +292,68 @@ namespace System.Windows.Forms.Documents
         ///  Updates the value of the autoscroll scrollbars based on the current form
         ///  state. This is a one-way sync, updating the scrollbars only.
         /// </summary>
-        private void SyncScrollbars(bool autoScroll)
+        private void SyncScrollbars()
         {
             Rectangle displayRect = this._displayRect;
 
-            if (autoScroll)
+            if (!IsHandleCreated)
             {
-                if (!IsHandleCreated)
-                {
-                    return;
-                }
-
-                if (HScroll)
-                {
-                    if (!HorizontalScroll._maximumSetExternally)
-                    {
-                        HorizontalScroll._maximum = displayRect.Width - 1;
-                    }
-
-                    if (!HorizontalScroll._largeChangeSetExternally)
-                    {
-                        HorizontalScroll._largeChange = ClientRectangle.Width;
-                    }
-
-                    if (!HorizontalScroll._smallChangeSetExternally)
-                    {
-                        HorizontalScroll._smallChange = 5;
-                    }
-
-                    if (resetRTLHScrollValue && !IsMirrored)
-                    {
-                        resetRTLHScrollValue = false;
-                        //BeginInvoke(new EventHandler(OnSetScrollPosition));
-                    }
-                    else if (-displayRect.X >= HorizontalScroll._minimum && -displayRect.X < HorizontalScroll._maximum)
-                    {
-                        HorizontalScroll._value = -displayRect.X;
-                    }
-
-                    HorizontalScroll.UpdateScrollInfo();
-                }
-
-                if (VScroll)
-                {
-                    if (!VerticalScroll._maximumSetExternally)
-                    {
-                        VerticalScroll._maximum = displayRect.Height - 1;
-                    }
-
-                    if (!VerticalScroll._largeChangeSetExternally)
-                    {
-                        VerticalScroll._largeChange = ClientRectangle.Height;
-                    }
-
-                    if (!VerticalScroll._smallChangeSetExternally)
-                    {
-                        VerticalScroll._smallChange = 5;
-                    }
-
-                    if (-displayRect.Y >= VerticalScroll._minimum && -displayRect.Y < VerticalScroll._maximum)
-                    {
-                        VerticalScroll._value = -displayRect.Y;
-                    }
-
-                    VerticalScroll.UpdateScrollInfo();
-                }
+                return;
             }
-            else
+
+            if (HScroll)
             {
-                if (HorizontalScroll.Visible)
+                if (!HorizontalScroll._maximumSetExternally)
                 {
-                    HorizontalScroll.Value = -displayRect.X;
-                }
-                else
-                {
-                    ResetScrollProperties(HorizontalScroll);
+                    HorizontalScroll._maximum = displayRect.Width - 1;
                 }
 
-                if (VerticalScroll.Visible)
+                if (!HorizontalScroll._largeChangeSetExternally)
                 {
-                    VerticalScroll.Value = -displayRect.Y;
+                    HorizontalScroll._largeChange = ClientRectangle.Width;
                 }
-                else
+
+                if (!HorizontalScroll._smallChangeSetExternally)
                 {
-                    ResetScrollProperties(VerticalScroll);
+                    HorizontalScroll._smallChange = 5;
                 }
+
+                if (resetRTLHScrollValue && !IsMirrored)
+                {
+                    resetRTLHScrollValue = false;
+                    //BeginInvoke(new EventHandler(OnSetScrollPosition));
+                }
+                else if (-displayRect.X >= HorizontalScroll._minimum && -displayRect.X < HorizontalScroll._maximum)
+                {
+                    HorizontalScroll._value = -displayRect.X;
+                }
+
+                HorizontalScroll.UpdateScrollInfo();
+            }
+
+            if (VScroll)
+            {
+                if (!VerticalScroll._maximumSetExternally)
+                {
+                    VerticalScroll._maximum = displayRect.Height - 1;
+                }
+
+                if (!VerticalScroll._largeChangeSetExternally)
+                {
+                    VerticalScroll._largeChange = ClientRectangle.Height;
+                }
+
+                if (!VerticalScroll._smallChangeSetExternally)
+                {
+                    VerticalScroll._smallChange = 5;
+                }
+
+                if (-displayRect.Y >= VerticalScroll._minimum && -displayRect.Y < VerticalScroll._maximum)
+                {
+                    VerticalScroll._value = -displayRect.Y;
+                }
+
+                VerticalScroll.UpdateScrollInfo();
             }
         }
 
@@ -429,6 +392,7 @@ namespace System.Windows.Forms.Documents
                 case PInvoke.SB_THUMBTRACK:
                     pos = ScrollThumbPosition(SCROLLBAR_CONSTANTS.SB_VERT);
                     break;
+
                 case PInvoke.SB_LINEUP:
                     if (pos > 0)
                     {
@@ -440,6 +404,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
+
                 case PInvoke.SB_LINEDOWN:
                     if (pos < maxPos - VerticalScroll.SmallChange)
                     {
@@ -451,6 +416,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
+
                 case PInvoke.SB_PAGEUP:
                     if (pos > VerticalScroll.LargeChange)
                     {
@@ -462,6 +428,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
+
                 case PInvoke.SB_PAGEDOWN:
                     if (pos < maxPos - VerticalScroll.LargeChange)
                     {
@@ -473,9 +440,11 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
+
                 case PInvoke.SB_TOP:
                     pos = 0;
                     break;
+
                 case PInvoke.SB_BOTTOM:
                     pos = maxPos;
                     break;
@@ -487,7 +456,7 @@ namespace System.Windows.Forms.Documents
             {
                 SetScrollState(ScrollStateUserHasScrolled, true);
                 SetDisplayRectLocation(_displayRect.X, -pos);
-                SyncScrollbars(AutoScroll);
+                SyncScrollbars();
             }
 
             WmOnScroll(ref m, oldValue, pos, ScrollOrientation.VerticalScroll);
@@ -511,10 +480,8 @@ namespace System.Windows.Forms.Documents
         /// <summary>
         ///  Raises the <see cref='System.Windows.Forms.ScrollBar.OnScroll'/> event.
         /// </summary>
-        protected virtual void OnScroll(ScrollEventArgs se)
-        {
-            //((ScrollEventHandler)Events[s_scrollEvent])?.Invoke(this, se);
-        }
+        protected virtual void OnScroll(ScrollEventArgs scrollEventArgs) 
+            => ScrollEvent?.Invoke(this, scrollEventArgs);
 
         /// <summary>
         ///  Allows to set the <see cref="DisplayRectangle" /> to enable the visual scroll effect.
@@ -522,7 +489,7 @@ namespace System.Windows.Forms.Documents
         internal void SetDisplayFromScrollProps(int x, int y)
         {
             Rectangle display = GetDisplayRectInternal();
-            //ApplyScrollbarChanges(display);
+            ApplyScrollbarChanges(display);
             SetDisplayRectLocation(x, y);
         }
 
@@ -531,16 +498,6 @@ namespace System.Windows.Forms.Documents
             if (_displayRect.IsEmpty)
             {
                 _displayRect = ClientRectangle;
-            }
-
-            if (!AutoScroll && HorizontalScroll._visible == true)
-            {
-                _displayRect = new Rectangle(_displayRect.X, _displayRect.Y, HorizontalScroll.Maximum, _displayRect.Height);
-            }
-
-            if (!AutoScroll && VerticalScroll._visible == true)
-            {
-                _displayRect = new Rectangle(_displayRect.X, _displayRect.Y, _displayRect.Width, VerticalScroll.Maximum);
             }
 
             return _displayRect;
@@ -599,14 +556,12 @@ namespace System.Windows.Forms.Documents
 
             if (IsHandleCreated && (xDelta != 0 || yDelta != 0))
             {
-                Debug.Assert(IsHandleCreated, "Handle is not created");
-
                 RECT rcClip = new RECT()
                 {
                     left = ClientRectangle.X,
                     top = ClientRectangle.Y,
-                    right = ClientRectangle.Width+ ClientRectangle.X,
-                    bottom = ClientRectangle.Height+ClientRectangle.Y
+                    right = ClientRectangle.Width + ClientRectangle.X,
+                    bottom = ClientRectangle.Height + ClientRectangle.Y
                 };
 
                 RECT rcUpdate = rcClip;
@@ -624,16 +579,6 @@ namespace System.Windows.Forms.Documents
                     SHOW_WINDOW_CMD.SW_INVALIDATE |
                         SHOW_WINDOW_CMD.SW_ERASE |
                         SHOW_WINDOW_CMD.SW_SCROLLCHILDREN);
-            }
-
-            // Force child controls to update bounds.
-            for (int i = 0; i < Controls.Count; i++)
-            {
-                Control ctl = Controls[i];
-                if (ctl is not null && ctl.IsHandleCreated)
-                {
-                    // ctl.UpdateBounds()
-                }
             }
         }
 
@@ -655,10 +600,6 @@ namespace System.Windows.Forms.Documents
             int pos = -_displayRect.X;
             int oldValue = pos;
             int maxPos = -(client.Width - _displayRect.Width);
-            if (!AutoScroll)
-            {
-                maxPos = HorizontalScroll.Maximum;
-            }
 
             var loWord = Interop.PARAM.LOWORD(m.WParam);
             switch ((uint)loWord)
@@ -724,7 +665,7 @@ namespace System.Windows.Forms.Documents
             {
                 SetScrollState(ScrollStateUserHasScrolled, true);
                 SetDisplayRectLocation(-pos, _displayRect.Y);
-                SyncScrollbars(AutoScroll);
+                SyncScrollbars();
             }
 
             WmOnScroll(ref m, oldValue, pos, ScrollOrientation.HorizontalScroll);
@@ -770,6 +711,114 @@ namespace System.Windows.Forms.Documents
                     base.WndProc(ref m);
                     break;
             }
+        }
+
+        private bool ApplyScrollbarChanges(Rectangle display)
+        {
+            bool needLayout = false;
+            bool needHscroll = false;
+            bool needVscroll = false;
+
+            Rectangle currentClient = ClientRectangle;
+            Rectangle fullClient = currentClient;
+            Rectangle minClient = fullClient;
+
+            if (HScroll)
+            {
+                fullClient.Height += SystemInformation.HorizontalScrollBarHeight;
+            }
+            else
+            {
+                minClient.Height -= SystemInformation.HorizontalScrollBarHeight;
+            }
+
+            if (VScroll)
+            {
+                fullClient.Width += SystemInformation.VerticalScrollBarWidth;
+            }
+            else
+            {
+                minClient.Width -= SystemInformation.VerticalScrollBarWidth;
+            }
+
+            int maxX = minClient.Width;
+            int maxY = minClient.Height;
+
+            if (Document is not null)
+            {
+                maxX = (int) Document.Width;
+                maxY = (int) Document.Height;
+                needHscroll = true;
+                needVscroll = true;
+            }
+
+            // Check maxX/maxY against the clientRect, we must compare it to the
+            // clientRect without any scrollbars, and then we can check it against
+            // the clientRect with the "new" scrollbars. This will make the
+            // scrollbars show and hide themselves correctly at the boundaries.
+            //
+            if (maxX <= fullClient.Width)
+            {
+                needHscroll = false;
+            }
+            if (maxY <= fullClient.Height)
+            {
+                needVscroll = false;
+            }
+            Rectangle clientToBe = fullClient;
+
+            if (needHscroll)
+            {
+                clientToBe.Height -= SystemInformation.HorizontalScrollBarHeight;
+            }
+
+            if (needVscroll)
+            {
+                clientToBe.Width -= SystemInformation.VerticalScrollBarWidth;
+            }
+
+            if (needHscroll && maxY > clientToBe.Height)
+            {
+                needVscroll = true;
+            }
+
+            if (needVscroll && maxX > clientToBe.Width)
+            {
+                needHscroll = true;
+            }
+
+            if (!needHscroll)
+            {
+                maxX = clientToBe.Width;
+            }
+
+            if (!needVscroll)
+            {
+                maxY = clientToBe.Height;
+            }
+
+            // Show the needed scrollbars
+            needLayout = (SetVisibleScrollbars(needHscroll, needVscroll) || needLayout);
+
+            // If needed, adjust the size...
+            if (HScroll || VScroll)
+            {
+                needLayout = (SetDisplayRectangleSize(maxX, maxY) || needLayout);
+            }
+
+            // Else just update the display rect size... this keeps it as big as the client
+            // area in a resize scenario
+            //
+            else
+            {
+                SetDisplayRectangleSize(maxX, maxY);
+            }
+
+            // Sync up the scrollbars
+            //
+            SyncScrollbars();
+
+            return needLayout;
         }
     }
 }

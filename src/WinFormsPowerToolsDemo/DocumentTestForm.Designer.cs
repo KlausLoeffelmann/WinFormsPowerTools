@@ -28,26 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
+            System.Windows.Forms.Documents.Document document1 = new System.Windows.Forms.Documents.Document();
+            this.documentControl1 = new System.Windows.Forms.Documents.DocumentControl();
             this.SuspendLayout();
             // 
-            // panel1
+            // documentControl1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.documentControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.AutoScroll = true;
-            this.panel1.Location = new System.Drawing.Point(68, 36);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(659, 358);
-            this.panel1.TabIndex = 0;
+            document1.Height = 600F;
+            document1.Width = 800F;
+            this.documentControl1.Document = document1;
+            this.documentControl1.Location = new System.Drawing.Point(12, 12);
+            this.documentControl1.Name = "documentControl1";
+            this.documentControl1.Size = new System.Drawing.Size(806, 619);
+            this.documentControl1.TabIndex = 0;
+            this.documentControl1.Text = "documentControl1";
+            this.documentControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.documentControl1_Paint);
             // 
             // DocumentTestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.panel1);
+            this.ClientSize = new System.Drawing.Size(830, 643);
+            this.Controls.Add(this.documentControl1);
             this.Name = "DocumentTestForm";
             this.Text = "DocumentFormTest";
             this.Load += new System.EventHandler(this.DocumentTestForm_Load);
@@ -57,6 +62,6 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Documents.DocumentControl documentControl1;
     }
 }

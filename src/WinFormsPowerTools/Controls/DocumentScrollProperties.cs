@@ -48,7 +48,7 @@ namespace System.Windows.Forms.Documents
             get => _enabled;
             set
             {
-                if (_parent is not null && _parent.AutoScroll)
+                if (_parent is not null)
                 {
                     return;
                 }
@@ -118,7 +118,7 @@ namespace System.Windows.Forms.Documents
             get => _maximum;
             set
             {
-                if (_parent is not null && _parent.AutoScroll)
+                if (_parent is not null)
                 {
                     return;
                 }
@@ -153,7 +153,7 @@ namespace System.Windows.Forms.Documents
             get => _minimum;
             set
             {
-                if (_parent is not null && _parent.AutoScroll)
+                if (_parent is not null)
                 {
                     return;
                 }
@@ -272,7 +272,7 @@ namespace System.Windows.Forms.Documents
             get => _visible;
             set
             {
-                if (_parent is not null && _parent.AutoScroll)
+                if (_parent is not null)
                 {
                     return;
                 }
@@ -297,7 +297,7 @@ namespace System.Windows.Forms.Documents
                     fMask = SCROLLINFO_MASK.SIF_ALL,
                     nMin = _minimum,
                     nMax = _maximum,
-                    nPage = _parent.AutoScroll ? (uint)GetPageSize(_parent) : (uint)LargeChange,
+                    nPage = (uint)GetPageSize(_parent),
                     nPos = _value,
                     nTrackPos = 0
                 };
