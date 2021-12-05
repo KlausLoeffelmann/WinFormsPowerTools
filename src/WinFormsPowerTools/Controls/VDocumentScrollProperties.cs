@@ -4,7 +4,7 @@
 
 #nullable enable
 
-using Windows.Win32.UI.Controls;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace System.Windows.Forms.Documents
 {

@@ -4,9 +4,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using Windows.Win32;
-using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.Foundation;
-using Windows.Win32.UI.Controls;
+using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace System.Windows.Forms.Documents
@@ -85,7 +84,8 @@ namespace System.Windows.Forms.Documents
         [Category("Layout")]
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public VDocumentScrollProperties VerticalScroll => _verticalScroll ??= new VDocumentScrollProperties(this);
+        public VDocumentScrollProperties VerticalScroll 
+            => _verticalScroll ??= new VDocumentScrollProperties(this);
 
         /// <summary>
         /// Gets the Horizontal Scroll bar for this ScrollableControl.
@@ -93,7 +93,8 @@ namespace System.Windows.Forms.Documents
         [Category("Layout")]
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Always)]
-        public HDocumentScrollProperties HorizontalScroll => _horizontalScroll ??= new HDocumentScrollProperties(this);
+        public HDocumentScrollProperties HorizontalScroll 
+            => _horizontalScroll ??= new HDocumentScrollProperties(this);
 
         /// <summary>
         ///  Gets or sets a value indicating whether the horizontal scroll bar is visible.
@@ -416,7 +417,7 @@ namespace System.Windows.Forms.Documents
 
             Rectangle client = ClientRectangle;
             var loWord = Interop.PARAM.LOWORD(m.WParam);
-            bool thumbTrack = loWord != Constants.SB_THUMBTRACK;
+            bool thumbTrack = loWord != PInvoke.SB_THUMBTRACK;
 
             int pos = 0-_displayRect.Y;
             int oldValue = pos;
@@ -424,11 +425,11 @@ namespace System.Windows.Forms.Documents
 
             switch ((uint)loWord)
             {
-                case Constants.SB_THUMBPOSITION:
-                case Constants.SB_THUMBTRACK:
+                case PInvoke.SB_THUMBPOSITION:
+                case PInvoke.SB_THUMBTRACK:
                     pos = ScrollThumbPosition(SCROLLBAR_CONSTANTS.SB_VERT);
                     break;
-                case Constants.SB_LINEUP:
+                case PInvoke.SB_LINEUP:
                     if (pos > 0)
                     {
                         pos -= VerticalScroll.SmallChange;
@@ -439,7 +440,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case Constants.SB_LINEDOWN:
+                case PInvoke.SB_LINEDOWN:
                     if (pos < maxPos - VerticalScroll.SmallChange)
                     {
                         pos += VerticalScroll.SmallChange;
@@ -450,7 +451,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case Constants.SB_PAGEUP:
+                case PInvoke.SB_PAGEUP:
                     if (pos > VerticalScroll.LargeChange)
                     {
                         pos -= VerticalScroll.LargeChange;
@@ -461,7 +462,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case Constants.SB_PAGEDOWN:
+                case PInvoke.SB_PAGEDOWN:
                     if (pos < maxPos - VerticalScroll.LargeChange)
                     {
                         pos += VerticalScroll.LargeChange;
@@ -472,10 +473,10 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case Constants.SB_TOP:
+                case PInvoke.SB_TOP:
                     pos = 0;
                     break;
-                case Constants.SB_BOTTOM:
+                case PInvoke.SB_BOTTOM:
                     pos = maxPos;
                     break;
             }
@@ -662,12 +663,12 @@ namespace System.Windows.Forms.Documents
             var loWord = Interop.PARAM.LOWORD(m.WParam);
             switch ((uint)loWord)
             {
-                case Constants.SB_THUMBPOSITION:
-                case Constants.SB_THUMBTRACK:
+                case PInvoke.SB_THUMBPOSITION:
+                case PInvoke.SB_THUMBTRACK:
                     pos = ScrollThumbPosition(SCROLLBAR_CONSTANTS.SB_HORZ);
 
                     break;
-                case Constants.SB_LINELEFT:
+                case PInvoke.SB_LINELEFT:
                     if (pos > HorizontalScroll.SmallChange)
                     {
                         pos -= HorizontalScroll.SmallChange;
@@ -678,7 +679,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case Constants.SB_LINERIGHT:
+                case PInvoke.SB_LINERIGHT:
                     if (pos < maxPos - HorizontalScroll.SmallChange)
                     {
                         pos += HorizontalScroll.SmallChange;
@@ -689,7 +690,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case Constants.SB_PAGELEFT:
+                case PInvoke.SB_PAGELEFT:
                     if (pos > HorizontalScroll.LargeChange)
                     {
                         pos -= HorizontalScroll.LargeChange;
@@ -700,7 +701,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case Constants.SB_PAGERIGHT:
+                case PInvoke.SB_PAGERIGHT:
                     if (pos < maxPos - HorizontalScroll.LargeChange)
                     {
                         pos += HorizontalScroll.LargeChange;
@@ -711,15 +712,15 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case Constants.SB_LEFT:
+                case PInvoke.SB_LEFT:
                     pos = 0;
                     break;
-                case Constants.SB_RIGHT:
+                case PInvoke.SB_RIGHT:
                     pos = maxPos;
                     break;
             }
 
-            if (GetScrollState(ScrollStateFullDrag) || loWord != Constants.SB_THUMBTRACK)
+            if (GetScrollState(ScrollStateFullDrag) || loWord != PInvoke.SB_THUMBTRACK)
             {
                 SetScrollState(ScrollStateUserHasScrolled, true);
                 SetDisplayRectLocation(-pos, _displayRect.Y);
@@ -754,15 +755,15 @@ namespace System.Windows.Forms.Documents
         {
             switch ((uint) m.Msg)
             {
-                case Constants.WM_VSCROLL:
+                case PInvoke.WM_VSCROLL:
                     WmVScroll(ref m);
                     break;
-                case Constants.WM_HSCROLL:
+                case PInvoke.WM_HSCROLL:
                     WmHScroll(ref m);
                     break;
                 
                 // Same as WM_SETTINGCHANGE
-                case Constants.WM_WININICHANGE:
+                case PInvoke.WM_WININICHANGE:
                     WmSettingChange(ref m);
                     break;
                 default:
