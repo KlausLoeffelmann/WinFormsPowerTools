@@ -37,15 +37,15 @@ namespace WinFormsPowerTools.CodeGen
                     var semanticModel = context.Compilation.GetSemanticModel(syntaxTree);
 
                     var formsControllerSymbol = (INamedTypeSymbol)semanticModel.GetDeclaredSymbol(classDeclaration);
-                    var viewControllerNamespace = formsControllerSymbol.ContainingNamespace;
-                    var formsControllerProperties = formsControllerSymbol.GetMembers().OfType<IPropertySymbol>();
+                    var viewControllerNamespace = formsControllerSymbol?.ContainingNamespace;
+                    var formsControllerProperties = formsControllerSymbol?.GetMembers().OfType<IPropertySymbol>();
 
-                    var formsControllerFields = formsControllerSymbol.GetMembers()
+                    var formsControllerFields = formsControllerSymbol?.GetMembers()
                         .OfType<IFieldSymbol>()
                         .SelectMany(field => field.GetAttributes(), (field, attributeData) => (field, attributeData))
                         .Where(fieldAttributeTuple => fieldAttributeTuple.attributeData.AttributeClass.Name == nameof(ViewControllerPropertyAttribute));
 
-                    var formsControllerAttribute = formsControllerSymbol.GetAttributes()
+                    var formsControllerAttribute = formsControllerSymbol?.GetAttributes()
                         .OfType<AttributeData>()
                         .Where(attribute => attribute.AttributeClass.Name == nameof(ViewControllerAttribute))
                         .FirstOrDefault();
@@ -84,7 +84,7 @@ namespace WinFormsPowerTools.CodeGen
                     viewModelClass.AppendLine($"public partial class {classDeclaration.Identifier.Text}");
                     viewModelClass.AppendLine($"{{");
 
-                    foreach (var fieldAttributeTuple in formsControllerFields)
+                    foreach (var fieldAttributeTuple in formsControllerFields!)
                     {
                         string propertyName;
 
@@ -188,7 +188,7 @@ namespace WinFormsPowerTools.CodeGen
             }
         }
 
-        private string GetPropertyNameFromFieldName(string fieldName)
+        private string? GetPropertyNameFromFieldName(string fieldName)
         {
             if (string.IsNullOrEmpty(fieldName) || fieldName == "_")
             {
