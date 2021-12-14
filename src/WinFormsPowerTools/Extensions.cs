@@ -1,4 +1,6 @@
-﻿namespace System.Windows.Forms.DataEntryForms
+﻿using Windows.Win32;
+
+namespace System.Windows.Forms.DataEntryForms
 {
     public static class Extensions
     {
