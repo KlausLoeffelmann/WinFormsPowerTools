@@ -44,11 +44,22 @@ namespace WinFormsPowerToolsDemo
             this.documentControl1.Location = new System.Drawing.Point(12, 12);
             document1.Height = 600F;
             document1.Width = 800F;
-            this.documentControl1.MainDocument = document1;
+            this.documentControl1.Document = document1;
+            this.documentControl1.Location = new System.Drawing.Point(12, 83);
             this.documentControl1.Name = "documentControl1";
-            this.documentControl1.Size = new System.Drawing.Size(959, 717);
+            this.documentControl1.Size = new System.Drawing.Size(806, 548);
             this.documentControl1.TabIndex = 0;
             this.documentControl1.Text = "documentControl1";
+            this.documentControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.documentControl1_Paint);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(702, 12);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(116, 46);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // DocumentTestForm
             // 

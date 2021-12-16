@@ -3,38 +3,23 @@ using System.ComponentModel;
 
 namespace System.Windows.Forms.TemplateBinding
 {
-    public class NestedPropertyChangedManager : PcmTree<object>
+    public class NestedPropertyChangedManager : Chain
     {
-        Action<PcmTreeNode<object>>? _removeAction = (node) =>
+        Action<ChainLink>? _removeAction = (node) =>
          {
 
          };
 
-        Action<PcmTreeNode<object>, object?>? _valueChangedAction = (node, oldValue) =>
-           {
-           };
+        //Action<PcmTreeNode>? _valueChangedAction = (node, oldValue) =>
+        //   {
+        //   };
 
-        public NestedPropertyChangedManager(object? rootValue, 
-            EventHandler<NodeValueChangedEventArgs<object>> nodeValueChangedAction) 
-            : base(rootValue, nodeValueChangedAction)
+        public NestedPropertyChangedManager(object? dataContext, 
+            EventHandler<ChainValueChangedEventArgs> nodeValueChangedAction) 
+            : base(dataContext)
         {
-            RootNode.RemoveAction = _removeAction;
-            RootNode.ValueChangedAction = _valueChangedAction;
-        }
-
-        // TODO: Implement remove action and valuechangedaction.
-        public object? DataContext
-        {
-            get => RootNode?.Value;
-            set
-            {
-                if (!Equals(value, DataContext))
-                {
-                    RootNode.Remove();
-                }
-
-                RootNode = new PcmTreeNode<object>(value, _removeAction, _valueChangedAction);
-            }
+            //RootNode.RemoveAction = _removeAction;
+            //RootNode.ValueChangedAction = _valueChangedAction;
         }
     }
 }

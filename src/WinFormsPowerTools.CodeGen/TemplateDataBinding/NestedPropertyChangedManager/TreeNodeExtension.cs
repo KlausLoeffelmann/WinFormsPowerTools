@@ -7,30 +7,30 @@ namespace WinFormsPowerTools.CodeGen.TemplateDataBinding.NestedPropertyChangedMa
 {
     public static class TreeNodeExtension
     {
-        public static void ForEachNodeAndSubNode<T>(this IEnumerable<PcmTreeNode<T>> nodes, Action<PcmTreeNode<T>> nodeTraverseAction)
-        {
-            foreach (PcmTreeNode<T> node in nodes)
-            {
-                if (node.Nodes is { } subNodes && subNodes.Count > 0)
-                {
-                    subNodes.ForEachNodeAndSubNode(nodeTraverseAction);
-                }
-                nodeTraverseAction(node);
-            }
-        }
+        //public static void ForEachNodeAndSubNode(this IEnumerable<ChainLink> nodes, Action<ChainLink> nodeTraverseAction)
+        //{
+        //    foreach (ChainLink node in nodes)
+        //    {
+        //        if (node.Nodes is { } subNodes && subNodes.Count > 0)
+        //        {
+        //            subNodes.ForEachNodeAndSubNode(nodeTraverseAction);
+        //        }
+        //        nodeTraverseAction(node);
+        //    }
+        //}
 
-        public static void DeleteSubNodes<T>(this PcmTreeNode<T> node, Action<PcmTreeNode<T>> nodeDeleteAction)
-        {
-            while (node.Nodes is { } subNodes && subNodes.Count > 0)
-            {
-                var currentNode = node.Nodes.First();
+        //public static void DeleteSubNodes(this ChainLink node, Action<ChainLink> nodeDeleteAction)
+        //{
+        //    while (node.Nodes is { } subNodes && subNodes.Count > 0)
+        //    {
+        //        var currentNode = node.Nodes.First();
 
-                currentNode.DeleteSubNodes(nodeDeleteAction);
+        //        currentNode.DeleteSubNodes(nodeDeleteAction);
 
-                nodeDeleteAction(currentNode);
+        //        nodeDeleteAction(currentNode);
 
-                node.Nodes.Remove(currentNode);
-            }
-        }
+        //        node.Nodes.Remove(currentNode);
+        //    }
+        //}
     }
 }

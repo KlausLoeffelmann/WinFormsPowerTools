@@ -14,13 +14,13 @@ namespace WinFormsPowerTools.UnitTests.TemplateBinding
 
         public new Employee? DataContext
         {
-            get => (Employee?)PcmTree?.RootNode.Value;
+            get => (Employee?)PcmTree?.RootLink.Value;
             set
             {
                 if (PcmTree is not null)
                 {
-                    PcmTree.RootNode.Remove();
-
+                    // TODO: Clean Tree.
+                    // PcmTree.RootLink.Remove();
                 }
 
                 if (value is null)
@@ -51,15 +51,19 @@ namespace WinFormsPowerTools.UnitTests.TemplateBinding
             }
         }
 
-        private PcmTreeNode<object> BuildPropertyTree()
+        private ChainLink BuildPropertyTree()
         {
-            var node = PcmTree!.RootNode.AddNode(DataContext?.Contact);
-            node = node.AddNode(DataContext?.Contact?.Address);
-            node = node.AddNode(DataContext?.Contact?.Address?.City);
+            // We are simulating binding City, so we need to have the whole property path
+            // build up as a node. This is what later needs to be code-generated from the 
+            // binding definition.
+
+            var node = PcmTree!.RootLink.AddLink(dataContext => ((Employee?)dataContext)?.Contact, nameof(Employee.Contact));
+            node = node.AddLink(dataContext => ((Employee?)dataContext)?.Contact?.Address, nameof(Employee.Contact.Address));
+            node = node.AddLink(dataContext => ((Employee?)dataContext)?.Contact?.Address?.City, nameof(Employee.Contact.Address.City));
             return node;
         }
 
-        private void NodeValueChangedEventProc(object? sender, NodeValueChangedEventArgs<object> e)
+        private void NodeValueChangedEventProc(object? sender, ChainValueChangedEventArgs e)
         {
             if (sender is Contact || sender is Address)
             {
