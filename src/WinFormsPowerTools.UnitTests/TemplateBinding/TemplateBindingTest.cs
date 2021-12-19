@@ -57,15 +57,14 @@ namespace WinFormsPowerTools.UnitTests.TemplateBinding
             // We are simulating binding City, so we need to have the whole property path
             // build up as a node. This is what later needs to be code-generated from the 
             // binding definition.
-
             var chainLink = chain!.RootLink.AddLink(dataContext => ((Employee?)dataContext)?.Contact, nameof(Employee.Contact));
             chainLink = chainLink.AddLink(dataContext => ((Employee?)dataContext)?.Contact?.Address, nameof(Employee.Contact.Address));
-            chainLink = chainLink.AddLink(dataContext => ((Employee?)dataContext)?.Contact?.Address?.City, nameof(Employee.Contact.Address.City));
+            chainLink = chainLink.AddLink(dataContext => ((Employee?)dataContext)?.Contact?.Address?.City, nameof(Employee.Contact.Address.City), true);
         }
 
         private void ChainLinkValueChanged(object? sender, ChainValueChangedEventArgs e)
         {
-            Debug.Print(e.PropertyName);
+            Debug.Print($"{e.PropertyName}:{e.ValueChangedReason}");
         }
 
         [Fact]
@@ -78,6 +77,9 @@ namespace WinFormsPowerTools.UnitTests.TemplateBinding
             dataSource!.Contact!.Address!.City = "New City!";
             dataSource!.Contact = GetTestContact2();
             dataSource!.Contact!.Address!.City = "New second City!";
+            dataSource!.Contact = null;
+            dataSource!.Contact = GetTestContact2();
+            chain.DataContext = null;
         }
     }
 }

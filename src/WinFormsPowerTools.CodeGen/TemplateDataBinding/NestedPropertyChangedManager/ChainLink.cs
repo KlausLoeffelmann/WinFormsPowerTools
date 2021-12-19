@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
 
 namespace System.Windows.Forms.TemplateBinding
@@ -10,26 +9,32 @@ namespace System.Windows.Forms.TemplateBinding
     {
         private ChainLink? _link;
         private object? _value;
+        private bool _valueInitializationFlag;
+        private readonly bool _isSealingLink;
 
         internal ChainLink(
             Func<object?, object?> dataContextValueGetter,
             string propertyName,
-            Chain tree, Action<ChainLink>? removeAction,
-            Action<ChainLink, string, ChainValueChangedReason>? valueChangedAction)
+            Chain chain, 
+            Action<ChainLink, string, ChainValueChangedReason>? valueChangedAction,
+            bool isSealingLink = false)
         {
             PropertyName = propertyName;
-            Tree = tree;
+            Chain = chain;
             DataContextNodeValueGetAction = dataContextValueGetter;
-            RemoveAction = removeAction;
             ValueChangedAction = valueChangedAction;
-            Value = dataContextValueGetter.Invoke(Tree.DataContext);
+            _isSealingLink = isSealingLink;
+            _valueInitializationFlag = true;
+            Value = dataContextValueGetter.Invoke(Chain.DataContext);
+            _valueInitializationFlag = false;
         }
 
         public ChainLink? Link
             => _link;
 
-        public Chain Tree { get; internal set; }
-        public ChainLink? ParentNode { get; internal set; }
+        public bool IsSealingLink => _isSealingLink;
+        public Chain Chain { get; internal set; }
+        public ChainLink? ParentLink { get; internal set; }
         public Action<ChainLink>? RemoveAction { get; internal set; }
         public Action<ChainLink, string, ChainValueChangedReason>? ValueChangedAction { get; internal set; }
         public Func<object?, object?> DataContextNodeValueGetAction { get; internal set; }
@@ -58,9 +63,13 @@ namespace System.Windows.Forms.TemplateBinding
 
                     oldValue = default;
 
-                    var valueChangedReason = Link!.Link is null
-                        ? ChainValueChangedReason.ValueAssignment
-                        : ChainValueChangedReason.PathAssignment;
+                    ChainValueChangedReason valueChangedReason = _valueInitializationFlag
+                        ? _isSealingLink 
+                            ? ChainValueChangedReason.ValueInitialization 
+                            : ChainValueChangedReason.PathInitialization
+                        : Link is null 
+                            ? ChainValueChangedReason.ValueAssignment
+                            : ChainValueChangedReason.PathAssignment;
 
                     ValueChangedAction?.Invoke(this, PropertyName, valueChangedReason);
                 }
@@ -78,9 +87,9 @@ namespace System.Windows.Forms.TemplateBinding
             ValueChangedAction?.Invoke(this, e.PropertyName, valueChangedReason);
         }
 
-        public ChainLink AddLink(Func<object?,object?> dataContextNodeValueGetAction, string propertyName)
+        public ChainLink AddLink(Func<object?,object?> dataContextNodeValueGetAction, string propertyName, bool sealChain=false)
         {
-            return AddLink(dataContextNodeValueGetAction, propertyName, ValueChangedAction, RemoveAction);
+            return AddLink(dataContextNodeValueGetAction, propertyName, ValueChangedAction, RemoveAction, sealChain);
         }
 
         public ChainLink AddLink(
@@ -88,12 +97,19 @@ namespace System.Windows.Forms.TemplateBinding
             string propertyName,
             Action<ChainLink, string, ChainValueChangedReason>?
             valueChangedAction,
-            Action<ChainLink>? removeAction)
+            Action<ChainLink>? removeAction,
+            bool sealChain = false)
         {
-            var link = new ChainLink(dataContextNodeValueGetAction, propertyName, Tree, removeAction, valueChangedAction);
-            link.ParentNode = this;
+            var link = new ChainLink(
+                dataContextNodeValueGetAction,
+                propertyName,
+                Chain,
+                valueChangedAction,
+                sealChain);
 
+            link.ParentLink = this;
             _link = link;
+
             return link;
         }
 
@@ -121,11 +137,11 @@ namespace System.Windows.Forms.TemplateBinding
         public override string ToString()
         {
             StringBuilder sb = new($"{PropertyName}:{Value}");
-            var parent = ParentNode;
+            var parent = ParentLink;
             while (parent is not null)
             {
                 sb = sb.Insert(0, $"{parent.PropertyName}.");
-                parent = parent.ParentNode;
+                parent = parent.ParentLink;
             }
 
             return sb.ToString();

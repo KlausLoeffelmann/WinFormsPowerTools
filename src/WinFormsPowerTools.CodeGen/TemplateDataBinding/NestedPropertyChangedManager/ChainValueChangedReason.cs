@@ -5,6 +5,8 @@
         ValueAssignment,
         PathAssignment,
         PropertyChanged,
-        PathChanged
+        PathChanged,
+        ValueInitialization,
+        PathInitialization
     }
 }

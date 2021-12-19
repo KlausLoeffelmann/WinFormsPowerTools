@@ -8,29 +8,39 @@ namespace System.Windows.Forms.TemplateBinding
     {
         public event EventHandler<ChainValueChangedEventArgs>? ChainValueChanged;
 
-        private Action<ChainLink>? _removeAction;
         private Action<ChainLink, string, ChainValueChangedReason>? _valueChangedAction;
+        private object? _dataContext;
 
         public ChainLink RootLink { get; protected set; }
 
         public Chain(object? dataContext)
         {
             DataContext = dataContext;
-            _removeAction = RemoveActionProc;
             _valueChangedAction = ChainValueChangedProc;
 
             RootLink = new ChainLink(
                 dataContextValueGetter: dataContext => dataContext,
                 "Root",
-                tree: this,
-                _removeAction,
+                chain: this,
                 _valueChangedAction);
         }
 
-        public object? DataContext { get; set; }
-
-        private static void RemoveActionProc(ChainLink treeNode)
+        public object? DataContext
         {
+            get => _dataContext;
+            set => AssignDataContext(value);
+        }
+
+        private void AssignDataContext(object? value)
+        {
+            _dataContext = value;
+
+            var childLink = RootLink;
+            while (childLink is not null)
+            {
+                childLink.Value = childLink.DataContextNodeValueGetAction(DataContext);
+                childLink = childLink.Link;
+            }
         }
 
         protected virtual void ChainValueChangedProc(ChainLink link, string propertyName, ChainValueChangedReason valueChangedReason)
