@@ -10,7 +10,7 @@ namespace WinFormsPowerToolsDemo
         public DocumentTestForm()
         {
             InitializeComponent();
-            documentControl1.Document = new Document();
+            documentControl1.MainDocument = new Document();
         }
 
         private void DocumentTestForm_Load(object sender, EventArgs e)

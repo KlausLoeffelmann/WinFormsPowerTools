@@ -1,7 +1,9 @@
 ﻿#nullable disable
 
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
@@ -12,7 +14,7 @@ namespace System.Windows.Forms.Documents
     public partial class DocumentControl : Control
     {
         private int _scrollState;
-        private Document _document;
+        private Document _mainDocument;
 
         private VDocumentScrollProperties _verticalScroll;
         private HDocumentScrollProperties _horizontalScroll;
@@ -43,19 +45,25 @@ namespace System.Windows.Forms.Documents
         {
             SetStyle(ControlStyles.ContainerControl, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint, false);
-            Document = new Document();
+            MainDocument = new Document();
         }
 
-        public Document Document
+        public Document MainDocument
         {
-            get => _document;
+            get => _mainDocument;
             set
             {
-                _document = value;
-                _displayRect = new Rectangle(0, 0, (int)_document.Width, (int)_document.Height);
+                _mainDocument = value;
+                _displayRect = new Rectangle(0, 0, (int)_mainDocument.Width, (int)_mainDocument.Height);
                 PerformLayout();
             }
         }
+
+        public IEnumerable<IDocumentItem> HorizontalFixedMarginItems { get; }
+
+        public IEnumerable<IDocumentItem> VerticalFixedMarginItems { get; }
+
+        public IEnumerable<IDocumentItem> FixedMarginItems { get; }
 
         protected override void OnLayout(LayoutEventArgs levent)
         {
@@ -686,6 +694,22 @@ namespace System.Windows.Forms.Documents
             UpdateFullDrag();
         }
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            if (MainDocument?.DocumentItems is { } documentItems)
+            {
+                foreach (var documentItem in documentItems)
+                {
+                    if (documentItem is GraphicsDocumentItem graphicsDocumentItem)
+                    {
+                        graphicsDocumentItem.OnRender(new PointF(HorizontalScroll.Value, VerticalScroll.Value), e.Graphics);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         ///  The button's window procedure. Inheriting classes can override this
         ///  to add extra functionality, but should not forget to call
@@ -744,10 +768,10 @@ namespace System.Windows.Forms.Documents
             int maxX = minClient.Width;
             int maxY = minClient.Height;
 
-            if (Document is not null)
+            if (MainDocument is not null)
             {
-                maxX = (int) Document.Width;
-                maxY = (int) Document.Height;
+                maxX = (int) MainDocument.Width;
+                maxY = (int) MainDocument.Height;
                 needHscroll = true;
                 needVscroll = true;
             }

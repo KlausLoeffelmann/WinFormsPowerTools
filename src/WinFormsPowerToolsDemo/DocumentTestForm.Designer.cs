@@ -44,7 +44,7 @@ namespace WinFormsPowerToolsDemo
             | System.Windows.Forms.AnchorStyles.Right)));
             document1.Height = 600F;
             document1.Width = 800F;
-            this.documentControl1.Document = document1;
+            this.documentControl1.MainDocument = document1;
             this.documentControl1.Location = new System.Drawing.Point(78, 86);
             this.documentControl1.Name = "documentControl1";
             this.documentControl1.Size = new System.Drawing.Size(740, 545);

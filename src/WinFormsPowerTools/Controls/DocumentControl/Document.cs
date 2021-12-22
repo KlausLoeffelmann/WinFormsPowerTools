@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace System.Windows.Forms.Documents
 {
@@ -10,5 +6,6 @@ namespace System.Windows.Forms.Documents
     {
         public float Width { get; set; } = 800;
         public float Height { get; set; } = 600;
+        public IEnumerable<IDocumentItem> DocumentItems { get; }
     }
 }
