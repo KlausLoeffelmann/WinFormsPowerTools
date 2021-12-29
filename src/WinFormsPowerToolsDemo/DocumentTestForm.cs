@@ -1,5 +1,5 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Windows.Forms.Documents;
 
@@ -10,18 +10,27 @@ namespace WinFormsPowerToolsDemo
         public DocumentTestForm()
         {
             InitializeComponent();
-            documentControl1.MainDocument = new Document();
-        }
+            Document doc = new();
+            documentControl1.MainDocument = doc;
 
-        private void DocumentTestForm_Load(object sender, EventArgs e)
-        {
+            doc.SuspendUpdates();
+            doc.AddDocumentItem(new TestDocumentItem());
+            doc.ResumeUpdates();
         }
+    }
 
-        private void documentControl1_Paint(object sender, PaintEventArgs e)
+    public class TestDocumentItem : GraphicsDocumentItem
+    {
+        protected override void OnRender(PointF scrollOffset, Graphics graphics)
         {
-            for (int x=0; x< 800; x+=10)
+            using Matrix matrix = new();
+            matrix.Translate(-scrollOffset.X, -scrollOffset.Y);
+            graphics.Transform = matrix;
+
+            var documentSize = new SizeF(ParentDocument!.Width, ParentDocument!.Height);
+            for (int x = 0; x < 800; x += 10)
             {
-                e.Graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(x, 600));
+                graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(x, 600));
             }
         }
     }

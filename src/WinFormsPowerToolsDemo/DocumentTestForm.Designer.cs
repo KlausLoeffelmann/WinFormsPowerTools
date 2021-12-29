@@ -42,15 +42,14 @@ namespace WinFormsPowerToolsDemo
             this.documentControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.documentControl1.Location = new System.Drawing.Point(12, 80);
             document1.Height = 600F;
             document1.Width = 800F;
             this.documentControl1.MainDocument = document1;
-            this.documentControl1.Location = new System.Drawing.Point(78, 86);
             this.documentControl1.Name = "documentControl1";
-            this.documentControl1.Size = new System.Drawing.Size(740, 545);
+            this.documentControl1.Size = new System.Drawing.Size(806, 551);
             this.documentControl1.TabIndex = 0;
             this.documentControl1.Text = "documentControl1";
-            this.documentControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.documentControl1_Paint);
             // 
             // button1
             // 
@@ -70,7 +69,6 @@ namespace WinFormsPowerToolsDemo
             this.Controls.Add(this.documentControl1);
             this.Name = "DocumentTestForm";
             this.Text = "DocumentFormTest";
-            this.Load += new System.EventHandler(this.DocumentTestForm_Load);
             this.ResumeLayout(false);
 
         }

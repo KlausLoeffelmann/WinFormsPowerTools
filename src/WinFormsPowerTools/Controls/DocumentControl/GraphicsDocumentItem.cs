@@ -1,14 +1,16 @@
 ﻿using System.Drawing;
 
+#nullable enable
+
 namespace System.Windows.Forms.Documents
 {
-    public abstract class GraphicsDocumentItem : IDocumentItem
+    public abstract class GraphicsDocumentItem : DocumentItem
     {
-        public PointF Location { get; set; }
-        public SizeF Size { get; set; }
-
-        void IDocumentItem.OnRender(PointF ScrollOffset, object DeviceContext)
-            => OnRender(ScrollOffset, (Graphics)DeviceContext);
+        protected internal override void OnRender(PointF ScrollOffset, object DeviceContext)
+            => OnRender(
+                ScrollOffset,
+                (Graphics)(DeviceContext
+                            ?? throw new NullReferenceException(nameof(DeviceContext))));
 
         internal protected abstract void OnRender(PointF scrollOffset, Graphics DeviceContext);
     }

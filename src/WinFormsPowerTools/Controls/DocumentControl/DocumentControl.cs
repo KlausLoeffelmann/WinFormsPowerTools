@@ -1,9 +1,8 @@
-﻿#nullable disable
+﻿#nullable enable
 
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
@@ -14,10 +13,10 @@ namespace System.Windows.Forms.Documents
     public partial class DocumentControl : Control
     {
         private int _scrollState;
-        private Document _mainDocument;
+        private Document? _mainDocument;
 
-        private VDocumentScrollProperties _verticalScroll;
-        private HDocumentScrollProperties _horizontalScroll;
+        private VDocumentScrollProperties? _verticalScroll;
+        private HDocumentScrollProperties? _horizontalScroll;
 
         /// <summary>
         ///  Current size of the displayRect.
@@ -36,7 +35,7 @@ namespace System.Windows.Forms.Documents
         protected const int ScrollStateUserHasScrolled = 0x0008;
         protected const int ScrollStateFullDrag = 0x0010;
 
-        public event ScrollEventHandler ScrollEvent;
+        public event ScrollEventHandler? ScrollEvent;
 
         /// <summary>
         ///  Initializes a new instance of the <see cref='ScrollableControl'/> class.
@@ -48,22 +47,37 @@ namespace System.Windows.Forms.Documents
             MainDocument = new Document();
         }
 
-        public Document MainDocument
+        public Document? MainDocument
         {
             get => _mainDocument;
             set
             {
+                if (value is null)
+                {
+                    if (_mainDocument is not null)
+                    {
+                        _mainDocument.HostControl = null;
+                    }
+
+                    _mainDocument = null;
+
+                    // TODO: Clear the background.
+
+                    return;
+                }
+
                 _mainDocument = value;
+                _mainDocument.HostControl = this;
                 _displayRect = new Rectangle(0, 0, (int)_mainDocument.Width, (int)_mainDocument.Height);
                 PerformLayout();
             }
         }
 
-        public IEnumerable<IDocumentItem> HorizontalFixedMarginItems { get; }
+        public IEnumerable<DocumentItem>? HorizontalFixedMarginItems { get; }
 
-        public IEnumerable<IDocumentItem> VerticalFixedMarginItems { get; }
+        public IEnumerable<DocumentItem>? VerticalFixedMarginItems { get; }
 
-        public IEnumerable<IDocumentItem> FixedMarginItems { get; }
+        public IEnumerable<DocumentItem>? FixedMarginItems { get; }
 
         protected override void OnLayout(LayoutEventArgs levent)
         {
