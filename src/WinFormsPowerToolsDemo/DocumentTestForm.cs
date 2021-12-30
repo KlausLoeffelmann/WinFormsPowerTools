@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using SkiaSharp;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Windows.Forms.Documents;
@@ -11,11 +12,19 @@ namespace WinFormsPowerToolsDemo
         {
             InitializeComponent();
             Document doc = new();
-            documentControl1.MainDocument = doc;
+            //documentControl1.MainDocument = doc;
 
             doc.SuspendUpdates();
             doc.AddDocumentItem(new TestDocumentItem());
             doc.ResumeUpdates();
+        }
+
+        private void skTestControl1_PaintSurface(object sender, SkWinFormsDocumentControl.SKPaintGLSurfaceEventArgs e)
+        {
+            SKPaint skPaint = new();
+            skPaint.Color = SKColors.White;
+
+            e.Surface.Canvas.DrawCircle(new SKPoint(100, 100), 100, skPaint);
         }
     }
 
