@@ -3,7 +3,7 @@
 
 using SkiaSharp;
 
-namespace SkWinFormsDocumentControl
+namespace SkiaWinForms
 {
     public class SKPaintGLSurfaceEventArgs
     {

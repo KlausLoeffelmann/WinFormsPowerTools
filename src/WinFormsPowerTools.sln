@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerToolsDemo", "W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.StandardLib", "WinFormsPowerTools.StandardLib\WinFormsPowerTools.StandardLib.csproj", "{6E2A19D4-8801-477A-B04C-061162EA0ECB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkWinFormsDocumentControl", "SkWinFormsDocumentControl\SkWinFormsDocumentControl.csproj", "{A07213C8-3C43-489A-86D1-8D8CF26C6499}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaWinForms", "SkWinFormsDocumentControl\SkiaWinForms.csproj", "{A07213C8-3C43-489A-86D1-8D8CF26C6499}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

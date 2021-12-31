@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using SkiaWinForms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -19,7 +20,7 @@ namespace WinFormsPowerToolsDemo
             doc.ResumeUpdates();
         }
 
-        private void skTestControl1_PaintSurface(object sender, SkWinFormsDocumentControl.SKPaintGLSurfaceEventArgs e)
+        private void skTestControl1_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
         {
             SKPaint skPaint = new();
             skPaint.Color = SKColors.White;

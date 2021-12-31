@@ -33,7 +33,6 @@ namespace WinFormsPowerToolsDemo
         private void InitializeComponent()
         {
             this.button1 = new System.Windows.Forms.Button();
-            this.skTestControl1 = new SkWinFormsDocumentControl.SkTestControl();
             this.SuspendLayout();
             // 
             // button1
@@ -45,21 +44,11 @@ namespace WinFormsPowerToolsDemo
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
             // 
-            // skTestControl1
-            // 
-            this.skTestControl1.Location = new System.Drawing.Point(12, 87);
-            this.skTestControl1.Name = "skTestControl1";
-            this.skTestControl1.Size = new System.Drawing.Size(796, 535);
-            this.skTestControl1.TabIndex = 2;
-            this.skTestControl1.Text = "skTestControl1";
-            this.skTestControl1.PaintSurface += new System.EventHandler<SkWinFormsDocumentControl.SKPaintGLSurfaceEventArgs>(this.skTestControl1_PaintSurface);
-            // 
             // DocumentTestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(830, 643);
-            this.Controls.Add(this.skTestControl1);
             this.Controls.Add(this.button1);
             this.Name = "DocumentTestForm";
             this.Text = "DocumentFormTest";
@@ -69,6 +58,5 @@ namespace WinFormsPowerToolsDemo
 
         #endregion
         private System.Windows.Forms.Button button1;
-        private SkWinFormsDocumentControl.SkTestControl skTestControl1;
     }
 }

@@ -9,57 +9,183 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
 using NativeWindow = OpenTK.Windowing.Desktop.NativeWindow;
 
-namespace SkWinFormsDocumentControl
+namespace SkiaWinForms
 {
-    public class SkTestControl : Control
+    internal class SkiaExtenderComponent : Component
     {
 		private const SKColorType colorType = SKColorType.Rgba8888;
 		private const GRSurfaceOrigin surfaceOrigin = GRSurfaceOrigin.BottomLeft;
 
-		/// <summary>
-		/// The OpenGL configuration of this control.
-		/// </summary>
 		private GLControlSettings _glControlSettings;
-
 		private GRContext? grContext;
 		private GRGlFramebufferInfo glInfo;
 		private GRBackendRenderTarget? renderTarget;
 		private SKSurface? surface;
 		private SKCanvas? canvas;
-
 		private SKSizeI lastSize;
-
 		private NativeWindow? _nativeWindow = null;
+		private bool _resizeEventSuppressed;
+        private Control? _extendingControl;
 
-        private bool _resizeEventSuppressed;
-
-		[Category("Appearance")]
+        [Category("Appearance")]
 		public event EventHandler<SKPaintGLSurfaceEventArgs>? PaintSurface;
 
-		public SkTestControl()
+        public SkiaExtenderComponent()
         {
 			_glControlSettings = new GLControlSettings();
 		}
 
+		public Control? ExtendingControl {
+			get => _extendingControl; 
+			set
+            {
+				_extendingControl = value;
+            }
+		}
+
+		private void HookUpEvents()
+        {
+            if (ExtendingControl is null)
+            {
+				throw new NullReferenceException("Cannot hook-up events when the Control is not set.");
+            }
+
+			ExtendingControl.HandleCreated += ExtendingControl_HandleCreated;
+            ExtendingControl.HandleDestroyed += ExtendingControl_HandleDestroyed;
+            ExtendingControl.ParentChanged += ExtendingControl_ParentChanged;
+            ExtendingControl.Paint += ExtendingControl_Paint;
+            ExtendingControl.Resize += ExtendingControl_Resize;
+		}
+
+		private void UnhookEvents()
+		{
+			if (ExtendingControl is null)
+			{
+				throw new NullReferenceException("Cannot hook-up events when the Control is not set.");
+			}
+
+			ExtendingControl.HandleCreated -= ExtendingControl_HandleCreated;
+			ExtendingControl.ParentChanged -= ExtendingControl_ParentChanged;
+			ExtendingControl.Paint -= ExtendingControl_Paint;
+			ExtendingControl.HandleDestroyed -= ExtendingControl_HandleDestroyed;
+			ExtendingControl.Resize -=ExtendingControl_Resize;
+		}
+
 		/// <summary>
-		/// This event handler will be invoked by WinForms when the HWND of this
-		/// control itself has been created and assigned in the Handle property.
-		/// We capture the event to construct the NativeWindow that will be responsible
-		/// for all of the actual OpenGL rendering and native device input.
+		/// This is invoked when the Resize event is triggered, and is used to position
+		/// the internal GLFW window accordingly.
+		///
+		/// Note: This method may be called before the OpenGL context is ready or the
+		/// NativeWindow even exists, so everything inside it requires safety checks.
 		/// </summary>
 		/// <param name="e">An EventArgs instance (ignored).</param>
-		protected override void OnHandleCreated(EventArgs e)
+		private void ExtendingControl_Resize(object? sender, EventArgs e)
 		{
-			CreateNativeWindow(_glControlSettings.ToNativeWindowSettings());
+		}
 
-			base.OnHandleCreated(e);
+		private void ExtendingControlResizeCore()
+        {
+			// Do not raise OnResize event before the handle and context are created.
+			if (!ExtendingControl!.IsHandleCreated)
+			{
+				_resizeEventSuppressed = true;
+				return;
+			}
+
+			ResizeNativeWindow();
+		}
+
+		private void ExtendingControl_HandleDestroyed(object? sender, EventArgs e)
+        {
+			DestroyNativeWindow();
+		}
+
+		private void ExtendingControl_Paint(object sender, PaintEventArgs e)
+		{
+			if (IsDesignMode())
+			{
+				e.Graphics.Clear(ExtendingControl!.BackColor);
+				return;
+			}
+
+			EnsureCreated();
+			MakeCurrent();
+
+			// create the contexts if not done already
+			if (grContext == null)
+			{
+				var glInterface = GRGlInterface.Create();
+				grContext = GRContext.CreateGl(glInterface);
+			}
+
+			// get the new surface size
+			var newSize = new SKSizeI(ExtendingControl!.Width, ExtendingControl!.Height);
+
+			// manage the drawing surface
+			if (renderTarget == null || lastSize != newSize || !renderTarget.IsValid)
+			{
+				// create or update the dimensions
+				lastSize = newSize;
+
+				GL.GetInteger(GetPName.FramebufferBinding, out var framebuffer);
+				GL.GetInteger(GetPName.StencilBits, out var stencil);
+				GL.GetInteger(GetPName.Samples, out var samples);
+
+				var maxSamples = grContext.GetMaxSurfaceSampleCount(colorType);
+				if (samples > maxSamples)
+					samples = maxSamples;
+
+				glInfo = new GRGlFramebufferInfo((uint)framebuffer, colorType.ToGlSizedFormat());
+
+				// destroy the old surface
+				surface?.Dispose();
+				surface = null;
+				canvas = null;
+
+				// re-create the render target
+				renderTarget?.Dispose();
+				renderTarget = new GRBackendRenderTarget(newSize.Width, newSize.Height, samples, stencil, glInfo);
+			}
+
+			// create the surface
+			if (surface == null)
+			{
+				surface = SKSurface.Create(grContext, renderTarget, surfaceOrigin, colorType);
+				canvas = surface.Canvas;
+			}
+
+			using (new SKAutoCanvasRestore(canvas, true))
+			{
+				// start drawing
+				OnPaintSurface(new SKPaintGLSurfaceEventArgs(surface, renderTarget, surfaceOrigin, colorType, glInfo));
+			}
+
+			// update the control
+			canvas!.Flush();
+			SwapBuffers();
+		}
+
+		/// <summary>
+		/// This event is raised when this control's parent control is changed,
+		/// which may result in this control becoming a different size or shape, so
+		/// we capture it to ensure that the underlying GLFW window gets correctly
+		/// resized and repositioned as well.
+		/// </summary>
+		/// <param name="e">An EventArgs instance (ignored).</param>
+		private void ExtendingControl_ParentChanged(object? sender, EventArgs e)
+		{
+			ResizeNativeWindow();
+		}
+
+		private void ExtendingControl_HandleCreated(object? sender, EventArgs e)
+        {
+			CreateNativeWindow(_glControlSettings.ToNativeWindowSettings());
 
 			if (_resizeEventSuppressed)
 			{
-				OnResize(EventArgs.Empty);
+				ExtendingControlResizeCore();
 				_resizeEventSuppressed = false;
 			}
 
@@ -68,7 +194,7 @@ namespace SkWinFormsDocumentControl
 				// _designTimeRenderer = new GLControlDesignTimeRenderer(this);
 			}
 
-			if (Focused || (_nativeWindow?.IsFocused ?? false))
+			if (ExtendingControl!.Focused || (_nativeWindow?.IsFocused ?? false))
 			{
 				ForceFocusToCorrectWindow();
 			}
@@ -97,7 +223,7 @@ namespace SkWinFormsDocumentControl
 				else
 				{
 					// Focus should be on the GLControl itself.
-					Focus();
+					ExtendingControl!.Focus();
 				}
 			}
 		}
@@ -150,12 +276,9 @@ namespace SkWinFormsDocumentControl
 		/// </summary>
 		private void EnsureCreated()
 		{
-			if (IsDisposed)
-				throw new ObjectDisposedException(GetType().Name);
-
-			if (!IsHandleCreated)
+			if (ExtendingControl!.IsHandleCreated)
 			{
-				CreateControl();
+				ExtendingControl.CreateControl();
 
 				if (_nativeWindow == null)
 					throw new InvalidOperationException("Failed to create GLControl."
@@ -166,10 +289,7 @@ namespace SkWinFormsDocumentControl
 
 			if (_nativeWindow == null && !IsDesignMode())
 			{
-				RecreateHandle();
-
-				if (_nativeWindow == null)
-					throw new InvalidOperationException("Failed to recreate GLControl :-(");
+				throw new InvalidOperationException("Failed to recreate GLControl :-(");
 			}
 		}
 
@@ -187,7 +307,7 @@ namespace SkWinFormsDocumentControl
 				IntPtr hWnd = GLFW.GetWin32Window(nativeWindow.WindowPtr);
 
 				// Reparent the real HWND under this control.
-				Win32.SetParent(hWnd, Handle);
+				Win32.SetParent(hWnd, ExtendingControl!.Handle);
 
 				// Change the real HWND's window styles to be "WS_CHILD | WS_DISABLED" (i.e.,
 				// a child of some container, with no input support), and turn off *all* the
@@ -216,7 +336,7 @@ namespace SkWinFormsDocumentControl
 			=> IsAncestorSiteInDesignModeInternal;
 
 		private bool IsAncestorSiteInDesignModeInternal =>
-			GetSitedParentSite(this) is ISite thisOrAncestorSite ? thisOrAncestorSite.DesignMode : false;
+			GetSitedParentSite(ExtendingControl!) is ISite thisOrAncestorSite ? thisOrAncestorSite.DesignMode : false;
 
 		private ISite? GetSitedParentSite(Control control) =>
 			control is null
@@ -225,74 +345,6 @@ namespace SkWinFormsDocumentControl
 					? control.Site
 					: GetSitedParentSite(control.Parent);
 
-		protected override void OnPaint(PaintEventArgs e)
-        {
-            if (IsDesignMode())
-            {
-                e.Graphics.Clear(BackColor);
-                return;
-            }
-
-			EnsureCreated();
-			base.OnPaint(e);
-
-			MakeCurrent();
-
-			// create the contexts if not done already
-			if (grContext == null)
-			{
-				var glInterface = GRGlInterface.Create();
-				grContext = GRContext.CreateGl(glInterface);
-			}
-
-			// get the new surface size
-			var newSize = new SKSizeI(Width, Height);
-
-			// manage the drawing surface
-			if (renderTarget == null || lastSize != newSize || !renderTarget.IsValid)
-			{
-				// create or update the dimensions
-				lastSize = newSize;
-
-				GL.GetInteger(GetPName.FramebufferBinding, out var framebuffer);
-				GL.GetInteger(GetPName.StencilBits, out var stencil);
-				GL.GetInteger(GetPName.Samples, out var samples);
-
-				var maxSamples = grContext.GetMaxSurfaceSampleCount(colorType);
-				if (samples > maxSamples)
-					samples = maxSamples;
-
-				glInfo = new GRGlFramebufferInfo((uint)framebuffer, colorType.ToGlSizedFormat());
-
-				// destroy the old surface
-				surface?.Dispose();
-				surface = null;
-				canvas = null;
-
-				// re-create the render target
-				renderTarget?.Dispose();
-				renderTarget = new GRBackendRenderTarget(newSize.Width, newSize.Height, samples, stencil, glInfo);
-			}
-
-			// create the surface
-			if (surface == null)
-			{
-				surface = SKSurface.Create(grContext, renderTarget, surfaceOrigin, colorType);
-				canvas = surface.Canvas;
-			}
-
-			using (new SKAutoCanvasRestore(canvas, true))
-			{
-				// start drawing
-#pragma warning disable CS0612 // Type or member is obsolete
-				OnPaintSurface(new SKPaintGLSurfaceEventArgs(surface, renderTarget, surfaceOrigin, colorType, glInfo));
-#pragma warning restore CS0612 // Type or member is obsolete
-			}
-
-			// update the control
-			canvas!.Flush();
-			SwapBuffers();
-		}
 
 		protected virtual void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 		{
@@ -309,12 +361,12 @@ namespace SkWinFormsDocumentControl
 		/// </summary>
 		public void MakeCurrent()
 		{
-            if (IsHandleCreated && !DesignMode)
-            {
-                EnsureCreated();
-                _nativeWindow!.MakeCurrent();
-            }
-        }
+			if (ExtendingControl!.IsHandleCreated && !DesignMode)
+			{
+				EnsureCreated();
+				_nativeWindow!.MakeCurrent();
+			}
+		}
 
 		/// <summary>
 		/// Swaps the front and back buffers, presenting the rendered scene to the user.
@@ -334,25 +386,6 @@ namespace SkWinFormsDocumentControl
 		public IGraphicsContext? Context => _nativeWindow?.Context;
 
 		/// <summary>
-		/// This is triggered when the underlying Handle/HWND instance is *about to be*
-		/// destroyed (this is called *before* the Handle/HWND is destroyed).  We use it
-		/// to cleanly destroy the NativeWindow before its parent disappears.
-		/// </summary>
-		/// <param name="e">An EventArgs instance (ignored).</param>
-		protected override void OnHandleDestroyed(EventArgs e)
-		{
-			base.OnHandleDestroyed(e);
-
-			DestroyNativeWindow();
-
-			//if (_designTimeRenderer != null)
-			//{
-			//	_designTimeRenderer.Dispose();
-			//	_designTimeRenderer = null;
-			//}
-		}
-
-		/// <summary>
 		/// Destroy the child NativeWindow that wraps the underlying GLFW instance.
 		/// </summary>
 		private void DestroyNativeWindow()
@@ -365,28 +398,6 @@ namespace SkWinFormsDocumentControl
 		}
 
 		/// <summary>
-		/// This is invoked when the Resize event is triggered, and is used to position
-		/// the internal GLFW window accordingly.
-		///
-		/// Note: This method may be called before the OpenGL context is ready or the
-		/// NativeWindow even exists, so everything inside it requires safety checks.
-		/// </summary>
-		/// <param name="e">An EventArgs instance (ignored).</param>
-		protected override void OnResize(EventArgs e)
-		{
-			// Do not raise OnResize event before the handle and context are created.
-			if (!IsHandleCreated)
-			{
-				_resizeEventSuppressed = true;
-				return;
-			}
-
-			ResizeNativeWindow();
-
-			base.OnResize(e);
-		}
-
-		/// <summary>
 		/// Resize the native window to fit this control.
 		/// </summary>
 		private void ResizeNativeWindow()
@@ -396,22 +407,8 @@ namespace SkWinFormsDocumentControl
 
 			if (_nativeWindow != null)
 			{
-				_nativeWindow.ClientRectangle = new Box2i(0, 0, Width, Height);
+				_nativeWindow.ClientRectangle = new Box2i(0, 0, ExtendingControl!.Width, ExtendingControl!.Height);
 			}
-		}
-
-		/// <summary>
-		/// This event is raised when this control's parent control is changed,
-		/// which may result in this control becoming a different size or shape, so
-		/// we capture it to ensure that the underlying GLFW window gets correctly
-		/// resized and repositioned as well.
-		/// </summary>
-		/// <param name="e">An EventArgs instance (ignored).</param>
-		protected override void OnParentChanged(EventArgs e)
-		{
-			ResizeNativeWindow();
-
-			base.OnParentChanged(e);
 		}
 	}
 }
