@@ -10,7 +10,7 @@ namespace WinFormsPowerToolsDemo
             InitializeComponent();
         }
 
-        private void skiaCanvas1_PaintSurface(object sender, SkiaWinForms.SKPaintGLSurfaceEventArgs e)
+        private void skiaCanvas1_PaintSurface(object sender, SkiaWinForms.SkiaPaintEventArgs e)
         {
             SKPaint _fillingPaint = new();
             _fillingPaint.Color = new SKColor(200, 10, 10, 200);

@@ -12,8 +12,9 @@ namespace WinFormsPowerToolsDemo
 
         public SkiaSharpDemoForm()
         {
-            _movingCircleShapes = Shapes.RandomShapes(200);
+            _movingCircleShapes = Shapes.RandomShapes(500);
             InitializeComponent();
+            Panel_Resize(null, null);
 
             _timer = new Timer();
             _timer.Interval = 10;
@@ -28,9 +29,13 @@ namespace WinFormsPowerToolsDemo
             {
                 gdiPlusRenderTargetPanel.Invalidate();
             }
-            else
+            else if (tabControl1.SelectedIndex == 1)
             {
                 skiaCanvasRenderTarget.Invalidate();
+            }
+            else
+            {
+                skiaCanvasGLRenderTarget.Invalidate();
             }
         }
 
@@ -48,13 +53,13 @@ namespace WinFormsPowerToolsDemo
             }
         }
 
-        private void gdiPlusRenderTargetPanel_Paint(object sender, PaintEventArgs e)
+        private void GdiPlus_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             _movingCircleShapes.OnGdiplusRender(e.Graphics);
         }
 
-        private void skiaCanvasRenderTarget_PaintSurface(object sender, SkiaWinForms.SKPaintGLSurfaceEventArgs e)
+        private void SkiaAndSkiaGL_PaintSurface(object sender, SkiaWinForms.SkiaPaintEventArgs e)
         {
             e.Surface.Canvas.Clear();
             _movingCircleShapes.OnSkiaRender(e.Surface);
@@ -69,12 +74,20 @@ namespace WinFormsPowerToolsDemo
                         gdiPlusRenderTargetPanel.ClientSize.Width,
                         gdiPlusRenderTargetPanel.ClientSize.Height));
             }
-            else
+            else if (tabControl1.SelectedIndex == 1)
             {
                 _movingCircleShapes.CanvasSizeChanged(
                     new SizeF(
                         skiaCanvasRenderTarget.ClientSize.Width,
                         skiaCanvasRenderTarget.ClientSize.Height));
+            }
+
+            else
+            {
+                _movingCircleShapes.CanvasSizeChanged(
+                    new SizeF(
+                        skiaCanvasGLRenderTarget.ClientSize.Width,
+                        skiaCanvasGLRenderTarget.ClientSize.Height));
             }
         }
 

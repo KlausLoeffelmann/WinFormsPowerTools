@@ -20,7 +20,7 @@ namespace WinFormsPowerToolsDemo
             doc.ResumeUpdates();
         }
 
-        private void skTestControl1_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
+        private void skTestControl1_PaintSurface(object sender, SkiaPaintEventArgs e)
         {
             SKPaint skPaint = new();
             skPaint.Color = SKColors.White;

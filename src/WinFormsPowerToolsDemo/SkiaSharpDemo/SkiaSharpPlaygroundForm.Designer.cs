@@ -43,7 +43,7 @@
             this.skiaCanvas1.Name = "skiaCanvas1";
             this.skiaCanvas1.Size = new System.Drawing.Size(865, 720);
             this.skiaCanvas1.TabIndex = 0;
-            this.skiaCanvas1.PaintSurface += new System.EventHandler<SkiaWinForms.SKPaintGLSurfaceEventArgs>(this.skiaCanvas1_PaintSurface);
+            this.skiaCanvas1.PaintSurface += new System.EventHandler<SkiaWinForms.SkiaPaintEventArgs>(this.skiaCanvas1_PaintSurface);
             // 
             // testButton
             // 

@@ -1,30 +1,20 @@
-﻿using OpenTK.Graphics.OpenGL.Compatibility;
-using OpenTK.WinForms;
-using SkiaSharp;
+﻿using SkiaSharp;
 using System;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace SkiaWinForms
 {
-    public class SkiaCanvas : GLControl
-    {
-		private const SKColorType colorType = SKColorType.Rgba8888;
-		private const GRSurfaceOrigin surfaceOrigin = GRSurfaceOrigin.BottomLeft;
-		private const int Stencil = 8;
-		private const int Samples = 8;
+    public class SkiaCanvas : Control
+	{
+		private Bitmap? bitmap;
 
+		// Are we in DesignMode or not?
 		private bool designMode;
 
-		private GRContext? grContext;
-		private GRGlFramebufferInfo glInfo;
-		private GRBackendRenderTarget? renderTarget;
-		private SKSurface? surface;
-		private SKCanvas? canvas;
-
-		private SKSizeI lastSize;
-
-		public SkiaCanvas() : base()
+		public SkiaCanvas()
 		{
 			Initialize();
 		}
@@ -32,15 +22,12 @@ namespace SkiaWinForms
 		private void Initialize()
 		{
 			designMode = DesignMode;
-			ResizeRedraw = true;
+			DoubleBuffered = true;
+			SetStyle(ControlStyles.ResizeRedraw, true);
 		}
 
-		public SKSize CanvasSize => lastSize;
-
-		public GRContext? GRContext => grContext;
-
 		[Category("Appearance")]
-		public event EventHandler<SKPaintGLSurfaceEventArgs>? PaintSurface;
+		public event EventHandler<SkiaPaintEventArgs>? PaintSurface;
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
@@ -52,84 +39,62 @@ namespace SkiaWinForms
 
 			base.OnPaint(e);
 
-			MakeCurrent();
+			// get the bitmap
+			var info = CreateBitmap();
 
-			// create the contexts if not done already
-			if (grContext == null)
-			{
-				var glInterface = GRGlInterface.Create();
-				GRContextOptions grContextOptions = new();
-				grContext = GRContext.CreateGl(glInterface, grContextOptions);
-			}
+			if (info.Width == 0 || info.Height == 0)
+				return;
 
-			// get the new surface size
-			var newSize = new SKSizeI(Width, Height);
-
-			// manage the drawing surface
-			if (renderTarget == null || lastSize != newSize || !renderTarget.IsValid)
-			{
-				// create or update the dimensions
-				lastSize = newSize;
-
-				//GL.GetInteger(GetPName.FramebufferBinding, out var framebuffer);
-				//GL.GetInteger(GetPName.StencilRef, out var stencil); stencil = 8;
-				//GL.GetInteger(GetPName.Samples, out var samples); samples = 16;
-
-				var maxSamples = grContext.GetMaxSurfaceSampleCount(colorType);
-
-				//if (samples > maxSamples)
-				//	samples = maxSamples;
-				var framebuffer = 0;
-				glInfo = new GRGlFramebufferInfo((uint)framebuffer, colorType.ToGlSizedFormat());
-
-				// destroy the old surface
-				surface?.Dispose();
-				surface = null;
-				canvas = null;
-
-				// re-create the render target
-				renderTarget?.Dispose();
-				renderTarget = new GRBackendRenderTarget(newSize.Width, newSize.Height, Samples, Stencil, glInfo);
-			}
+			var data = bitmap!.LockBits(
+				new Rectangle(0, 0, Width, Height),
+				ImageLockMode.WriteOnly,
+				bitmap.PixelFormat);
 
 			// create the surface
-			if (surface == null)
-			{
-				surface = SKSurface.Create(grContext, renderTarget, surfaceOrigin, colorType);
-				canvas = surface.Canvas;
-			}
-
-			using (new SKAutoCanvasRestore(canvas, true))
+			using (var surface = SKSurface.Create(info, data.Scan0, data.Stride))
 			{
 				// start drawing
-#pragma warning disable CS0612 // Type or member is obsolete
-				OnPaintSurface(new SKPaintGLSurfaceEventArgs(surface, renderTarget, surfaceOrigin, colorType, glInfo));
-#pragma warning restore CS0612 // Type or member is obsolete
+				OnPaintSurface(new SkiaPaintEventArgs(surface, info));
+
+				surface.Canvas.Flush();
 			}
 
-			// update the control
-			canvas?.Flush();
-			SwapBuffers();
+			// write the bitmap to the graphics
+			bitmap.UnlockBits(data);
+			e.Graphics.DrawImage(bitmap, 0, 0);
 		}
 
-		protected virtual void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
+		private SKImageInfo CreateBitmap()
+		{
+			var info = new SKImageInfo(Width, Height, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
+
+			if (bitmap == null || bitmap.Width != info.Width || bitmap.Height != info.Height)
+			{
+				FreeBitmap();
+
+				if (info.Width != 0 && info.Height != 0)
+					bitmap = new Bitmap(
+						info.Width,
+						info.Height,
+						System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+			}
+
+			return info;
+		}
+
+		private void FreeBitmap()
+		{
+			if (bitmap != null)
+			{
+				bitmap.Dispose();
+				bitmap = null;
+			}
+		}
+
+		protected virtual void OnPaintSurface(SkiaPaintEventArgs e)
 		{
 			// invoke the event
 			PaintSurface?.Invoke(this, e);
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-
-			// clean up
-			canvas = null;
-			surface?.Dispose();
-			surface = null;
-			renderTarget?.Dispose();
-			renderTarget = null;
-			grContext?.Dispose();
-			grContext = null;
 		}
 	}
 }

@@ -13,4 +13,10 @@
     <PackageReference Include="SkiaSharp" Version="2.88.0-preview.179" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="SkiaGLCanvas.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

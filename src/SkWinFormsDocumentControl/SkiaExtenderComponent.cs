@@ -1,5 +1,4 @@
-﻿using OpenTK.Graphics.OpenGLES1;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -30,7 +29,7 @@ namespace SkiaWinForms
         private Control? _extendingControl;
 
         [Category("Appearance")]
-		public event EventHandler<SKPaintGLSurfaceEventArgs>? PaintSurface;
+		public event EventHandler<SkiaPaintEventArgs>? PaintSurface;
 
         public SkiaExtenderComponent()
         {
@@ -159,7 +158,7 @@ namespace SkiaWinForms
 			using (new SKAutoCanvasRestore(canvas, true))
 			{
 				// start drawing
-				OnPaintSurface(new SKPaintGLSurfaceEventArgs(surface, renderTarget, surfaceOrigin, colorType, glInfo));
+				//OnPaintSurface(new SkiaPaintEventArgs(surface, renderTarget, surfaceOrigin, colorType, glInfo));
 			}
 
 			// update the control
@@ -346,7 +345,7 @@ namespace SkiaWinForms
 					: GetSitedParentSite(control.Parent);
 
 
-		protected virtual void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
+		protected virtual void OnPaintSurface(SkiaPaintEventArgs e)
 		{
 			// invoke the event
 			PaintSurface?.Invoke(this, e);
