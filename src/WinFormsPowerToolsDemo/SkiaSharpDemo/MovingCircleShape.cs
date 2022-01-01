@@ -19,8 +19,8 @@ namespace WinFormsPowerToolsDemo.SkiaSharpDemo
         private Pen _drawingPen;
         private Brush _fillingBrush;
 
-        private SKPaint _drawingPaint;
-        private SKPaint _fillingPaint;
+        //private SKPaint _drawingPaint;
+        //private SKPaint _fillingPaint;
 
         public MovingCircleShape(
             Color lineColor, 
@@ -50,23 +50,20 @@ namespace WinFormsPowerToolsDemo.SkiaSharpDemo
 
         public override void OnSkiaRender(SKSurface surface)
         {
-            if (_fillingPaint is null)
-            {
-                _fillingPaint = new SKPaint();
-                _fillingPaint.Color = new SKColor(_fillColor.R, _fillColor.G, _fillColor.B, _fillColor.A);
-                _fillingPaint.Style = SKPaintStyle.Fill;
+            SKPaint _fillingPaint = new();
+            _fillingPaint.Color = new SKColor(_fillColor.R, _fillColor.G, _fillColor.B, _fillColor.A);
+            _fillingPaint.Style = SKPaintStyle.Fill;
 
-                _drawingPaint = new SKPaint();
-                //_drawingPaint.BlendMode = SKBlendMode.Color;
-                _drawingPaint.Color = new SKColor(_lineColor.R, _lineColor.G, _lineColor.B, _fillColor.A);
-                _drawingPaint.StrokeWidth = _penWidth;
-                _drawingPaint.Style = SKPaintStyle.Stroke;
-            }
+            SKPaint _drawingPaint = new();
+            //_drawingPaint.BlendMode = SKBlendMode.Color;
+            _drawingPaint.Color = new SKColor(_lineColor.R, _lineColor.G, _lineColor.B, _fillColor.A);
+            _drawingPaint.StrokeWidth = _penWidth;
+            _drawingPaint.Style = SKPaintStyle.Stroke;
 
             surface.Canvas.DrawCircle(_currentLocation.X, _currentLocation.Y, _radius, _fillingPaint);
-            surface.Canvas.DrawOval(_currentLocation.X, _currentLocation.Y, _radius, _radius, _drawingPaint);
+            surface.Canvas.DrawCircle(_currentLocation.X, _currentLocation.Y, _radius, _drawingPaint);
             //surface.Canvas.DrawRect(_currentLocation.X - _radius, _currentLocation.Y - _radius, _radius * 2, _radius * 2, _drawingPaint);
-            //for (int x=0; x<_radius*2; x+=10)
+            //for (int x = 0; x < _radius * 2; x += 10)
             //{
             //    surface.Canvas.DrawLine(
             //        _currentLocation.X - _radius,

@@ -12,14 +12,8 @@ namespace WinFormsPowerToolsDemo
 
         public SkiaSharpDemoForm()
         {
-            InitializeComponent();
-
             _movingCircleShapes = Shapes.RandomShapes(1000);
-
-            _movingCircleShapes.CanvasSizeChanged(
-                new SizeF(
-                    gdiPlusRenderTargetPanel.ClientSize.Width,
-                    gdiPlusRenderTargetPanel.ClientSize.Height));
+            InitializeComponent();
 
             _timer = new Timer();
             _timer.Interval = 10;
@@ -82,6 +76,12 @@ namespace WinFormsPowerToolsDemo
                         skiaCanvasRenderTarget.ClientSize.Width,
                         skiaCanvasRenderTarget.ClientSize.Height));
             }
+        }
+
+        private void openSkiaPlaygroundButton_Click(object sender, EventArgs e)
+        {
+            SkiaSharpPlaygroundForm form = new();
+            form.ShowDialog();
         }
     }
 }
