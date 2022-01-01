@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.ES20;
+﻿using OpenTK.Graphics.OpenGLES1;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -129,15 +129,15 @@ namespace SkiaWinForms
 				// create or update the dimensions
 				lastSize = newSize;
 
-				GL.GetInteger(GetPName.FramebufferBinding, out var framebuffer);
-				GL.GetInteger(GetPName.StencilBits, out var stencil);
-				GL.GetInteger(GetPName.Samples, out var samples);
+				//GL.GetInteger(GetPName.FramebufferBinding, out var framebuffer);
+				//GL.GetInteger(GetPName.StencilBits, out var stencil);
+				//GL.GetInteger(GetPName.Samples, out var samples);
 
 				var maxSamples = grContext.GetMaxSurfaceSampleCount(colorType);
-				if (samples > maxSamples)
-					samples = maxSamples;
+				//if (samples > maxSamples)
+				//	samples = maxSamples;
 
-				glInfo = new GRGlFramebufferInfo((uint)framebuffer, colorType.ToGlSizedFormat());
+				//glInfo = new GRGlFramebufferInfo((uint)framebuffer, colorType.ToGlSizedFormat());
 
 				// destroy the old surface
 				surface?.Dispose();
@@ -146,7 +146,7 @@ namespace SkiaWinForms
 
 				// re-create the render target
 				renderTarget?.Dispose();
-				renderTarget = new GRBackendRenderTarget(newSize.Width, newSize.Height, samples, stencil, glInfo);
+				//renderTarget = new GRBackendRenderTarget(newSize.Width, newSize.Height, samples, stencil, glInfo);
 			}
 
 			// create the surface

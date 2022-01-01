@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL.Compatibility;
 using OpenTK.WinForms;
 using SkiaSharp;
 using System;
@@ -59,8 +59,6 @@ namespace SkiaWinForms
 			{
 				var glInterface = GRGlInterface.Create();
 				GRContextOptions grContextOptions = new();
-				grContextOptions.AllowPathMaskCaching = true;
-
 				grContext = GRContext.CreateGl(glInterface, grContextOptions);
 			}
 
@@ -73,15 +71,15 @@ namespace SkiaWinForms
 				// create or update the dimensions
 				lastSize = newSize;
 
-				GL.GetInteger(GetPName.FramebufferBinding, out var framebuffer);
+				//GL.GetInteger(GetPName.FramebufferBinding, out var framebuffer);
 				//GL.GetInteger(GetPName.StencilRef, out var stencil); stencil = 8;
 				//GL.GetInteger(GetPName.Samples, out var samples); samples = 16;
 
 				var maxSamples = grContext.GetMaxSurfaceSampleCount(colorType);
-				
+
 				//if (samples > maxSamples)
 				//	samples = maxSamples;
-
+				var framebuffer = 0;
 				glInfo = new GRGlFramebufferInfo((uint)framebuffer, colorType.ToGlSizedFormat());
 
 				// destroy the old surface
