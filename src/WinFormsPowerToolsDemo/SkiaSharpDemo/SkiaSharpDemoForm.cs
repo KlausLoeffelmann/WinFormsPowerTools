@@ -12,7 +12,7 @@ namespace WinFormsPowerToolsDemo
 
         public SkiaSharpDemoForm()
         {
-            _movingCircleShapes = Shapes.RandomShapes(500);
+            _movingCircleShapes = Shapes.RandomShapes(1000);
             InitializeComponent();
             Panel_Resize(null, null);
 

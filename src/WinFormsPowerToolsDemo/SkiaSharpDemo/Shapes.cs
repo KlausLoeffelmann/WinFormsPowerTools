@@ -50,7 +50,7 @@ namespace WinFormsPowerToolsDemo.SkiaSharpDemo
                     lineColor: Color.FromArgb(random.Next()),
                     fillColor: Color.FromArgb(random.Next()),
                     penWidth: random.Next(5) + 2,
-                    radius: random.Next(200) + 30,
+                    radius: random.Next(100) + 20,
                     xSpeed: (float)(random.NextDouble() * 10 + .1),
                     ySpeed: (float)(random.NextDouble() * 10 + .1),
                     startLocation: new PointF(random.Next(200), random.Next(200))));

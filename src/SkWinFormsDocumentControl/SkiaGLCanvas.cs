@@ -2,7 +2,6 @@
 using SkiaSharp;
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace SkiaWinForms
@@ -12,14 +11,14 @@ namespace SkiaWinForms
 		private const SKColorType colorType = SKColorType.Rgba8888;
 		private const GRSurfaceOrigin surfaceOrigin = GRSurfaceOrigin.BottomLeft;
 		private const int Stencil = 8;
-		private const int Samples = 8;
+		private const int Samples = 2;
 
-		private GRContext? grContext;
-		private GRGlFramebufferInfo glInfo;
-		private GRBackendRenderTarget? renderTarget;
-		private SKSurface? surface;
-		private SKCanvas? canvas;
-		private SKSizeI lastSize;
+		private GRContext? _grContext;
+		private GRGlFramebufferInfo _glInfo;
+		private GRBackendRenderTarget? _renderTarget;
+		private SKSurface? _surface;
+		private SKCanvas? _canvas;
+		private SKSizeI _lastSize;
 
 		// Are we in DesignMode or not?
 		private bool designMode;
@@ -35,9 +34,9 @@ namespace SkiaWinForms
 			ResizeRedraw = true;
 		}
 
-		public SKSize CanvasSize => lastSize;
+		public SKSize CanvasSize => _lastSize;
 
-		public GRContext? GRContext => grContext;
+		public GRContext? GRContext => _grContext;
 
 		[Category("Appearance")]
 		public event EventHandler<SkiaPaintEventArgs>? PaintSurface;
@@ -55,61 +54,64 @@ namespace SkiaWinForms
 			MakeCurrent();
 
 			// create the contexts if not done already
-			if (grContext == null)
+			if (_grContext == null)
 			{
 				var glInterface = GRGlInterface.Create();
 				GRContextOptions grContextOptions = new();
-				grContext = GRContext.CreateGl(glInterface, grContextOptions);
+				grContextOptions.BufferMapThreshold = 500000;
+				_grContext = GRContext.CreateGl(glInterface, grContextOptions);
 			}
 
 			// get the new surface size
 			var newSize = new SKSizeI(Width, Height);
 
 			// manage the drawing surface
-			if (renderTarget == null || lastSize != newSize || !renderTarget.IsValid)
+			if (_renderTarget == null || _lastSize != newSize || !_renderTarget.IsValid)
 			{
 				// create or update the dimensions
-				lastSize = newSize;
+				_lastSize = newSize;
 
 				//GL.GetInteger(GetPName.FramebufferBinding, out var framebuffer);
 				//GL.GetInteger(GetPName.StencilRef, out var stencil); stencil = 8;
 				//GL.GetInteger(GetPName.Samples, out var samples); samples = 16;
 
-				var maxSamples = grContext.GetMaxSurfaceSampleCount(colorType);
+				var maxSamples = _grContext.GetMaxSurfaceSampleCount(colorType);
 
 				//if (samples > maxSamples)
 				//	samples = maxSamples;
 				var framebuffer = 0;
-				glInfo = new GRGlFramebufferInfo((uint)framebuffer, colorType.ToGlSizedFormat());
+				_glInfo = new GRGlFramebufferInfo((uint)framebuffer, colorType.ToGlSizedFormat());
 
 				// destroy the old surface
-				surface?.Dispose();
-				surface = null;
-				canvas = null;
+				_surface?.Dispose();
+				_surface = null;
+				_canvas = null;
 
 				// re-create the render target
-				renderTarget?.Dispose();
-				renderTarget = new GRBackendRenderTarget(newSize.Width, newSize.Height, Samples, Stencil, glInfo);
+				_renderTarget?.Dispose();
+				_renderTarget = new GRBackendRenderTarget(newSize.Width, newSize.Height, Samples, Stencil, _glInfo);
 			}
 
 			// create the surface
-			if (surface == null)
+			if (_surface == null)
 			{
-				surface = SKSurface.Create(grContext, renderTarget, surfaceOrigin, colorType);
-				canvas = surface.Canvas;
+				SKSurfaceProperties props = new(SKPixelGeometry.Unknown);
+				_surface = SKSurface.Create(_grContext, _renderTarget, surfaceOrigin, colorType, props);
+				_canvas = _surface.Canvas;
 			}
 
-			using (new SKAutoCanvasRestore(canvas, true))
+			using (new SKAutoCanvasRestore(_canvas, false))
 			{
 				// start drawing
 				OnPaintSurface(new SkiaPaintEventArgs(
-					surface,
+					_surface,
 					surfaceOrigin,
-					new SKImageInfo(renderTarget.Width, renderTarget.Height, colorType)));
+					new SKImageInfo(_renderTarget.Width, _renderTarget.Height, colorType)));
 			}
 
 			// update the control
-			canvas?.Flush();
+			var info=_renderTarget.GetGlFramebufferInfo(out _glInfo);	
+			_canvas?.Flush();
 			SwapBuffers();
 		}
 
@@ -124,13 +126,13 @@ namespace SkiaWinForms
 			base.Dispose(disposing);
 
 			// clean up
-			canvas = null;
-			surface?.Dispose();
-			surface = null;
-			renderTarget?.Dispose();
-			renderTarget = null;
-			grContext?.Dispose();
-			grContext = null;
+			_canvas = null;
+			_surface?.Dispose();
+			_surface = null;
+			_renderTarget?.Dispose();
+			_renderTarget = null;
+			_grContext?.Dispose();
+			_grContext = null;
 		}
 	}
 }
