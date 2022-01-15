@@ -9,6 +9,7 @@ namespace WinformsPowerTools.Direct2D
     public partial class D2DPanel : Control
     {
         private ID2D1RenderTarget? _renderTarget;
+        private bool _baseResourcesValid;
 
         public D2DPanel()
         {
@@ -20,6 +21,11 @@ namespace WinformsPowerTools.Direct2D
 
         private void CreateResourcesInternal(IntPtr windowsHandle)
         {
+            if (_baseResourcesValid)
+            {
+                return;
+            }
+
             var factory = D2DExtensions.CreateFactory();
             if (factory is not null)
             {
@@ -33,7 +39,28 @@ namespace WinformsPowerTools.Direct2D
 
                 factory.CreateHwndRenderTarget(default, renderTargetProperties, out var dcRenderTarget);
                 _renderTarget = dcRenderTarget;
+                _baseResourcesValid = true;
             }
+        }
+
+        unsafe protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            CreateResourcesInternal(this.Handle);
+            if (_baseResourcesValid)
+            {
+                _renderTarget!.BeginDraw();
+                OnD2DPaint();
+                _renderTarget!.EndDraw();
+            }
+        }
+
+        protected virtual void OnD2DPaint()
+        {
+            //if (_baseResourcesValid)
+            //{
+            //    _d2DPaint?.Invoke(this, new D2DPaintEventArgs(RenderTarget!));
+            //}
         }
     }
 
