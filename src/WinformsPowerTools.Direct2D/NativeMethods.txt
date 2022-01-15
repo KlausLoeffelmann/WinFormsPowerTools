@@ -1,0 +1,4 @@
+﻿ID2D1Factory
+D2D1CreateFactory
+
+
