@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Windows.Win32;
 using Windows.Win32.Graphics.Direct2D;
+using Windows.Win32.Graphics.Direct2D.Common;
 
 namespace WinformsPowerTools.Direct2D
 {
@@ -21,11 +22,6 @@ namespace WinformsPowerTools.Direct2D
 
         private void CreateResourcesInternal(IntPtr windowsHandle)
         {
-            if (_baseResourcesValid)
-            {
-                return;
-            }
-
             var factory = D2DExtensions.CreateFactory();
             if (factory is not null)
             {
@@ -46,7 +42,17 @@ namespace WinformsPowerTools.Direct2D
         unsafe protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            CreateResourcesInternal(this.Handle);
+
+            if (this.IsAncestorSiteInDesignMode)
+            {
+                return;
+            }
+
+            if (!_baseResourcesValid)
+            {
+                CreateResourcesInternal(this.Handle);
+            }
+
             if (_baseResourcesValid)
             {
                 _renderTarget!.BeginDraw();
@@ -57,10 +63,17 @@ namespace WinformsPowerTools.Direct2D
 
         protected virtual void OnD2DPaint()
         {
-            //if (_baseResourcesValid)
-            //{
-            //    _d2DPaint?.Invoke(this, new D2DPaintEventArgs(RenderTarget!));
-            //}
+            D2D_POINT_2F startPoint = new() { x = 1, y = 1 };
+            D2D_POINT_2F endPoint = new() { x = ClientRectangle.Right - 1, y = ClientRectangle.Bottom - 1 };
+            D2D1_COLOR_F brushColor;
+            brushColor.a = 200;
+            brushColor.b = 200;
+            brushColor.g = 0;
+            brushColor.r = 0;
+
+            _renderTarget.CreateSolidColorBrush(in brushColor, null, out var solidColorBrush);
+
+            _renderTarget!.DrawLine(startPoint, endPoint, solidColorBrush, 3, null);
         }
     }
 
