@@ -26,12 +26,17 @@ namespace Microsoft.Maui.Graphics.D2D
 
         public void BeginDraw()
         {
-            CurrentState.BeginDraw();
+            CurrentState.CurrentStateLayer.BeginDraw();
         }
 
         public void EndDraw()
         {
-            CurrentState.EndDraw();
+            CurrentState.CurrentStateLayer.EndDraw();
+        }
+
+        public void Clear(System.Drawing.Color color)
+        {
+            CurrentState.CurrentStateLayer.Clear(color);
         }
 
         public IWin32Window? Window
@@ -44,7 +49,7 @@ namespace Microsoft.Maui.Graphics.D2D
             }
         }
 
-        public override Color FillColor { set => throw new NotImplementedException(); }
+        public override Color FillColor { set => this.CurrentState.CurrentStateLayer.StrokeColor = value; }
         public override Color FontColor { set => throw new NotImplementedException(); }
         public override string FontName { set => throw new NotImplementedException(); }
         public override float FontSize { set => throw new NotImplementedException(); }
@@ -52,13 +57,7 @@ namespace Microsoft.Maui.Graphics.D2D
         public override bool Antialias { set => throw new NotImplementedException(); }
         public override BlendMode BlendMode { set => throw new NotImplementedException(); }
         public override float MiterLimit { set => throw new NotImplementedException(); }
-        public override Color StrokeColor 
-        { 
-            set
-            {
-                this.CurrentState.StrokeColor = value;
-            }
-        }
+        public override Color StrokeColor { set => this.CurrentState.CurrentStateLayer.FillColor = value; }
         public override LineCap StrokeLineCap { set => throw new NotImplementedException(); }
         public override LineJoin StrokeLineJoin { set => throw new NotImplementedException(); }
         protected override float NativeStrokeSize { set => throw new NotImplementedException(); }
@@ -100,7 +99,7 @@ namespace Microsoft.Maui.Graphics.D2D
 
         public override void FillEllipse(float x, float y, float width, float height)
         {
-            throw new NotImplementedException();
+            CurrentState.CurrentStateLayer.FillEllipse(x, y, width, height);
         }
 
         public override void FillPath(PathF path, WindingMode windingMode)
@@ -110,12 +109,12 @@ namespace Microsoft.Maui.Graphics.D2D
 
         public override void FillRectangle(float x, float y, float width, float height)
         {
-            throw new NotImplementedException();
+            CurrentState.CurrentStateLayer.FillRectangle(x, y, width, height);
         }
 
         public override void FillRoundedRectangle(float x, float y, float width, float height, float cornerRadius)
         {
-            throw new NotImplementedException();
+            CurrentState.CurrentStateLayer.FillRoundedRectangle(x, y, width, height, cornerRadius);
         }
 
         public override void SetFillPaint(Paint paint, RectangleF rectangle)
@@ -150,17 +149,17 @@ namespace Microsoft.Maui.Graphics.D2D
 
         protected override void NativeDrawArc(float x, float y, float width, float height, float startAngle, float endAngle, bool clockwise, bool closed)
         {
-            throw new NotImplementedException();
+            CurrentState.CurrentStateLayer.DrawArc(x, y, x, y, startAngle, endAngle, clockwise, closed);
         }
 
         protected override void NativeDrawEllipse(float x, float y, float width, float height)
         {
-            throw new NotImplementedException();
+            CurrentState.CurrentStateLayer.DrawEllipse(x, y, width, height);
         }
 
         protected override void NativeDrawLine(float x1, float y1, float x2, float y2)
         {
-            CurrentState.DrawLine(x1, y1, x2, y2);
+            CurrentState.CurrentStateLayer.DrawLine(x1, y1, x2, y2);
         }
 
         protected override void NativeDrawPath(PathF path)
@@ -170,12 +169,12 @@ namespace Microsoft.Maui.Graphics.D2D
 
         protected override void NativeDrawRectangle(float x, float y, float width, float height)
         {
-            throw new NotImplementedException();
+            CurrentState.CurrentStateLayer.DrawRectangle(x, y, width, height);
         }
 
         protected override void NativeDrawRoundedRectangle(float x, float y, float width, float height, float cornerRadius)
         {
-            throw new NotImplementedException();
+            CurrentState.CurrentStateLayer.DrawRoundedRectangle(x, y, width, height, cornerRadius);
         }
 
         protected override void NativeRotate(float degrees, float radians, float x, float y)

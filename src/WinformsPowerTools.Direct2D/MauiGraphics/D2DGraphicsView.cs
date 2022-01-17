@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace Microsoft.Maui.Graphics.D2D.WinForms
@@ -9,9 +10,12 @@ namespace Microsoft.Maui.Graphics.D2D.WinForms
         private D2DCanvas _canvas;
         private bool _isDesignModeOrUnknown = true;
 
+        private readonly System.Drawing.Color _defaultBackColor = System.Drawing.Color.Black;
+
         public D2DGraphicsView()
         {
             ResizeRedraw = true;
+            ResetBackColor();
 
             _canvas = new D2DCanvas() { Window = this };
         }
@@ -29,6 +33,26 @@ namespace Microsoft.Maui.Graphics.D2D.WinForms
                     Invalidate();
                 }
             }
+        }
+
+        public override System.Drawing.Color BackColor
+        {
+            get => base.BackColor;
+            set
+            {
+                base.BackColor = value;
+                Invalidate();
+            }
+        }
+
+        public bool ShouldSerializeBackColor()
+        {
+            return BackColor != _defaultBackColor;
+        }
+
+        public override void ResetBackColor()
+        {
+            BackColor = _defaultBackColor;
         }
 
         protected override void OnHandleDestroyed(EventArgs e)
@@ -75,6 +99,7 @@ namespace Microsoft.Maui.Graphics.D2D.WinForms
             }
 
             _canvas.BeginDraw();
+            _canvas.Clear(BackColor);
 
             if (Drawable is not null)
             {
