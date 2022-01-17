@@ -16,14 +16,15 @@ namespace Microsoft.Maui.Graphics.D2D
         private Color? _fillColor;
         private ID2D1SolidColorBrush? _strokeColorCash;
         private ID2D1SolidColorBrush? _fillColorCash;
-        private float _strokeWidth = 1;
         private ID2D1StrokeStyle? _strokeStyle = null;
 
         public D2DLayer(IWin32Window? window)
         {
             _window = window;
 
-            if (window is not null)
+            if (window is not null &&
+                window is Control control &&
+                control.IsHandleCreated)
             {
                 StrokeColor = Colors.White;
                 FillColor = Colors.Black;
@@ -95,6 +96,8 @@ namespace Microsoft.Maui.Graphics.D2D
             }
         }
 
+        internal float StrokeSize { get; set; }
+
         internal Color? StrokeColor
         {
             get => _strokeColor;
@@ -107,7 +110,7 @@ namespace Microsoft.Maui.Graphics.D2D
                     {
                         throw new ArgumentNullException(nameof(value));
                     }
-                    
+
                     _strokeColor = value;
                     D2D1_COLOR_F strokeColor;
 
@@ -154,14 +157,14 @@ namespace Microsoft.Maui.Graphics.D2D
             D2D_POINT_2F startPoint = new() { x = x1, y = x1 };
             D2D_POINT_2F endPoint = new() { x = x2, y = y2 };
 
-            RenderTarget!.DrawLine(startPoint, endPoint, _strokeColorCash, _strokeWidth, _strokeStyle);
+            RenderTarget!.DrawLine(startPoint, endPoint, _strokeColorCash, StrokeSize, _strokeStyle);
         }
 
         internal void DrawRectangle(float x, float y, float width, float height)
         {
             D2D_RECT_F rrectangle;
             rrectangle = new() { left = x, top = y, right = x + width, bottom = y + height };
-            RenderTarget!.DrawRectangle(rrectangle, _strokeColorCash, _strokeWidth, _strokeStyle);
+            RenderTarget!.DrawRectangle(rrectangle, _strokeColorCash, StrokeSize, _strokeStyle);
         }
 
         internal void FillRectangle(float x, float y, float width, float height)
@@ -178,7 +181,7 @@ namespace Microsoft.Maui.Graphics.D2D
             rrectangle.radiusX = cornerRadius;
             rrectangle.radiusY = cornerRadius;
 
-            RenderTarget!.DrawRoundedRectangle(rrectangle, _strokeColorCash, _strokeWidth, _strokeStyle);
+            RenderTarget!.DrawRoundedRectangle(rrectangle, _strokeColorCash, StrokeSize, _strokeStyle);
         }
 
         internal void FillRoundedRectangle(float x, float y, float width, float height, float cornerRadius)
@@ -202,7 +205,7 @@ namespace Microsoft.Maui.Graphics.D2D
             ellipse.radiusX = width;
             ellipse.radiusY = height;
 
-            RenderTarget!.DrawEllipse(ellipse, _strokeColorCash, _strokeWidth, _strokeStyle);
+            RenderTarget!.DrawEllipse(ellipse, _strokeColorCash, StrokeSize, _strokeStyle);
         }
 
         internal void FillEllipse(float x, float y, float width, float height)
