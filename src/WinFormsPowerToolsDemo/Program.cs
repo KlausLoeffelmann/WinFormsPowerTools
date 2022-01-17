@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using WinFormsPowerTools.AutoLayout;
+using WinFormsPowerToolsDemo.MauiGraphics;
 
 namespace WinFormsPowerToolsDemo
 {
