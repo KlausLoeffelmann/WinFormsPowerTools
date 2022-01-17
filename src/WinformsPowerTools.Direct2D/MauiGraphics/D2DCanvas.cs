@@ -60,7 +60,7 @@ namespace Microsoft.Maui.Graphics.D2D
         public override Color StrokeColor { set => this.CurrentState.CurrentStateLayer.FillColor = value; }
         public override LineCap StrokeLineCap { set => throw new NotImplementedException(); }
         public override LineJoin StrokeLineJoin { set => throw new NotImplementedException(); }
-        protected override float NativeStrokeSize { set => throw new NotImplementedException(); }
+        protected override float NativeStrokeSize { set => this.CurrentState.CurrentStateLayer.StrokeSize = value; }
 
         public override void ClipPath(PathF path, WindingMode windingMode = WindingMode.NonZero)
         {

@@ -81,6 +81,12 @@ namespace Microsoft.Maui.Graphics.D2D.WinForms
             }
         }
 
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            Canvas.ResetState();
+        }
+
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
             // We're blocking background-painting by not
