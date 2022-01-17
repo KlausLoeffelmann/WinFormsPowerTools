@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms.DataEntryForms.Components;
-using System.Windows.Forms.DataEntryForms.EntryFormatters;
 
 namespace System.Windows.Forms.DataEntryForms.Controls
 {

@@ -28,23 +28,27 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.d2dPanel1 = new WinformsPowerTools.Direct2D.D2DPanel();
+            this.d2dGraphicsView1 = new Microsoft.Maui.Graphics.D2D.WinForms.D2DGraphicsView();
             this.SuspendLayout();
             // 
-            // d2dPanel1
+            // d2dGraphicsView1
             // 
-            this.d2dPanel1.Location = new System.Drawing.Point(26, 28);
-            this.d2dPanel1.Name = "d2dPanel1";
-            this.d2dPanel1.Size = new System.Drawing.Size(843, 584);
-            this.d2dPanel1.TabIndex = 0;
-            this.d2dPanel1.Text = "d2dPanel1";
+            this.d2dGraphicsView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.d2dGraphicsView1.Drawable = null;
+            this.d2dGraphicsView1.Location = new System.Drawing.Point(12, 12);
+            this.d2dGraphicsView1.Name = "d2dGraphicsView1";
+            this.d2dGraphicsView1.Size = new System.Drawing.Size(881, 629);
+            this.d2dGraphicsView1.TabIndex = 0;
+            this.d2dGraphicsView1.Text = "d2dGraphicsView1";
             // 
             // D2DTestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(905, 653);
-            this.Controls.Add(this.d2dPanel1);
+            this.Controls.Add(this.d2dGraphicsView1);
             this.Name = "D2DTestForm";
             this.Text = "D2DTestForm";
             this.ResumeLayout(false);
@@ -53,6 +57,7 @@
 
         #endregion
 
-        private WinformsPowerTools.Direct2D.D2DPanel d2dPanel1;
+        private Microsoft.Maui.Graphics.D2D.WinForms.D2DPanel d2dPanel1;
+        private Microsoft.Maui.Graphics.D2D.WinForms.D2DGraphicsView d2dGraphicsView1;
     }
 }
