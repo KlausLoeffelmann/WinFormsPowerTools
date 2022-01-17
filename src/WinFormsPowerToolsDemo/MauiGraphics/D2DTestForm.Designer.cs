@@ -1,4 +1,4 @@
-﻿namespace WinFormsPowerToolsDemo
+﻿namespace WinFormsPowerToolsDemo.MauiGraphics
 {
     partial class D2DTestForm
     {
