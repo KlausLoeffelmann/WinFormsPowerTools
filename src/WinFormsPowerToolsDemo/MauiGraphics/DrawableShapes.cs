@@ -32,11 +32,11 @@ namespace WinFormsPowerToolsDemo.MauiGraphics
                 shapes.Add(new MovingCircleShape(
                     lineColor: Color.FromRgba((byte)random.Next(255), (byte)random.Next(255), (byte)random.Next(255), (byte)random.Next(255)),
                     fillColor: Color.FromRgba((byte)random.Next(255), (byte)random.Next(255), (byte)random.Next(255), (byte)random.Next(255)),
-                    penWidth: random.Next(5) + 2,
-                    radius: random.Next(100) + 20,
+                    penWidth: random.Next(3) + 1,
+                    radius: random.Next(100) + 10,
                     xSpeed: (float)(random.NextDouble() * 10 + .1),
                     ySpeed: (float)(random.NextDouble() * 10 + .1),
-                    startLocation: new PointF(random.Next(200), random.Next(200))));
+                    startLocation: new PointF(random.Next(100), random.Next(100))));
             }
 
             return shapes;
