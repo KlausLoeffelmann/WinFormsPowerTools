@@ -7,7 +7,7 @@ namespace Microsoft.Maui.Graphics.D2D
 {
     public partial class D2DCanvas : AbstractCanvas<D2DCanvasState>
     {
-        private IWin32Window? _window;
+        private Control? _window;
 
         public D2DCanvas() : base(CreateNewState, CreateStateCopy)
         {
@@ -39,7 +39,12 @@ namespace Microsoft.Maui.Graphics.D2D
             CurrentState.CurrentStateLayer.Clear(color);
         }
 
-        public IWin32Window? Window
+        public void Resize(System.Drawing.Size size)
+        {
+            CurrentState.CurrentStateLayer.Resize(size);
+        }
+
+        public Control? Window
         {
             get => _window;
             set

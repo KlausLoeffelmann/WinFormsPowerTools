@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -7,18 +8,19 @@ using Windows.Win32.Graphics.Direct2D.Common;
 
 namespace Microsoft.Maui.Graphics.D2D
 {
-    internal class D2DLayer
+    internal class D2DLayer : IDisposable
     {
-        private ID2D1RenderTarget? _renderTarget;
-        private IWin32Window? _window;
+        private ID2D1HwndRenderTarget? _renderTarget;
+        private Control? _window;
 
         private Color? _strokeColor;
         private Color? _fillColor;
         private ID2D1SolidColorBrush? _strokeColorCash;
         private ID2D1SolidColorBrush? _fillColorCash;
         private ID2D1StrokeStyle? _strokeStyle = null;
+        private bool disposedValue;
 
-        public D2DLayer(IWin32Window? window)
+        public D2DLayer(Control? window)
         {
             _window = window;
 
@@ -31,10 +33,9 @@ namespace Microsoft.Maui.Graphics.D2D
             }
         }
 
-        public ID2D1RenderTarget RenderTarget => _renderTarget ??= CreateRenderTarget(_window);
+        public ID2D1RenderTarget RenderTarget => _renderTarget ??= CreateHwndRenderTarget(_window);
         public ID2D1Factory? Direct2DFactory { get; } = D2DExtensions.CreateFactory();
-        public IWin32Window? Window => _window;
-
+        public Control? Window => _window;
 
         public void BeginDraw()
         {
@@ -57,43 +58,55 @@ namespace Microsoft.Maui.Graphics.D2D
             RenderTarget!.Clear(d2dcolor);
         }
 
+        public void Resize(System.Drawing.Size size)
+        {
+            if (_renderTarget is null)
+            {
+                return;
+            }
+
+            ResizeRenderTarget(_renderTarget, size);
+        }
+
         unsafe public void Flush()
         {
             RenderTarget.Flush();
         }
 
-        private static ID2D1RenderTarget CreateRenderTarget(IWin32Window? window)
+        private static ID2D1HwndRenderTarget CreateHwndRenderTarget(Control control)
         {
-            if (window is null)
-            {
-                throw new ArgumentNullException(nameof(window));
-            }
-
-            var control = Control.FromHandle(window.Handle);
-
             if (control is null)
             {
-                throw new InvalidOperationException("No control with the given windowsHandler found.");
+                throw new ArgumentNullException(nameof(control));
             }
 
             var factory = D2DExtensions.CreateFactory();
             if (factory is not null)
             {
                 var renderTargetProperties = new D2D1_HWND_RENDER_TARGET_PROPERTIES();
-                renderTargetProperties.hwnd = new HWND(window.Handle);
+                renderTargetProperties.hwnd = new HWND(control.Handle);
 
                 var size = new D2D_SIZE_U();
                 size.width = (uint)control.Width;
                 size.height = (uint)control.Height;
                 renderTargetProperties.pixelSize = size;
 
-                factory.CreateHwndRenderTarget(default, renderTargetProperties, out var dcRenderTarget);
-                return dcRenderTarget;
+                factory.CreateHwndRenderTarget(default, renderTargetProperties, out var dcHwndRenderTarget);
+                
+                return dcHwndRenderTarget;
             }
             else
             {
                 throw new InvalidOperationException("Couldn't create a D2D render target for the given control.");
             }
+        }
+
+        private static void ResizeRenderTarget(ID2D1HwndRenderTarget renderTarget, System.Drawing.Size size)
+        {
+            D2D_SIZE_U newSize;
+            newSize.width = (uint) size.Width;
+            newSize.height = (uint) size.Height;
+            renderTarget.Resize(newSize);
         }
 
         internal float StrokeSize { get; set; }
@@ -120,6 +133,10 @@ namespace Microsoft.Maui.Graphics.D2D
                     strokeColor.r = value.Red;
 
                     RenderTarget.CreateSolidColorBrush(in strokeColor, null, out var strokeColorCache);
+                    if (_strokeColorCash is not null)
+                    {
+                        Marshal.FinalReleaseComObject(_strokeColorCash);
+                    }
                     _strokeColorCash = strokeColorCache;
                 }
             }
@@ -147,6 +164,10 @@ namespace Microsoft.Maui.Graphics.D2D
                     fillColor.r = value.Red;
 
                     RenderTarget.CreateSolidColorBrush(in fillColor, null, out var fillColorCache);
+                    if (_fillColorCash is not null)
+                    {
+                        Marshal.FinalReleaseComObject(_fillColorCash);
+                    }
                     _fillColorCash = fillColorCache;
                 }
             }
@@ -216,6 +237,51 @@ namespace Microsoft.Maui.Graphics.D2D
             ellipse.radiusY = height;
 
             RenderTarget!.FillEllipse(ellipse, _fillColorCash);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                }
+
+                if (_renderTarget is not null)
+                {
+                    Marshal.FinalReleaseComObject(RenderTarget);
+                    _renderTarget = null;
+                }
+
+                if (_fillColorCash is not null)
+                {
+                    Marshal.FinalReleaseComObject(_fillColorCash);
+                    _renderTarget = null;
+
+                }
+
+                if (_strokeColorCash is not null)
+                {
+                    Marshal.FinalReleaseComObject(_strokeColorCash);
+                    _renderTarget = null;
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        ~D2DLayer()
+        {
+            // do not change this code. put cleanup code in 'dispose(bool disposing)' method
+            Dispose(disposing: false);
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

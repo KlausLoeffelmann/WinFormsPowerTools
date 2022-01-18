@@ -6,7 +6,7 @@ namespace Microsoft.Maui.Graphics.D2D
     {
         private D2DLayer _d2DLayer;
 
-        public D2DCanvasState(IWin32Window? window)
+        public D2DCanvasState(Control? window)
         {
             _d2DLayer = new D2DLayer(window);
         }
