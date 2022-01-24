@@ -1,4 +1,7 @@
 ﻿ID2D1Factory
+IDWriteFactory
 D2D1CreateFactory
-
-
+DWriteCreateFactory
+IWICImagingFactory
+CLSID_WICImagingFactory
+CoCreateInstance
