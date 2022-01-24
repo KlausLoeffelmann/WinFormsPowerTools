@@ -71,7 +71,6 @@
 
         #endregion
 
-        private Microsoft.Maui.Graphics.D2D.WinForms.D2DPanel d2dPanel1;
         private Microsoft.Maui.Graphics.D2D.WinForms.D2DGraphicsView _d2dGraphicsView;
         private System.Windows.Forms.Button _startStopButton;
     }
