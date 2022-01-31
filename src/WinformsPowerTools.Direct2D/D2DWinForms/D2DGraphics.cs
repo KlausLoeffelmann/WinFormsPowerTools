@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+
+using Windows.Win32;
 using Windows.Win32.Graphics.Direct2D;
+using Windows.Win32.Graphics.Direct2D.Common;
 
 namespace System.Windows.Forms.D2D
 {
@@ -10,8 +13,6 @@ namespace System.Windows.Forms.D2D
         private bool disposedValue;
         private D2DLayer? _d2dLayer;
 
-        private WeakCache<Pen, ID2D1SolidColorBrush> _strokeColorCache;
-        private WeakCache<Brush, ID2D1SolidColorBrush> _fillColorCache;
         private const int MaxBrushesCacheSize = 10;
 
         public D2DGraphics(Control control)
@@ -21,9 +22,6 @@ namespace System.Windows.Forms.D2D
             _control.Resize += Control_Resize;
             _control.HandleDestroyed += Control_HandleDestroyed;
             _control.Disposed += Control_Disposed;
-
-            _strokeColorCache = new WeakCache<Pen, ID2D1SolidColorBrush>(MaxBrushesCacheSize);
-            _fillColorCache = new WeakCache<Brush, ID2D1SolidColorBrush>(MaxBrushesCacheSize);
         }
 
         private void Control_Resize(object? sender, EventArgs e)
@@ -67,27 +65,30 @@ namespace System.Windows.Forms.D2D
 
         public void Clear(Color color)
         {
-            throw new NotImplementedException();
+            _d2dLayer!.Clear(color);
         }
 
         public void DrawEllipse(Pen pen, float x, float y, float width, float height)
         {
-            throw new NotImplementedException();
+            var d2dPen = ID2D1Pen.FromPen(pen, _d2dLayer!.RenderTarget);
+            _d2dLayer.DrawEllipse(x, y, width, height, d2dPen.PenBrush, d2dPen.PenSize, d2dPen.PenStyle);
         }
 
         public void DrawImage(Image image, float x, float y, float width, float height)
         {
-            throw new NotImplementedException();
+            _d2dLayer.DrawImage(image, x, y, width, height);
         }
 
         public void DrawLine(Pen pen, float x1, float y1, float x2, float y2)
         {
-            throw new NotImplementedException();
+            var d2dPen = ID2D1Pen.FromPen(pen, _d2dLayer!.RenderTarget);
+            _d2dLayer.DrawLine(x1, y1, x2, y2, d2dPen.PenBrush, d2dPen.PenSize, d2dPen.PenStyle);
         }
 
         public void DrawRectangle(Pen pen, float x, float y, float width, float height)
         {
-            throw new NotImplementedException();
+            var d2dPen = ID2D1Pen.FromPen(pen, _d2dLayer!.RenderTarget);
+            _d2dLayer.DrawRectangle(x, y, width, height, d2dPen.PenBrush, d2dPen.PenSize, d2dPen.PenStyle);
         }
 
         public void DrawString(string? s, Font font, Brush brush, float x, float y)
@@ -97,12 +98,14 @@ namespace System.Windows.Forms.D2D
 
         public void FillEllipse(Brush brush, float x, float y, float width, float height)
         {
-            throw new NotImplementedException();
+            var d2dBrush = ID2D1Brush.FromSolidBrush((SolidBrush)brush, _d2dLayer!.RenderTarget);
+            _d2dLayer.FillEllipse(x, y, width, height, d2dBrush.Brush);
         }
 
         public void FillRectangle(Brush brush, float x, float y, float width, float height)
         {
-            throw new NotImplementedException();
+            var d2dBrush = ID2D1Brush.FromSolidBrush((SolidBrush)brush, _d2dLayer!.RenderTarget);
+            _d2dLayer.FillRectangle(x, y, width, height, d2dBrush.Brush);
         }
 
         protected virtual void Dispose(bool disposing)

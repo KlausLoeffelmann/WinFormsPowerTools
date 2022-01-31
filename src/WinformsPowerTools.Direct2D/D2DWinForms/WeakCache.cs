@@ -54,7 +54,7 @@ namespace System.Windows.Forms.D2D
                 returnValue = _internalList.Dequeue().Value;
             }
 
-            _internalList.Enqueue(new WeakKeyValuePair<T, U>(key, value)); ;
+            _internalList.Enqueue(new WeakKeyValuePair<T, U>(key, value));
 
             return returnValue;
         }

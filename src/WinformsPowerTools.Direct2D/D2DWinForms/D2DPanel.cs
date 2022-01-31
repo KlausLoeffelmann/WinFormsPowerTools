@@ -5,6 +5,7 @@ namespace System.Windows.Forms.D2D
 {
     public partial class D2DPanel : Control
     {
+        public event EventHandler<PaintIGraphicsEventArgs>? PaintIGraphics;
         private IGraphics _graphics;
 
         public D2DPanel()
@@ -29,12 +30,11 @@ namespace System.Windows.Forms.D2D
             }
 
             ((ISupportBeginAndEndDraw)_graphics).BeginDraw();
-            OnIGraphicsPaint(_graphics);
+            OnPaintIGraphics(_graphics);
             ((ISupportBeginAndEndDraw)_graphics).EndDraw();
         }
 
-        protected virtual void OnIGraphicsPaint(IGraphics graphics)
-        {
-        }
+        protected virtual void OnPaintIGraphics(IGraphics graphics) 
+            => PaintIGraphics?.Invoke(this, new PaintIGraphicsEventArgs(graphics));
     }
 }
