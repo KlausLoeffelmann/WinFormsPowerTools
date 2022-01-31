@@ -183,7 +183,6 @@ namespace Microsoft.Maui.Graphics.D2D
 
         public override void DrawImage(IImage image, float x, float y, float width, float height)
         {
-            CurrentState.CurrentStateLayer.DrawImage(image, x, y, width, height);
         }
 
         public override void DrawString(string value, float x, float y, HorizontalAlignment horizontalAlignment)

@@ -1,11 +1,12 @@
-﻿using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Graphics.D2D;
+﻿using System.Drawing;
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
 using Windows.Win32.Graphics.Direct2D.Common;
 using Windows.Win32.Graphics.DirectWrite;
+using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.Graphics.Imaging;
 using Windows.Win32.System.Com;
 
@@ -67,7 +68,8 @@ namespace System.Windows.Forms.D2D
             return textFormat;
         }
 
-        private unsafe IDWriteFactory CreateDirectWriteFactory(DWRITE_FACTORY_TYPE factoryType = DWRITE_FACTORY_TYPE.DWRITE_FACTORY_TYPE_ISOLATED)
+        private unsafe IDWriteFactory CreateDirectWriteFactory(
+            DWRITE_FACTORY_TYPE factoryType = DWRITE_FACTORY_TYPE.DWRITE_FACTORY_TYPE_ISOLATED)
         {
             PInvoke.DWriteCreateFactory(factoryType, new Guid(D2DExtensions.IID_IDWriteFactory), out var dWriteFactory);
             var factory = dWriteFactory as IDWriteFactory;
@@ -178,36 +180,47 @@ namespace System.Windows.Forms.D2D
             RenderTarget!.DrawLine(startPoint, endPoint, strokeColorBrush, strokeSize, strokeStyle);
         }
 
-        internal unsafe void DrawImage(IImage image, float x, float y, float width, float height)
+        internal unsafe void DrawImage(Image image, float x, float y, float width, float height)
         {
-            if (image is D2DGdiImage d2dImage)
-            {
-                var hBitMapPtr = d2dImage.NativeImage.GetHbitmap();
+            // TODO: Add code to react properly to HRESULTs. Add clean-up code.
+            
+            // Odd: Clone only works on a copy of the passed image instance.
+            using Bitmap bitmapCopy = new Bitmap(image); 
+            using Bitmap targetBitmap = bitmapCopy.Clone(
+                new Rectangle(0, 0, bitmapCopy.Width, bitmapCopy.Height), 
+                PixelFormat.Format32bppPArgb);
 
-                //global::Windows.Win32.Foundation.HRESULT.
+            // TODO: @jeremy: do we need this?
+            var hres = PInvoke.CoInitializeEx(null, COINIT.COINIT_APARTMENTTHREADED);
 
-                var hres=PInvoke.CoCreateInstance<IWICImagingFactory>(
-                    typeof(IWICImagingFactory).GUID, 
-                    pUnkOuter: null,
-                    CLSCTX.CLSCTX_INPROC_SERVER,
-                    out var imageFactory);
+            // Important: For Win Ver>8 we need to call this with CLSID_WICImagingFactory>>2<<!
+            hres = PInvoke.CoCreateInstance<IWICImagingFactory>(
+                PInvoke.CLSID_WICImagingFactory2,
+                pUnkOuter: null,
+                CLSCTX.CLSCTX_INPROC_SERVER,
+                out var imageFactory);
 
-                D2D_SIZE_U size = new() { width = (uint)width, height = (uint)height };
-                var bytes = image.AsBytes();
-                var paint = image.AsPaint();
+            var hBitmapPtr = targetBitmap.GetHbitmap();
+            HBITMAP hBitmap = new(hBitmapPtr);
+            HPALETTE hPalette = new();
 
+            imageFactory.CreateBitmapFromHBITMAP(
+                hBitmap,
+                hPalette,
+                WICBitmapAlphaChannelOption.WICBitmapUsePremultipliedAlpha,
+                out var pplBitmap);
 
-                fixed (byte* pBytes = &bytes[0])
-                {
-                    //ID2D1Bitmap bitmap = RenderTarget.CreateBitmapFromWicBitmap()
-                    //    size,
-                    //    (void*)pBytes, image.AsPaint.
-    
-                    //    );
+            RenderTarget.CreateBitmapFromWicBitmap(pplBitmap, null, out var d2dBitmap);
 
-                    //RenderTarget!.DrawBitmap();
-                }
-            }
+            D2D_RECT_F rrectangle;
+            rrectangle = new() { left = x, top = y, right = x + width, bottom = y + height };
+
+            RenderTarget.DrawBitmap(
+                d2dBitmap, 
+                rrectangle, 
+                opacity: 1, 
+                D2D1_BITMAP_INTERPOLATION_MODE.D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, 
+                sourceRectangle: null);
         }
 
         internal void DrawRectangle(float x, float y, float width, float height,
