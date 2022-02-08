@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace AirQuality.WinForms.Controls
+namespace System.Windows.Forms
 {
     [System.ComponentModel.ComplexBindingProperties("DataSource")]
     public partial class TileRepeater : Panel

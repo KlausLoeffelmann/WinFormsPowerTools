@@ -6,12 +6,12 @@ using System.Windows.Forms.DataEntryForms.Controls;
 
 namespace WinFormsPowerToolsDemo
 {
-    public partial class Form1 : Form
+    public partial class EntryFieldsTestForm : Form
     {
         private Timer _delayOperationTimer;
         private Timer _propertyReportTimer;
 
-        public Form1()
+        public EntryFieldsTestForm()
         {
             InitializeComponent();
             saveToolStripButton.Click += saveToolStripButton_Clicked;

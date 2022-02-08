@@ -4,7 +4,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace AirQuality.WinForms.Controls
+namespace System.Windows.Forms
 {
     public partial class TileRepeater
     {

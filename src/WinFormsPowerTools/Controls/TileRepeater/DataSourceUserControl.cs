@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
-using System.Windows.Forms;
-
-namespace AirQuality.WinForms.Controls
+namespace System.Windows.Forms
 {
     public partial class DataSourceUserControl : UserControl
     {

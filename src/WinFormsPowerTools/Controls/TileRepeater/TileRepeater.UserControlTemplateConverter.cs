@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -7,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace AirQuality.WinForms.Controls
+namespace System.Windows.Forms
 {
     public partial class TileRepeater
     {
