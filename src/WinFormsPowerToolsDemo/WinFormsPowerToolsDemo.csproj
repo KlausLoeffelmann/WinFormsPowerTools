@@ -5,6 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
 	<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

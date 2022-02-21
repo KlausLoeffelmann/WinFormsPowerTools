@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.d2dPanel1 = new System.Windows.Forms.D2D.D2DPanel();
+            this.d2dPanel1 = new System.Windows.Forms.D2D.Direct2DPanel();
             this._btnWritePixels = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -69,7 +69,7 @@
 
         #endregion
 
-        private System.Windows.Forms.D2D.D2DPanel d2dPanel1;
+        private System.Windows.Forms.D2D.Direct2DPanel d2dPanel1;
         private System.Windows.Forms.Button _btnWritePixels;
     }
 }

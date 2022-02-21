@@ -2,18 +2,18 @@
 
 namespace System.Windows.Forms.D2D
 {
-    internal class D2DGraphics 
+    internal class Direct2DGraphics 
         : IGraphics, 
           ISupportsBeginAndEndDraw, 
           IDirect2DImaging
     {
         private Control _control;
         private bool disposedValue;
-        private D2DLayer? _d2dLayer;
+        private Direct2DLayer? _d2dLayer;
 
         private const int MaxBrushesCacheSize = 10;
 
-        public D2DGraphics(Control control)
+        public Direct2DGraphics(Control control)
         {
             _control = control;
             _control.HandleCreated += Control_HandleCreated;

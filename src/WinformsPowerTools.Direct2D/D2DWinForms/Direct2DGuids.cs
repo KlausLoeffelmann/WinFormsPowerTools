@@ -5,7 +5,7 @@ using Windows.Win32.Graphics.Direct2D;
 
 namespace System.Windows.Forms.D2D
 {
-    internal static class D2DExtensions
+    internal static class Direct2DGuids
     {
         public const string IID_ID2D1Factory = "06152247-6f50-465a-9245-118bfd3b6007";
         public const string IID_ID2D1Resource = "2cd90691-12e2-11dc-9fed-001143a055f9";
