@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-
-using Windows.Win32;
-using Windows.Win32.Graphics.Direct2D;
-using Windows.Win32.Graphics.Direct2D.Common;
+﻿using System.Drawing;
 
 namespace System.Windows.Forms.D2D
 {
-    internal class D2DGraphics : IGraphics, ISupportBeginAndEndDraw
+    internal class D2DGraphics 
+        : IGraphics, 
+          ISupportsBeginAndEndDraw, 
+          IDirect2DImaging
     {
         private Control _control;
         private bool disposedValue;
@@ -54,19 +52,15 @@ namespace System.Windows.Forms.D2D
             _d2dLayer?.BeginDraw();
         }
 
-        public void EndDraw()
-        {
-            _d2dLayer?.EndDraw();
-        }
+        public void EndDraw() 
+            => _d2dLayer?.EndDraw();
 
         public Region Clip { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public RectangleF ClipBounds => throw new NotImplementedException();
 
-        public void Clear(Color color)
-        {
-            _d2dLayer!.Clear(color);
-        }
+        public void Clear(Color color) 
+            => _d2dLayer!.Clear(color);
 
         public void DrawEllipse(Pen pen, float x, float y, float width, float height)
         {
@@ -74,10 +68,14 @@ namespace System.Windows.Forms.D2D
             _d2dLayer.DrawEllipse(x, y, width, height, d2dPen.PenBrush, d2dPen.PenSize, d2dPen.PenStyle);
         }
 
-        public void DrawImage(Image image, float x, float y, float width, float height)
-        {
-            _d2dLayer.DrawImage(image, x, y, width, height);
-        }
+        public void DrawImage(Image image, float x, float y, float width, float height) 
+            => _d2dLayer!.DrawImage(image, x, y, width, height);
+
+        public IDirect2DImage FromImage(Image image)
+            => _d2dLayer!.FromImage(image);
+
+        public void DrawImage(IDirect2DImage image, float x, float y, float width, float height)
+            => _d2dLayer!.DrawImage(image, x, y, width, height);
 
         public void DrawLine(Pen pen, float x1, float y1, float x2, float y2)
         {

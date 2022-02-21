@@ -182,46 +182,25 @@ namespace System.Windows.Forms.D2D
 
         internal unsafe void DrawImage(Image image, float x, float y, float width, float height)
         {
-            // TODO: Add code to react properly to HRESULTs. Add clean-up code.
-            
-            // Odd: Clone only works on a copy of the passed image instance.
-            using Bitmap bitmapCopy = new Bitmap(image); 
-            using Bitmap targetBitmap = bitmapCopy.Clone(
-                new Rectangle(0, 0, bitmapCopy.Width, bitmapCopy.Height), 
-                PixelFormat.Format32bppPArgb);
+            using var d2dBitmap = Direct2DImage.FromImage(image, RenderTarget);
+            DrawImage(d2dBitmap, x, y, width, height);
+        }
 
-            // TODO: @jeremy: do we need this?
-            var hres = PInvoke.CoInitializeEx(null, COINIT.COINIT_APARTMENTTHREADED);
-
-            // Important: For Win Ver>8 we need to call this with CLSID_WICImagingFactory>>2<<!
-            hres = PInvoke.CoCreateInstance<IWICImagingFactory>(
-                PInvoke.CLSID_WICImagingFactory2,
-                pUnkOuter: null,
-                CLSCTX.CLSCTX_INPROC_SERVER,
-                out var imageFactory);
-
-            var hBitmapPtr = targetBitmap.GetHbitmap();
-            HBITMAP hBitmap = new(hBitmapPtr);
-            HPALETTE hPalette = new();
-
-            imageFactory.CreateBitmapFromHBITMAP(
-                hBitmap,
-                hPalette,
-                WICBitmapAlphaChannelOption.WICBitmapUsePremultipliedAlpha,
-                out var pplBitmap);
-
-            RenderTarget.CreateBitmapFromWicBitmap(pplBitmap, null, out var d2dBitmap);
-
+        internal unsafe void DrawImage(IDirect2DImage image, float x, float y, float width, float height)
+        {
             D2D_RECT_F rrectangle;
             rrectangle = new() { left = x, top = y, right = x + width, bottom = y + height };
 
             RenderTarget.DrawBitmap(
-                d2dBitmap, 
-                rrectangle, 
-                opacity: 1, 
-                D2D1_BITMAP_INTERPOLATION_MODE.D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR, 
+                ((Direct2DImage) image).NativeImage,
+                rrectangle,
+                opacity: 1,
+                D2D1_BITMAP_INTERPOLATION_MODE.D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
                 sourceRectangle: null);
         }
+
+        internal IDirect2DImage FromImage(Image image)
+            => Direct2DImage.FromImage(image, RenderTarget!);
 
         internal void DrawRectangle(float x, float y, float width, float height,
             ID2D1SolidColorBrush strokeColorBrush, float strokeSize, ID2D1StrokeStyle? strokeStyle)
