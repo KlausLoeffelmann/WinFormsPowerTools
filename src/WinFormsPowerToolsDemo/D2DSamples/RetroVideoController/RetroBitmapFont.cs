@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Windows.Forms.D2D;
+using System.Windows.Forms.Direct2D;
 
 namespace WinFormsPowerToolsDemo.D2DSamples.RetroVideoController
 {

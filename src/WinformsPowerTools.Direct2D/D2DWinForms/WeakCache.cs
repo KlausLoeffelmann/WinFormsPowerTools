@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace System.Windows.Forms.D2D
+namespace System.Windows.Forms.Direct2D
 {
     internal class WeakCache<T, U> where T : class
     {

@@ -1,4 +1,4 @@
-﻿namespace System.Windows.Forms.D2D
+﻿namespace System.Windows.Forms.Direct2D
 {
     public static class Direct2DExtension
     {

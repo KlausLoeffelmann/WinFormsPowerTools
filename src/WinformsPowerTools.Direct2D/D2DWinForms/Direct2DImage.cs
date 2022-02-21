@@ -8,7 +8,7 @@ using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.Graphics.Imaging;
 using Windows.Win32.System.Com;
 
-namespace System.Windows.Forms.D2D
+namespace System.Windows.Forms.Direct2D
 {
     internal class Direct2DImage : IDirect2DImage
     {

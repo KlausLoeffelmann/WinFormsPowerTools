@@ -1,18 +1,14 @@
 ﻿using System.Drawing;
-using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Direct2D;
 using Windows.Win32.Graphics.Direct2D.Common;
 using Windows.Win32.Graphics.DirectWrite;
-using Windows.Win32.Graphics.Gdi;
-using Windows.Win32.Graphics.Imaging;
-using Windows.Win32.System.Com;
 
 using Color = System.Drawing.Color;
 
-namespace System.Windows.Forms.D2D
+namespace System.Windows.Forms.Direct2D
 {
     internal class Direct2DLayer : IDisposable
     {

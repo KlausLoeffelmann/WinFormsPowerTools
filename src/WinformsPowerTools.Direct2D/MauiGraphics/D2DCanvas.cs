@@ -11,6 +11,19 @@ namespace Microsoft.Maui.Graphics.D2D
 {
     public partial class D2DCanvas : AbstractCanvas<D2DCanvasState>
     {
+        private class D2DStateService : ICanvasStateService<D2DCanvasState>
+        {
+            public D2DCanvasState CreateNew(object context)
+            {
+                return new D2DCanvasState(((D2DCanvas)context).Window);
+            }
+
+            public D2DCanvasState CreateCopy(D2DCanvasState prototype)
+            {
+                return new D2DCanvasState(prototype);
+            }
+        }
+
         private Control? _window;
         private Color _strokeColor;
         private Color _fontColor;
@@ -22,12 +35,17 @@ namespace Microsoft.Maui.Graphics.D2D
         private ID2D1SolidColorBrush _fillColorCache;
         private ID2D1SolidColorBrush _fontColorCache;
 
-        public D2DCanvas() : base(CreateNewState, CreateStateCopy)
+        public D2DCanvas() : base(GetStateService(), null)
         {
             this.StrokeColor = Colors.White;
             this.FillColor = Colors.Black;
             _strokeSize = 1;
             _strokeStyle = null;
+        }
+
+        private static ICanvasStateService<D2DCanvasState> GetStateService()
+        {
+            return new D2DStateService();
         }
 
         private static D2DCanvasState CreateNewState(object context)
@@ -160,7 +178,6 @@ namespace Microsoft.Maui.Graphics.D2D
             }
         }
 
-        public override string FontName { set => this.CurrentState.CurrentStateLayer.FontName = value; }
         public override float FontSize { set => this.CurrentState.CurrentStateLayer.FontSize = value; }
         public override float Alpha { set => throw new NotImplementedException(); }
         public override bool Antialias { set => throw new NotImplementedException(); }
@@ -169,7 +186,8 @@ namespace Microsoft.Maui.Graphics.D2D
         public override LineCap StrokeLineCap { set => throw new NotImplementedException(); }
         public override LineJoin StrokeLineJoin { set => throw new NotImplementedException(); }
 
-        protected override float NativeStrokeSize { set => this.CurrentState.CurrentStateLayer.StrokeSize = value; }
+        protected override float PlatformStrokeSize { set => this.CurrentState.CurrentStateLayer.StrokeSize = value; }
+        public override IFont Font { set => throw new NotImplementedException(); }
 
         public override void ClipPath(PathF path, WindingMode windingMode = WindingMode.NonZero)
         {
@@ -235,77 +253,7 @@ namespace Microsoft.Maui.Graphics.D2D
             throw new NotImplementedException();
         }
 
-        public override void SetToBoldSystemFont()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetToSystemFont()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void SubtractFromClip(float x, float y, float width, float height)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void NativeConcatenateTransform(Matrix3x2 transform)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void NativeDrawArc(float x, float y, float width, float height, float startAngle, float endAngle, bool clockwise, bool closed)
-        {
-            CurrentState.CurrentStateLayer.DrawArc(x, y, x, y, startAngle, endAngle, clockwise, closed, _strokeColorCache, _strokeSize, _strokeStyle);
-        }
-
-        protected override void NativeDrawEllipse(float x, float y, float width, float height)
-        {
-            CurrentState.CurrentStateLayer.DrawEllipse(x, y, width, height, _strokeColorCache, _strokeSize, _strokeStyle);
-        }
-
-        protected override void NativeDrawLine(float x1, float y1, float x2, float y2)
-        {
-            CurrentState.CurrentStateLayer.DrawLine(x1, y1, x2, y2, _strokeColorCache, _strokeSize, _strokeStyle);
-        }
-
-        protected override void NativeDrawPath(PathF path)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void NativeDrawRectangle(float x, float y, float width, float height)
-        {
-            CurrentState.CurrentStateLayer.DrawRectangle(x, y, width, height, _strokeColorCache, _strokeSize, _strokeStyle);
-        }
-
-        protected override void NativeDrawRoundedRectangle(float x, float y, float width, float height, float cornerRadius)
-        {
-            CurrentState.CurrentStateLayer.DrawRoundedRectangle(x, y, width, height, cornerRadius, _strokeColorCache, _strokeSize, _strokeStyle);
-        }
-
-        protected override void NativeRotate(float degrees, float radians, float x, float y)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void NativeRotate(float degrees, float radians)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void NativeScale(float fx, float fy)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void NativeSetStrokeDashPattern(float[] pattern, float strokeSize)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override void NativeTranslate(float tx, float ty)
         {
             throw new NotImplementedException();
         }
@@ -323,6 +271,66 @@ namespace Microsoft.Maui.Graphics.D2D
             {
                 Marshal.FinalReleaseComObject(_strokeColorCache);
             }
+        }
+
+        protected override void PlatformSetStrokeDashPattern(float[] pattern, float strokeSize)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void PlatformDrawLine(float x1, float y1, float x2, float y2)
+        {
+            CurrentState.CurrentStateLayer.DrawLine(x1, y1, x2, y2, _strokeColorCache, _strokeSize, _strokeStyle);
+        }
+
+        protected override void PlatformDrawArc(float x, float y, float width, float height, float startAngle, float endAngle, bool clockwise, bool closed)
+        {
+            CurrentState.CurrentStateLayer.DrawArc(x, y, x, y, startAngle, endAngle, clockwise, closed, _strokeColorCache, _strokeSize, _strokeStyle);
+        }
+
+        protected override void PlatformDrawRectangle(float x, float y, float width, float height)
+        {
+            CurrentState.CurrentStateLayer.DrawRectangle(x, y, width, height, _strokeColorCache, _strokeSize, _strokeStyle);
+        }
+
+        protected override void PlatformDrawRoundedRectangle(float x, float y, float width, float height, float cornerRadius)
+        {
+            CurrentState.CurrentStateLayer.DrawRoundedRectangle(x, y, width, height, cornerRadius, _strokeColorCache, _strokeSize, _strokeStyle);
+        }
+
+        protected override void PlatformDrawEllipse(float x, float y, float width, float height)
+        {
+            CurrentState.CurrentStateLayer.DrawEllipse(x, y, width, height, _strokeColorCache, _strokeSize, _strokeStyle);
+        }
+
+        protected override void PlatformDrawPath(PathF path)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void PlatformRotate(float degrees, float radians, float x, float y)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void PlatformRotate(float degrees, float radians)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void PlatformScale(float fx, float fy)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void PlatformTranslate(float tx, float ty)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void PlatformConcatenateTransform(Matrix3x2 transform)
+        {
+            throw new NotImplementedException();
         }
     }
 }

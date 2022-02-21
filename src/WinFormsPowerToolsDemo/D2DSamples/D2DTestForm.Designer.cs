@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.d2dPanel1 = new System.Windows.Forms.D2D.Direct2DPanel();
+            this.d2dPanel1 = new System.Windows.Forms.Direct2D.Direct2DPanel();
             this._btnWritePixels = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -42,7 +42,7 @@
             this.d2dPanel1.Size = new System.Drawing.Size(728, 350);
             this.d2dPanel1.TabIndex = 0;
             this.d2dPanel1.Text = "d2dPanel1";
-            this.d2dPanel1.PaintIGraphics += new System.EventHandler<System.Windows.Forms.D2D.PaintIGraphicsEventArgs>(this.d2dPanel1_PaintIGraphics);
+            this.d2dPanel1.PaintIGraphics += new System.EventHandler<System.Windows.Forms.Direct2D.GraphicsPaintEventArgs>(this.d2dPanel1_PaintIGraphics);
             // 
             // _btnWritePixels
             // 
@@ -69,7 +69,7 @@
 
         #endregion
 
-        private System.Windows.Forms.D2D.Direct2DPanel d2dPanel1;
+        private System.Windows.Forms.Direct2D.Direct2DPanel d2dPanel1;
         private System.Windows.Forms.Button _btnWritePixels;
     }
 }
