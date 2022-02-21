@@ -29,60 +29,85 @@ namespace System.Windows.Forms.D2D
 
         public unsafe static Direct2DImage FromImage(Image image, ID2D1RenderTarget renderTarget)
         {
-            // Odd: Clone only works on a copy of the passed image instance.
-            using Bitmap bitmapCopy = new Bitmap(image);
-            using Bitmap targetBitmap = bitmapCopy.Clone(
-                new Rectangle(0, 0, bitmapCopy.Width, bitmapCopy.Height),
-                PixelFormat.Format32bppPArgb);
+            Bitmap? targetBitmap = null;
 
-            // TODO: @jeremy: do we need this?
-            var hres = PInvoke.CoInitializeEx(null, COINIT.COINIT_APARTMENTTHREADED);
-
-            // Important: For Win Ver>8 we need to call this with CLSID_WICImagingFactory>>2<<!
-            hres = PInvoke.CoCreateInstance<IWICImagingFactory>(
-                PInvoke.CLSID_WICImagingFactory2,
-                pUnkOuter: null,
-                CLSCTX.CLSCTX_INPROC_SERVER,
-                out var imageFactory);
-
-            var hBitmapPtr = targetBitmap.GetHbitmap();
-            HBITMAP hBitmap = new(hBitmapPtr);
-            HPALETTE hPalette = new();
-
-            imageFactory.CreateBitmapFromHBITMAP(
-                hBitmap,
-                hPalette,
-                WICBitmapAlphaChannelOption.WICBitmapUsePremultipliedAlpha,
-                out var pplBitmap);
-
-            pplBitmap.GetSize(out var bitmapWidth, out var bitmapHeight);
-
-            uint bitmapStride = bitmapWidth * BytesPerPixel;
-
-            WICRect bitmapRect = new()
+            try
             {
-                X = 0,
-                Y = 0,
-                Width = (int)bitmapWidth,
-                Height = (int)bitmapHeight
-            };
+                // Odd: Clone only works on a copy of the passed image instance.
+                if (image.PixelFormat != PixelFormat.Format32bppPArgb)
+                {
+                    using Bitmap bitmapCopy = new Bitmap(image);
+                    targetBitmap = bitmapCopy.Clone(
+                        new Rectangle(0, 0, bitmapCopy.Width, bitmapCopy.Height),
+                        PixelFormat.Format32bppPArgb);
+                }
+                else
+                {
+                    targetBitmap = typeof(Bitmap).IsAssignableFrom(image.GetType())
+                        ? (Bitmap)image
+                        : new Bitmap(image);
+                }
 
-            byte[] bitmapBytes = new byte[BytesPerPixel * bitmapWidth * bitmapHeight];
-            Span<byte> bitmapSpan = new Span<byte>(bitmapBytes);
-            pplBitmap.CopyPixels(in bitmapRect, bitmapStride, bitmapSpan);
+                // TODO: @jeremy: do we need this?
+                var hres = PInvoke.CoInitializeEx(null, COINIT.COINIT_APARTMENTTHREADED);
 
-            renderTarget.CreateBitmapFromWicBitmap(
-                pplBitmap,
-                null,
-                out var d2dBitmap);
+                // Important: For Win Ver>8 we need to call this with CLSID_WICImagingFactory>>2<<!
+                hres = PInvoke.CoCreateInstance<IWICImagingFactory>(
+                    PInvoke.CLSID_WICImagingFactory2,
+                    pUnkOuter: null,
+                    CLSCTX.CLSCTX_INPROC_SERVER,
+                    out var imageFactory);
 
-            Direct2DImage d2dImage = new Direct2DImage(d2dBitmap);
-            d2dImage._bitmapBytes = bitmapBytes;
-            d2dImage._bitmapStride = bitmapStride;
-            d2dImage._bitmapWidth = (int) bitmapWidth;
-            d2dImage._bitmapHeight = (int) bitmapHeight;
+                var hBitmapPtr = targetBitmap.GetHbitmap();
+                HBITMAP hBitmap = new(hBitmapPtr);
+                HPALETTE hPalette = new();
 
-            return d2dImage;
+                imageFactory.CreateBitmapFromHBITMAP(
+                    hBitmap,
+                    hPalette,
+                    WICBitmapAlphaChannelOption.WICBitmapUsePremultipliedAlpha,
+                    out var pplBitmap);
+
+                pplBitmap.GetSize(out var bitmapWidth, out var bitmapHeight);
+
+                uint bitmapStride = bitmapWidth * BytesPerPixel;
+
+                WICRect bitmapRect = new()
+                {
+                    X = 0,
+                    Y = 0,
+                    Width = (int)bitmapWidth,
+                    Height = (int)bitmapHeight
+                };
+
+                byte[] bitmapBytes = new byte[BytesPerPixel * bitmapWidth * bitmapHeight];
+                Span<byte> bitmapSpan = new Span<byte>(bitmapBytes);
+                pplBitmap.CopyPixels(in bitmapRect, bitmapStride, bitmapSpan);
+
+                renderTarget.CreateBitmapFromWicBitmap(
+                    pplBitmap,
+                    null,
+                    out var d2dBitmap);
+
+                Direct2DImage d2dImage = new Direct2DImage(d2dBitmap);
+                d2dImage._bitmapBytes = bitmapBytes;
+                d2dImage._bitmapStride = bitmapStride;
+                d2dImage._bitmapWidth = (int)bitmapWidth;
+                d2dImage._bitmapHeight = (int)bitmapHeight;
+
+                return d2dImage;
+
+            }
+            finally
+            {
+                // If image had the correct PixelFormat to begin with,
+                // we did not clone it into targetBitmap, but used a reference.
+                // But then it must not be disposed.
+                if (!Equals(image, targetBitmap))
+                {
+                    targetBitmap?.Dispose();
+                }
+            }
         }
 
         public Span<byte> BitmapBytes 
@@ -133,7 +158,7 @@ namespace System.Windows.Forms.D2D
                 }
 
                 Marshal.ReleaseComObject(_d2dBitmap);
-                _d2dBitmap = null;
+                _d2dBitmap = null!;
 
                 _disposedValue = true;
             }

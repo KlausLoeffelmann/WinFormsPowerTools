@@ -14,7 +14,7 @@ using Color = System.Drawing.Color;
 
 namespace System.Windows.Forms.D2D
 {
-    internal class D2DLayer : IDisposable
+    internal class Direct2DLayer : IDisposable
     {
         private const int DefaultFontSize = 12;
 
@@ -23,7 +23,7 @@ namespace System.Windows.Forms.D2D
 
         private bool disposedValue;
 
-        public D2DLayer(Control? window)
+        public Direct2DLayer(Control? window)
         {
             _window = window;
 
@@ -71,7 +71,7 @@ namespace System.Windows.Forms.D2D
         private unsafe IDWriteFactory CreateDirectWriteFactory(
             DWRITE_FACTORY_TYPE factoryType = DWRITE_FACTORY_TYPE.DWRITE_FACTORY_TYPE_ISOLATED)
         {
-            PInvoke.DWriteCreateFactory(factoryType, new Guid(D2DExtensions.IID_IDWriteFactory), out var dWriteFactory);
+            PInvoke.DWriteCreateFactory(factoryType, new Guid(Direct2DGuids.IID_IDWriteFactory), out var dWriteFactory);
             var factory = dWriteFactory as IDWriteFactory;
 
             if (factory is null)
@@ -286,7 +286,7 @@ namespace System.Windows.Forms.D2D
             }
         }
 
-        ~D2DLayer()
+        ~Direct2DLayer()
         {
             // do not change this code. put cleanup code in 'dispose(bool disposing)' method
             Dispose(disposing: false);

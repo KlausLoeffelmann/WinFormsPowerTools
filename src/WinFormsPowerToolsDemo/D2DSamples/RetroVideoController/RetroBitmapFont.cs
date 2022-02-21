@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Windows.Forms.D2D;
 
 namespace WinFormsPowerToolsDemo.D2DSamples.RetroVideoController
 {
     internal class RetroBitmapFont
     {
-        private Image[] _fontImages;
+        private IDirect2DImage[] _fontImages;
 
-        public RetroBitmapFont(Image[] fontImages)
+        public RetroBitmapFont(IDirect2DImage[] fontImages)
         {
             _fontImages = fontImages;
         }
 
-        public static RetroBitmapFont? BitmapArrayFromHexFontFile(string hexFontFileName)
+        public static RetroBitmapFont? BitmapArrayFromHexFontFile(string hexFontFileName, IDirect2DImaging d2dImaging)
         {
             List<byte[]> fontByteMap = new();
 
@@ -36,7 +37,16 @@ namespace WinFormsPowerToolsDemo.D2DSamples.RetroVideoController
                     count += 2;
                 }
 
-                var image = new Bitmap(16, 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                var image = new Bitmap(
+                    16, 
+                    16, 
+                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                var d2dGlyphImage = d2dImaging.FromImage(image);
+
+
+
+
 
             }
 

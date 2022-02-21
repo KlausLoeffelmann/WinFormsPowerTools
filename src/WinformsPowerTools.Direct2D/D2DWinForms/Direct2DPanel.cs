@@ -3,15 +3,18 @@ using Windows.Win32.Graphics.Direct2D.Common;
 
 namespace System.Windows.Forms.D2D
 {
-    public partial class D2DPanel : Control
+    public partial class Direct2DPanel : Control
     {
         public event EventHandler<PaintIGraphicsEventArgs>? PaintIGraphics;
         private IGraphics _graphics;
 
-        public D2DPanel()
+        public Direct2DPanel()
         {
             ResizeRedraw = true;
-            _graphics = new D2DGraphics(this);
+
+            // We can get the IGraphics (which covers the D2D Graphics in this case)
+            // easily by the Extension method.
+            _graphics = this.GetDirect2Graphics();
         }
 
         protected override void OnHandleCreated(EventArgs e)
