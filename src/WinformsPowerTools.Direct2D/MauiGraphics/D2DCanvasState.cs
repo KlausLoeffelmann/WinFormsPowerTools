@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using System.Windows.Forms.D2D;
+using System.Windows.Forms.Direct2D;
 
 namespace Microsoft.Maui.Graphics.D2D
 {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.D2D;
+using System.Windows.Forms.Direct2D;
 
 namespace WinFormsPowerToolsDemo
 {
@@ -20,7 +20,7 @@ namespace WinFormsPowerToolsDemo
             InitializeComponent();
         }
 
-        private void d2dPanel1_PaintIGraphics(object sender, PaintIGraphicsEventArgs e)
+        private void d2dPanel1_PaintIGraphics(object sender, GraphicsPaintEventArgs e)
         {
             e.Graphics.Clear(BackColor);
             e.Graphics.FillRectangle(Brushes.Green, 10, 10, 200, 200);

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using Windows.Win32;
-using Windows.Win32.Graphics.Direct2D;
-
-namespace System.Windows.Forms.D2D
+﻿namespace System.Windows.Forms.Direct2D
 {
     internal static class Direct2DGuids
     {

@@ -1,11 +1,8 @@
-﻿using Windows.Win32;
-using Windows.Win32.Graphics.Direct2D.Common;
-
-namespace System.Windows.Forms.D2D
+﻿namespace System.Windows.Forms.Direct2D
 {
     public partial class Direct2DPanel : Control
     {
-        public event EventHandler<PaintIGraphicsEventArgs>? PaintIGraphics;
+        public event EventHandler<GraphicsPaintEventArgs>? PaintIGraphics;
         private IGraphics _graphics;
 
         public Direct2DPanel()
@@ -38,6 +35,6 @@ namespace System.Windows.Forms.D2D
         }
 
         protected virtual void OnPaintIGraphics(IGraphics graphics) 
-            => PaintIGraphics?.Invoke(this, new PaintIGraphicsEventArgs(graphics));
+            => PaintIGraphics?.Invoke(this, new GraphicsPaintEventArgs(graphics));
     }
 }

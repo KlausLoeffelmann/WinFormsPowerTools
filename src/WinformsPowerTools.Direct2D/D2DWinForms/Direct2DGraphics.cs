@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace System.Windows.Forms.D2D
+namespace System.Windows.Forms.Direct2D
 {
     internal class Direct2DGraphics 
         : IGraphics, 
@@ -64,7 +64,7 @@ namespace System.Windows.Forms.D2D
 
         public void DrawEllipse(Pen pen, float x, float y, float width, float height)
         {
-            var d2dPen = ID2D1Pen.FromPen(pen, _d2dLayer!.RenderTarget);
+            var d2dPen = Direct2DPen.FromPen(pen, _d2dLayer!.RenderTarget);
             _d2dLayer.DrawEllipse(x, y, width, height, d2dPen.PenBrush, d2dPen.PenSize, d2dPen.PenStyle);
         }
 
@@ -79,13 +79,13 @@ namespace System.Windows.Forms.D2D
 
         public void DrawLine(Pen pen, float x1, float y1, float x2, float y2)
         {
-            var d2dPen = ID2D1Pen.FromPen(pen, _d2dLayer!.RenderTarget);
+            var d2dPen = Direct2DPen.FromPen(pen, _d2dLayer!.RenderTarget);
             _d2dLayer.DrawLine(x1, y1, x2, y2, d2dPen.PenBrush, d2dPen.PenSize, d2dPen.PenStyle);
         }
 
         public void DrawRectangle(Pen pen, float x, float y, float width, float height)
         {
-            var d2dPen = ID2D1Pen.FromPen(pen, _d2dLayer!.RenderTarget);
+            var d2dPen = Direct2DPen.FromPen(pen, _d2dLayer!.RenderTarget);
             _d2dLayer.DrawRectangle(x, y, width, height, d2dPen.PenBrush, d2dPen.PenSize, d2dPen.PenStyle);
         }
 
@@ -96,13 +96,13 @@ namespace System.Windows.Forms.D2D
 
         public void FillEllipse(Brush brush, float x, float y, float width, float height)
         {
-            var d2dBrush = ID2D1Brush.FromSolidBrush((SolidBrush)brush, _d2dLayer!.RenderTarget);
+            var d2dBrush = Direct2DBrush.FromSolidBrush((SolidBrush)brush, _d2dLayer!.RenderTarget);
             _d2dLayer.FillEllipse(x, y, width, height, d2dBrush.Brush);
         }
 
         public void FillRectangle(Brush brush, float x, float y, float width, float height)
         {
-            var d2dBrush = ID2D1Brush.FromSolidBrush((SolidBrush)brush, _d2dLayer!.RenderTarget);
+            var d2dBrush = Direct2DBrush.FromSolidBrush((SolidBrush)brush, _d2dLayer!.RenderTarget);
             _d2dLayer.FillRectangle(x, y, width, height, d2dBrush.Brush);
         }
 

@@ -86,7 +86,7 @@ namespace Microsoft.Maui.Graphics.D2D
             }
             catch (Exception exc)
             {
-                Logger.Warn(exc);
+                //Logger.Warn(exc);
             }
         }
 
@@ -113,6 +113,11 @@ namespace Microsoft.Maui.Graphics.D2D
         public void Draw(ICanvas canvas, RectangleF dirtyRect)
         {
             canvas.DrawImage(this, dirtyRect.Left, dirtyRect.Top, Math.Abs(dirtyRect.Width), Math.Abs(dirtyRect.Height));
+        }
+
+        public IImage ToPlatformImage()
+        {
+            throw new NotImplementedException();
         }
     }
 }

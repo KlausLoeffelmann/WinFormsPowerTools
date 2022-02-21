@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace System.Windows.Forms.D2D
+namespace System.Windows.Forms.Direct2D
 {
     public interface IDirect2DImaging
     {
