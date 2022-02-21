@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.d2dPanel1 = new System.Windows.Forms.D2D.D2DPanel();
+            this._btnWritePixels = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // d2dPanel1
@@ -38,16 +39,27 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.d2dPanel1.Location = new System.Drawing.Point(35, 32);
             this.d2dPanel1.Name = "d2dPanel1";
-            this.d2dPanel1.Size = new System.Drawing.Size(728, 374);
+            this.d2dPanel1.Size = new System.Drawing.Size(728, 350);
             this.d2dPanel1.TabIndex = 0;
             this.d2dPanel1.Text = "d2dPanel1";
             this.d2dPanel1.PaintIGraphics += new System.EventHandler<System.Windows.Forms.D2D.PaintIGraphicsEventArgs>(this.d2dPanel1_PaintIGraphics);
+            // 
+            // _btnWritePixels
+            // 
+            this._btnWritePixels.Location = new System.Drawing.Point(342, 393);
+            this._btnWritePixels.Name = "_btnWritePixels";
+            this._btnWritePixels.Size = new System.Drawing.Size(171, 45);
+            this._btnWritePixels.TabIndex = 1;
+            this._btnWritePixels.Text = "Write Pixels";
+            this._btnWritePixels.UseVisualStyleBackColor = true;
+            this._btnWritePixels.Click += new System.EventHandler(this._btnWritePixels_Click);
             // 
             // D2DTestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this._btnWritePixels);
             this.Controls.Add(this.d2dPanel1);
             this.Name = "D2DTestForm";
             this.Text = "D2DTestForm";
@@ -58,5 +70,6 @@
         #endregion
 
         private System.Windows.Forms.D2D.D2DPanel d2dPanel1;
+        private System.Windows.Forms.Button _btnWritePixels;
     }
 }

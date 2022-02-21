@@ -29,9 +29,9 @@ namespace System.Windows.Forms.D2D
                 return;
             }
 
-            ((ISupportBeginAndEndDraw)_graphics).BeginDraw();
+            ((ISupportsBeginAndEndDraw)_graphics).BeginDraw();
             OnPaintIGraphics(_graphics);
-            ((ISupportBeginAndEndDraw)_graphics).EndDraw();
+            ((ISupportsBeginAndEndDraw)_graphics).EndDraw();
         }
 
         protected virtual void OnPaintIGraphics(IGraphics graphics) 
