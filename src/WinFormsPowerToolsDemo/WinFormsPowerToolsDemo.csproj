@@ -6,6 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
 	<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	<Nullable>enable</Nullable>
+	<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

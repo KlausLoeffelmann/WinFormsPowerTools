@@ -20,6 +20,11 @@ namespace System.Windows.Forms.Direct2D
             _control.Resize += Control_Resize;
             _control.HandleDestroyed += Control_HandleDestroyed;
             _control.Disposed += Control_Disposed;
+
+            if (control.IsHandleCreated)
+            {
+                _d2dLayer = new(_control);
+            }
         }
 
         private void Control_Resize(object? sender, EventArgs e)
