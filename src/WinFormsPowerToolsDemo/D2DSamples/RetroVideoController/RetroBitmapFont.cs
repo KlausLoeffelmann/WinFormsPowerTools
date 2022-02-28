@@ -7,7 +7,7 @@ using System.Windows.Forms.Direct2D;
 
 namespace WinFormsPowerToolsDemo.D2DSamples.RetroVideoController
 {
-    internal class RetroBitmapFont
+    public class RetroBitmapFont
     {
         private IDirect2DImage[] _fontImages;
         private const int FontNumberCharOffset = 6;
@@ -16,6 +16,8 @@ namespace WinFormsPowerToolsDemo.D2DSamples.RetroVideoController
         {
             _fontImages = fontImages;
         }
+
+        public IDirect2DImage[] FontImages => _fontImages;
 
         public unsafe static RetroBitmapFont BitmapArrayFromHexFontFile(string hexFontFileName, IDirect2DImaging d2dImaging)
         {
