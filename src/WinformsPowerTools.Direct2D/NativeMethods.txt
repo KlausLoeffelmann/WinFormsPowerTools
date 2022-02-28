@@ -6,5 +6,10 @@ IWICImagingFactory
 IWICImagingFactory2
 CLSID_WICImagingFactory
 CLSID_WICImagingFactory2
+
 CoCreateInstance
 CoInitializeEx
+
+timeGetDevCaps
+timeSetEvent
+timeKillEvent
