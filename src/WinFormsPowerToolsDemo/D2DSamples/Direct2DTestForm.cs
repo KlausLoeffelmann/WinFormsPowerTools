@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Direct2D;
-using WinFormsPowerToolsDemo.D2DSamples.RetroVideoController;
 
 namespace WinFormsPowerToolsDemo
 {
@@ -58,21 +51,6 @@ namespace WinFormsPowerToolsDemo
 
             _d2dImage.ApplyBitmapBytes();
             d2dPanel1.Invalidate();
-        }
-
-        private void convertHEXFontFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var fd = new OpenFileDialog()
-            {
-                DefaultExt = ".hex",
-                Title = "Open HEX-Font File:"
-            };
-
-            var dialogResult=fd.ShowDialog();
-            if (dialogResult== DialogResult.OK)
-            {
-                RetroBitmapFont bitmapFont = RetroBitmapFont.BitmapArrayFromHexFontFile(fd.FileName, (IDirect2DImaging)d2dPanel1.GetDirect2Graphics())!;
-            }
         }
     }
 }
