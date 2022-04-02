@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<IncludeBuildOutput>true</IncludeBuildOutput>
+		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<RepositoryUrl>https://github.com/dotnet/winforms-designer</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_GetFilesToPackage</TargetsForTfmSpecificContentInPackage>
+		<RunPostBuildEvent>Always</RunPostBuildEvent>
+		<PackageVersion>0.1.1</PackageVersion>
+		<AssemblyVersion>0.1.1</AssemblyVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Graphics" Version="6.0.200-preview.13.935" />
+	</ItemGroup>
+
+	<Target Name="_GetFilesToPackage">
+		<ItemGroup>
+			<_File Include="$(SolutionDir)\WinformsPowerTools.Direct2D\bin\$(Configuration)\net6.0-windows\WinformsPowerTools.Direct2D.dll" />
+
+			<!--We need this during Control development, so we get proper Debug-Support at runtime. -->
+			<_File Include="$(SolutionDir)\WinformsPowerTools.Direct2D\bin\$(Configuration)\net6.0-windows\WinformsPowerTools.Direct2D.pdb" />
+		</ItemGroup>
+
+		<ItemGroup>
+			<TfmSpecificPackageFile Include="@(_File)" PackagePath="$(BuildOutputTargetFolder)/$(TargetFramework)/%(_File.TargetDir)" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="CopyPackage" AfterTargets="Pack">
+		<Copy SourceFiles="$(OutputPath)..\$(PackageId).$(PackageVersion).nupkg"
+			  DestinationFolder="$(SolutionDir)NuGet\BuildOut\"/>
+	</Target>
+
+</Project>
