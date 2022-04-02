@@ -82,7 +82,6 @@
             this.convertHEXFontFileToolStripMenuItem.Name = "convertHEXFontFileToolStripMenuItem";
             this.convertHEXFontFileToolStripMenuItem.Size = new System.Drawing.Size(297, 34);
             this.convertHEXFontFileToolStripMenuItem.Text = "&Convert HEX-Font file...";
-            this.convertHEXFontFileToolStripMenuItem.Click += new System.EventHandler(this.convertHEXFontFileToolStripMenuItem_Click);
             // 
             // Direct2DTestForm
             // 
