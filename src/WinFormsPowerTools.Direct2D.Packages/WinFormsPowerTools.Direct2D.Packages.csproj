@@ -9,8 +9,8 @@
 		<RepositoryType>git</RepositoryType>
 		<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_GetFilesToPackage</TargetsForTfmSpecificContentInPackage>
 		<RunPostBuildEvent>Always</RunPostBuildEvent>
-		<PackageVersion>0.1.1</PackageVersion>
-		<AssemblyVersion>0.1.1</AssemblyVersion>
+		<PackageVersion>0.1.2</PackageVersion>
+		<AssemblyVersion>0.1.2</AssemblyVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
