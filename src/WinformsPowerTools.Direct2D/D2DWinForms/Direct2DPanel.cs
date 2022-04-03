@@ -1,9 +1,11 @@
 ﻿namespace System.Windows.Forms.Direct2D
 {
-    public partial class Direct2DPanel : Control
+    public partial class Direct2DPanel : Control, IGraphicsProvider
     {
         public event EventHandler<GraphicsPaintEventArgs>? PaintIGraphics;
         private IGraphics _graphics;
+
+        public IGraphics Graphics => _graphics;
 
         public Direct2DPanel()
         {
@@ -11,7 +13,7 @@
 
             // We can get the IGraphics (which covers the D2D Graphics in this case)
             // easily by the Extension method.
-            _graphics = this.GetDirect2Graphics();
+            _graphics = this.GetNewDirect2Graphics();
         }
 
         protected override void OnHandleCreated(EventArgs e)

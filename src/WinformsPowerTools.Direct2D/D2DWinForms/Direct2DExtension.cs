@@ -2,7 +2,7 @@
 {
     public static class Direct2DExtension
     {
-        public static IGraphics GetDirect2Graphics(this Control control)
+        public static IGraphics GetNewDirect2Graphics(this Control control)
         {
             return new Direct2DGraphics(control);
         }
