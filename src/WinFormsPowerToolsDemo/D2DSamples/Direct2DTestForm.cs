@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.Windows.Forms.Direct2D;
 
@@ -12,6 +13,18 @@ namespace WinFormsPowerToolsDemo
         public Direct2DTestForm()
         {
             InitializeComponent();
+            d2dPanel1.HandleCreated += D2dPanel1_HandleCreated;
+        }
+
+        private void D2dPanel1_HandleCreated(object? sender, EventArgs e)
+        {
+            if (_d2dImage is null)
+            {
+                //Image image = Properties.Resources.TestImage;
+                using Image image = new Bitmap(200, 1, PixelFormat.Format32bppArgb);
+
+                _d2dImage = ((IDirect2DImaging)d2dPanel1.Graphics).FromImage(image);
+            }
         }
 
         private void d2dPanel1_PaintIGraphics(object sender, GraphicsPaintEventArgs e)
@@ -22,18 +35,12 @@ namespace WinFormsPowerToolsDemo
 
             IDirect2DImaging d2dImaging = (IDirect2DImaging)e.Graphics;
 
-            if (_d2dImage is null)
-            {
-                Image image = Properties.Resources.TestImage;
-                _d2dImage = d2dImaging.FromImage(image);
-            }
-
             d2dImaging.DrawImage(
-                _d2dImage,
+                _d2dImage!,
                 15,
                 15,
                 _d2dImage.Width,
-                _d2dImage.Height);
+                _d2dImage.Height * 2);
         }
 
         private void _btnWritePixels_Click(object sender, EventArgs e)

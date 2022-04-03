@@ -24,7 +24,7 @@ namespace System.Windows.Forms.Direct2D
 
         private Direct2DImage(ID2D1Bitmap d2dBitmap)
         {
-            _d2dBitmap = d2dBitmap;
+            _d2dBitmap = d2dBitmap ?? throw new ArgumentNullException(nameof(d2dBitmap));
         }
 
         public unsafe static Direct2DImage FromImage(Image image, ID2D1RenderTarget renderTarget)
@@ -95,6 +95,7 @@ namespace System.Windows.Forms.Direct2D
                 d2dImage._bitmapWidth = (int)bitmapWidth;
                 d2dImage._bitmapHeight = (int)bitmapHeight;
 
+                GC.KeepAlive(d2dImage);
                 return d2dImage;
 
             }
@@ -110,7 +111,7 @@ namespace System.Windows.Forms.Direct2D
             }
         }
 
-        public Span<byte> BitmapBytes 
+        public Span<byte> BitmapBytes
             => _bitmapBytes;
 
         public uint BitmapStride => _bitmapStride;
@@ -124,15 +125,26 @@ namespace System.Windows.Forms.Direct2D
                 {
                     left = 0,
                     top = 0,
-                    right = (uint) _bitmapWidth,
-                    bottom = (uint) _bitmapHeight
+                    right = (uint)_bitmapWidth,
+                    bottom = (uint)_bitmapHeight
                 };
 
                 _d2dBitmap.CopyFromMemory(rect, bbytes, _bitmapStride);
             }
         }
 
-        public ID2D1Bitmap NativeImage => _d2dBitmap;
+        public ID2D1Bitmap NativeImage
+        {
+            get
+            {
+                if (_d2dBitmap is null)
+                {
+                    throw new NullReferenceException("Native COM Image was collected.");
+                }
+
+                return _d2dBitmap;
+            }
+        }
 
         public int Width => _bitmapWidth;
 

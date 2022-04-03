@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Type="http://schemas.microsoft.com/packaging/2010/07/manifest" Target="/WinFormsPowerTools.Direct2D.Packages.nuspec" Id="RFE9714751978773E" />
-  <Relationship Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="/package/services/metadata/core-properties/fa21f7598b9749aba90a7b9eae5a1af1.psmdcp" Id="R55A8728272CB6E33" />
-</Relationships>

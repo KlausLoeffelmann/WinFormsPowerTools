@@ -21,6 +21,10 @@
             base.OnHandleCreated(e);
         }
 
+        protected override void OnPaintBackground(PaintEventArgs pevent)
+        {
+        }
+
         unsafe protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);

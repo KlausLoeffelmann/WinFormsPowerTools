@@ -1,12 +1,11 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Media;
 
 namespace System.Windows.Forms.Direct2D
 {
-	public class MultiMediaTimer
+    public class MultiMediaTimer
 	{
 		private uint _timerID;                  // ID of multi media timers
 		private uint _user = 0;                 // user-defined Parameter - not used
