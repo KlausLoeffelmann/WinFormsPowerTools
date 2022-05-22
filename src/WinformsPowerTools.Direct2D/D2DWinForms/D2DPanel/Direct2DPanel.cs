@@ -1,9 +1,13 @@
-﻿namespace System.Windows.Forms.Direct2D
+﻿using System.ComponentModel;
+
+namespace System.Windows.Forms.Direct2D
 {
+    [Designer(typeof(Direct2DPanelDesigner))]
     public partial class Direct2DPanel : Control, IGraphicsProvider
     {
         public event EventHandler<GraphicsPaintEventArgs>? PaintIGraphics;
         private IGraphics _graphics;
+        private bool? _cachedIsAncestorSiteInDesignMode;
 
         public IGraphics Graphics => _graphics;
 
@@ -16,20 +20,19 @@
             _graphics = this.GetNewDirect2Graphics();
         }
 
-        protected override void OnHandleCreated(EventArgs e)
-        {
-            base.OnHandleCreated(e);
-        }
-
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
+            if (CachedIsAncestorSiteInDesignMode)
+            {
+                base.OnPaintBackground(pevent);
+            }
         }
 
         unsafe protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-            if (!IsHandleCreated || IsAncestorSiteInDesignMode)
+            if (!IsHandleCreated || CachedIsAncestorSiteInDesignMode)
 
             {
                 return;
@@ -42,5 +45,8 @@
 
         protected virtual void OnPaintIGraphics(IGraphics graphics) 
             => PaintIGraphics?.Invoke(this, new GraphicsPaintEventArgs(graphics));
+
+        protected bool CachedIsAncestorSiteInDesignMode
+            => _cachedIsAncestorSiteInDesignMode ??= IsAncestorSiteInDesignMode;
     }
 }
