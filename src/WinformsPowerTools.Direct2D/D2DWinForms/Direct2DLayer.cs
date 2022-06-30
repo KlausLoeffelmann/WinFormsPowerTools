@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -14,63 +15,32 @@ namespace System.Windows.Forms.Direct2D
     {
         private const int DefaultFontSize = 12;
 
-        private ID2D1HwndRenderTarget? _renderTarget;
-        private Control? _window;
+        [AllowNull]
+        private ID2D1HwndRenderTarget _renderTarget;
+        private readonly Control? _window;
 
         private bool disposedValue;
 
         public Direct2DLayer(Control? window)
         {
             _window = window;
-
-            if (window is not null &&
-                window is Control control &&
-                control.IsHandleCreated)
-            {
-                FontName = window.Font.Name;
-            }
-
             DirectWriteFactory = CreateDirectWriteFactory();
         }
 
         public ID2D1RenderTarget RenderTarget => _renderTarget ??= CreateHwndRenderTarget(_window);
         public ID2D1Factory? Direct2DFactory { get; } = CreateFactory();
-        public IDWriteFactory? DirectWriteFactory { get; } 
+
+        [AllowNull]
+        public IDWriteFactory DirectWriteFactory { get; } 
         public Control? Window => _window;
         internal float StrokeSize { get; set; }
 
-        public Color FontColor { get; internal set; } = Color.Black;
-        public string? FontName { get; internal set; }
-        public float FontSize { get; internal set; } = DefaultFontSize;
-
-        public IDWriteTextFormat CreateTextFormat(
-            string fontFamilyname,
-            DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_NORMAL,
-            DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE.DWRITE_FONT_STYLE_NORMAL,
-            DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_NORMAL,
-            float fontSize = DefaultFontSize,
-            string? localName = null)
-        {
-            DirectWriteFactory.CreateTextFormat(
-                fontFamilyname,
-                fontCollection: null,
-                fontWeight,
-                fontStyle,
-                fontStretch,
-                fontSize,
-                localName,
-                out var textFormat);
-
-            return textFormat;
-        }
-
-        private unsafe IDWriteFactory CreateDirectWriteFactory(
+        private static unsafe IDWriteFactory CreateDirectWriteFactory(
             DWRITE_FACTORY_TYPE factoryType = DWRITE_FACTORY_TYPE.DWRITE_FACTORY_TYPE_ISOLATED)
         {
             PInvoke.DWriteCreateFactory(factoryType, new Guid(Direct2DGuids.IID_IDWriteFactory), out var dWriteFactory);
-            var factory = dWriteFactory as IDWriteFactory;
 
-            if (factory is null)
+            if (dWriteFactory is not IDWriteFactory factory)
             {
                 throw new InvalidOperationException("Couldn't create a IDWriteFactory.");
             }
@@ -82,14 +52,18 @@ namespace System.Windows.Forms.Direct2D
             D2D1_FACTORY_TYPE factoryType = D2D1_FACTORY_TYPE.D2D1_FACTORY_TYPE_SINGLE_THREADED,
             D2D1_DEBUG_LEVEL debugLevel = D2D1_DEBUG_LEVEL.D2D1_DEBUG_LEVEL_NONE)
         {
-            D2D1_FACTORY_OPTIONS options = new D2D1_FACTORY_OPTIONS();
-            options.debugLevel = debugLevel;
+            D2D1_FACTORY_OPTIONS options = new()
+            {
+                debugLevel = debugLevel
+            };
 
             var result = PInvoke.D2D1CreateFactory(
                 D2D1_FACTORY_TYPE.D2D1_FACTORY_TYPE_SINGLE_THREADED,
                 typeof(ID2D1Factory).GUID,
                 new D2D1_FACTORY_OPTIONS(),
                 out var pFactory);
+
+            // TODO: Check result for errors.
 
             var factory = Marshal.GetObjectForIUnknown(new IntPtr(pFactory)) as ID2D1Factory;
             return factory;
@@ -105,12 +79,17 @@ namespace System.Windows.Forms.Direct2D
             var factory = CreateFactory();
             if (factory is not null)
             {
-                var renderTargetProperties = new D2D1_HWND_RENDER_TARGET_PROPERTIES();
-                renderTargetProperties.hwnd = new HWND(control.Handle);
+                var renderTargetProperties = new D2D1_HWND_RENDER_TARGET_PROPERTIES
+                {
+                    hwnd = new HWND(control.Handle)
+                };
 
-                var size = new D2D_SIZE_U();
-                size.width = (uint)control.Width;
-                size.height = (uint)control.Height;
+                var size = new D2D_SIZE_U
+                {
+                    width = (uint)control.Width,
+                    height = (uint)control.Height
+                };
+
                 renderTargetProperties.pixelSize = size;
 
                 factory.CreateHwndRenderTarget(default, renderTargetProperties, out var dcHwndRenderTarget);
@@ -173,7 +152,7 @@ namespace System.Windows.Forms.Direct2D
             D2D_POINT_2F startPoint = new() { x = x1, y = x1 };
             D2D_POINT_2F endPoint = new() { x = x2, y = y2 };
 
-            RenderTarget!.DrawLine(startPoint, endPoint, strokeColorBrush, strokeSize, strokeStyle);
+            RenderTarget.DrawLine(startPoint, endPoint, strokeColorBrush, strokeSize, strokeStyle);
         }
 
         internal unsafe void DrawImage(Image image, float x, float y, float width, float height)
@@ -203,14 +182,14 @@ namespace System.Windows.Forms.Direct2D
         {
             D2D_RECT_F rrectangle;
             rrectangle = new() { left = x, top = y, right = x + width, bottom = y + height };
-            RenderTarget!.DrawRectangle(rrectangle, strokeColorBrush, strokeSize, strokeStyle);
+            RenderTarget.DrawRectangle(rrectangle, strokeColorBrush, strokeSize, strokeStyle);
         }
 
         internal void FillRectangle(float x, float y, float width, float height, ID2D1SolidColorBrush fillColorBrush)
         {
             D2D_RECT_F rrectangle;
             rrectangle = new() { left = x, top = y, right = x + width, bottom = y + height };
-            RenderTarget!.FillRectangle(rrectangle, fillColorBrush);
+            RenderTarget.FillRectangle(rrectangle, fillColorBrush);
         }
 
         internal void DrawRoundedRectangle(float x, float y, float width, float height, float cornerRadius,
@@ -221,7 +200,7 @@ namespace System.Windows.Forms.Direct2D
             rrectangle.radiusX = cornerRadius;
             rrectangle.radiusY = cornerRadius;
 
-            RenderTarget!.DrawRoundedRectangle(rrectangle, strokeColorBrush, strokeSize, strokeStyle);
+            RenderTarget.DrawRoundedRectangle(rrectangle, strokeColorBrush, strokeSize, strokeStyle);
         }
 
         internal void FillRoundedRectangle(float x, float y, float width, float height, 
@@ -232,7 +211,7 @@ namespace System.Windows.Forms.Direct2D
             rrectangle.radiusX = cornerRadius;
             rrectangle.radiusY = cornerRadius;
 
-            RenderTarget!.FillRoundedRectangle(rrectangle, fillColorBrush);
+            RenderTarget.FillRoundedRectangle(rrectangle, fillColorBrush);
         }
 
         internal void DrawArc(float x1, float y1, float x2, float y2, float startAngle, float endAngle, bool clockwise, bool closed,
@@ -250,7 +229,7 @@ namespace System.Windows.Forms.Direct2D
             ellipse.radiusX = width;
             ellipse.radiusY = height;
 
-            RenderTarget!.DrawEllipse(ellipse, strokeColorBrush, strokeSize, strokeStyle);
+            RenderTarget.DrawEllipse(ellipse, strokeColorBrush, strokeSize, strokeStyle);
         }
 
         internal void FillEllipse(float x, float y, float width, float height, ID2D1SolidColorBrush fillColorBrush)
@@ -260,8 +239,27 @@ namespace System.Windows.Forms.Direct2D
             ellipse.radiusX = width;
             ellipse.radiusY = height;
 
-            RenderTarget!.FillEllipse(ellipse, fillColorBrush);
+            RenderTarget.FillEllipse(ellipse, fillColorBrush);
         }
+
+        internal void DrawText(string? s, Direct2DBrush d2dBrush, Direct2DFont d2dFont, float x, float y)
+        {
+            D2D_RECT_F layoutRect = new();
+            layoutRect.left = x;
+            layoutRect.top = y;
+            layoutRect.bottom = 0;
+            layoutRect.right = 0;
+
+            RenderTarget.DrawText(
+                s ?? string.Empty,
+                (uint) (s is null ? 0 : s.Length),
+                d2dFont.TextFormat,
+                layoutRect,
+                d2dBrush.Brush,
+                D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_NONE,
+                DWRITE_MEASURING_MODE.DWRITE_MEASURING_MODE_GDI_CLASSIC);
+        }
+
 
         protected virtual void Dispose(bool disposing)
         {

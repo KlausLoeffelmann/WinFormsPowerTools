@@ -178,7 +178,7 @@ namespace Microsoft.Maui.Graphics.D2D
             }
         }
 
-        public override float FontSize { set => this.CurrentState.CurrentStateLayer.FontSize = value; }
+        public override float FontSize { set => throw new NotImplementedException(); }
         public override float Alpha { set => throw new NotImplementedException(); }
         public override bool Antialias { set => throw new NotImplementedException(); }
         public override BlendMode BlendMode { set => throw new NotImplementedException(); }
