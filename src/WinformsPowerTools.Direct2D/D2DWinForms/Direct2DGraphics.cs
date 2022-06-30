@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 
 namespace System.Windows.Forms.Direct2D
 {
@@ -7,11 +8,13 @@ namespace System.Windows.Forms.Direct2D
           ISupportsBeginAndEndDraw, 
           IDirect2DImaging
     {
-        private Control _control;
+        private readonly Control _control;
         private bool disposedValue;
-        private Direct2DLayer? _d2dLayer;
 
-        private const int MaxBrushesCacheSize = 10;
+        [AllowNull]
+        private Direct2DLayer _d2dLayer;
+
+        private const int  MaxBrushesCacheSize = 10;
 
         public Direct2DGraphics(Control control)
         {
@@ -69,34 +72,43 @@ namespace System.Windows.Forms.Direct2D
 
         public void DrawEllipse(Pen pen, float x, float y, float width, float height)
         {
-            var d2dPen = Direct2DPen.FromPen(pen, _d2dLayer!.RenderTarget);
+            var d2dPen = Direct2DPen.FromPen(pen, _d2dLayer.RenderTarget);
             _d2dLayer.DrawEllipse(x, y, width, height, d2dPen.PenBrush, d2dPen.PenSize, d2dPen.PenStyle);
         }
 
         public void DrawImage(Image image, float x, float y, float width, float height) 
-            => _d2dLayer!.DrawImage(image, x, y, width, height);
+            => _d2dLayer.DrawImage(image, x, y, width, height);
 
         public IDirect2DImage FromImage(Image image)
-            => _d2dLayer!.FromImage(image);
+            => _d2dLayer.FromImage(image);
 
         public void DrawImage(IDirect2DImage image, float x, float y, float width, float height)
-            => _d2dLayer!.DrawImage(image, x, y, width, height);
+            => _d2dLayer.DrawImage(image, x, y, width, height);
 
         public void DrawLine(Pen pen, float x1, float y1, float x2, float y2)
         {
-            var d2dPen = Direct2DPen.FromPen(pen, _d2dLayer!.RenderTarget);
+            var d2dPen = Direct2DPen.FromPen(pen, _d2dLayer.RenderTarget);
             _d2dLayer.DrawLine(x1, y1, x2, y2, d2dPen.PenBrush, d2dPen.PenSize, d2dPen.PenStyle);
         }
 
         public void DrawRectangle(Pen pen, float x, float y, float width, float height)
         {
-            var d2dPen = Direct2DPen.FromPen(pen, _d2dLayer!.RenderTarget);
+            var d2dPen = Direct2DPen.FromPen(pen, _d2dLayer.RenderTarget);
             _d2dLayer.DrawRectangle(x, y, width, height, d2dPen.PenBrush, d2dPen.PenSize, d2dPen.PenStyle);
         }
 
         public void DrawString(string? s, Font font, Brush brush, float x, float y)
         {
-            throw new NotImplementedException();
+            if (brush is SolidBrush solidBrush)
+            {
+                var d2dFont = Direct2DFont.FromFont(font, _d2dLayer.DirectWriteFactory);
+                var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
+
+                _d2dLayer.DrawString(s, d2dBrush, d2dFont, x, y);
+                return;
+            }
+
+            throw new ArgumentException($"Only SolidBrush brushes are supported at this time.", nameof(brush));
         }
 
         public void FillEllipse(Brush brush, float x, float y, float width, float height)

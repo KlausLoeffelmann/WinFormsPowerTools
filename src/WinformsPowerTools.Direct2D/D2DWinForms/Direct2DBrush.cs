@@ -7,10 +7,10 @@ namespace System.Windows.Forms.Direct2D
 {
     internal class Direct2DBrush
     {
-        ID2D1SolidColorBrush _brush;
+        readonly ID2D1SolidColorBrush _brush;
         private const int MaxCachedBrushes = 10;
 
-        private static WeakCache<Brush, Direct2DBrush> s_brushCache = new(MaxCachedBrushes);
+        private static readonly WeakCache<Brush, Direct2DBrush> s_brushCache = new(MaxCachedBrushes);
 
         private Direct2DBrush(ID2D1SolidColorBrush brush)
         {
