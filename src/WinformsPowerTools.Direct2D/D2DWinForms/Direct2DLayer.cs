@@ -260,6 +260,65 @@ namespace System.Windows.Forms.Direct2D
                 DWRITE_MEASURING_MODE.DWRITE_MEASURING_MODE_GDI_CLASSIC);
         }
 
+        internal void DrawText(string? s, Direct2DBrush d2dBrush, Direct2DFont d2dFont, float x, float y, StringFormat stringFormat)
+        {
+            D2D_RECT_F layoutRect = new();
+            layoutRect.left = x;
+            layoutRect.top = y;
+            layoutRect.bottom = 0;
+            layoutRect.right = 0;
+
+            var textFormatAlignment = stringFormat.Alignment switch
+            {
+                StringAlignment.Near => DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_LEADING,
+                StringAlignment.Far => DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_TRAILING,
+                StringAlignment.Center => DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
+                
+                _ => throw new NotImplementedException($"Text alignment '{stringFormat.Alignment}' is not supported.")
+            };
+
+            var lineFormatAlignment = stringFormat.LineAlignment switch
+            {
+                StringAlignment.Near => DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_NEAR,
+                StringAlignment.Far => DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_FAR,
+                StringAlignment.Center => DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+
+                _ => throw new NotImplementedException($"Text alignment '{stringFormat.LineAlignment}' is not supported.")
+            };
+
+            var trimming = stringFormat.Trimming switch
+            {
+                StringTrimming.None => DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_NONE,
+                StringTrimming.EllipsisCharacter => DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER,
+                StringTrimming.EllipsisWord => DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_WORD,
+
+                _ => throw new NotImplementedException($"Text alignment '{stringFormat.Trimming}' is not supported.")
+            };
+
+            RenderTarget.DrawText(
+                s ?? string.Empty,
+                (uint)(s is null ? 0 : s.Length),
+                d2dFont.TextFormat,
+                layoutRect,
+                d2dBrush.Brush,
+                D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_NONE,
+                DWRITE_MEASURING_MODE.DWRITE_MEASURING_MODE_GDI_CLASSIC);
+        }
+
+
+        internal IDWriteTextLayout? TextLayout(string? s, Direct2DBrush d2dBrush, Direct2DFont d2dFont, 
+            float maxWidth, float maxHeight)
+        {
+            DirectWriteFactory.CreateTextLayout(
+                s ?? string.Empty,
+                (uint)(s is null ? 0 : s.Length),
+                d2dFont.TextFormat,
+                maxWidth,
+                maxHeight,
+                out IDWriteTextLayout? textLayout);
+
+            return textLayout;
+        }
 
         protected virtual void Dispose(bool disposing)
         {

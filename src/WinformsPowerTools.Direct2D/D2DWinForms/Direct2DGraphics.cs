@@ -97,20 +97,6 @@ namespace System.Windows.Forms.Direct2D
             _d2dLayer.DrawRectangle(x, y, width, height, d2dPen.PenBrush, d2dPen.PenSize, d2dPen.PenStyle);
         }
 
-        public void DrawString(string? s, Font font, Brush brush, float x, float y)
-        {
-            if (brush is SolidBrush solidBrush)
-            {
-                var d2dFont = Direct2DFont.FromFont(font, _d2dLayer.DirectWriteFactory);
-                var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
-
-                _d2dLayer.DrawString(s, d2dBrush, d2dFont, x, y);
-                return;
-            }
-
-            throw new ArgumentException($"Only SolidBrush brushes are supported at this time.", nameof(brush));
-        }
-
         public void FillEllipse(Brush brush, float x, float y, float width, float height)
         {
             var d2dBrush = Direct2DBrush.FromSolidBrush((SolidBrush)brush, _d2dLayer!.RenderTarget);
@@ -121,6 +107,54 @@ namespace System.Windows.Forms.Direct2D
         {
             var d2dBrush = Direct2DBrush.FromSolidBrush((SolidBrush)brush, _d2dLayer!.RenderTarget);
             _d2dLayer.FillRectangle(x, y, width, height, d2dBrush.Brush);
+        }
+
+        public void DrawString(string? s, Font font, Brush brush, float x, float y)
+        {
+            if (brush is SolidBrush solidBrush)
+            {
+                var d2dFont = Direct2DFont.FromFont(font, _d2dLayer.DirectWriteFactory);
+                var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
+
+                _d2dLayer.DrawText(s, d2dBrush, d2dFont, x, y);
+                return;
+            }
+
+            throw new ArgumentException($"Only SolidBrush brushes are supported at this time.", nameof(brush));
+        }
+
+        public void DrawString(string? s, Font font, Brush brush, float x, float y, StringFormat stringFormat)
+        {
+            if (brush is SolidBrush solidBrush)
+            {
+                var d2dFont = Direct2DFont.FromFont(font, _d2dLayer.DirectWriteFactory);
+                var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
+
+                _d2dLayer.DrawText(s, d2dBrush, d2dFont, x, y, stringFormat);
+                return;
+            }
+
+            throw new ArgumentException($"Only SolidBrush brushes are supported at this time.", nameof(brush));
+        }
+
+        public void DrawString(string? s, Font font, Brush brush, RectangleF layoutRectangle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawString(string? s, Font font, Brush brush, RectangleF layoutRectangle, StringFormat stringFormat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SizeF MeasureString(string? text, Font font, SizeF layoutArea)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SizeF MeasureString(string? text, Font font, SizeF layoutArea, StringFormat stringFormat)
+        {
+            throw new NotImplementedException();
         }
 
         protected virtual void Dispose(bool disposing)
