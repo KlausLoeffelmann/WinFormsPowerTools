@@ -70,6 +70,16 @@ namespace System.Windows.Forms.Direct2D
         /// <param name="y">The y-coordinate of the upper-left corner of the drawn text.</param>
         public void DrawString(string? s, System.Drawing.Font font, System.Drawing.Brush brush, float x, float y);
 
+        public void DrawString(string? s, System.Drawing.Font font, System.Drawing.Brush brush, float x, float y, StringFormat stringFormat);
+
+        public void DrawString(string? s, System.Drawing.Font font, System.Drawing.Brush brush, RectangleF layoutRectangle);
+
+        public void DrawString(string? s, System.Drawing.Font font, System.Drawing.Brush brush, RectangleF layoutRectangle, StringFormat stringFormat);
+
+        public SizeF MeasureString(string? text, System.Drawing.Font font, SizeF layoutArea);
+
+        public SizeF MeasureString(string? text, System.Drawing.Font font, SizeF layoutArea, StringFormat stringFormat);
+
         /// <summary>
         /// Fills the interior of an ellipse defined by a bounding rectangle specified by a pair of coordinates, a width, and a height.
         /// </summary>
