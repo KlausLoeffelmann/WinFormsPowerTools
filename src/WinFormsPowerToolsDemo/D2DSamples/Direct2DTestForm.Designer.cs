@@ -32,15 +32,16 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertHEXFontFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.direct2dPanel1 = new System.Windows.Forms.Direct2D.Direct2DPanel();
+            this._direct2dPanel = new System.Windows.Forms.Direct2D.Direct2DPanel();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // _btnWritePixels
             // 
-            this._btnWritePixels.Location = new System.Drawing.Point(368, 496);
+            this._btnWritePixels.Location = new System.Drawing.Point(478, 635);
+            this._btnWritePixels.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this._btnWritePixels.Name = "_btnWritePixels";
-            this._btnWritePixels.Size = new System.Drawing.Size(171, 45);
+            this._btnWritePixels.Size = new System.Drawing.Size(222, 58);
             this._btnWritePixels.TabIndex = 1;
             this._btnWritePixels.Text = "Write Pixels";
             this._btnWritePixels.UseVisualStyleBackColor = true;
@@ -53,7 +54,8 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(908, 33);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(8, 3, 0, 3);
+            this.menuStrip1.Size = new System.Drawing.Size(1180, 42);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -62,32 +64,35 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.convertHEXFontFileToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 29);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(71, 36);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // convertHEXFontFileToolStripMenuItem
             // 
             this.convertHEXFontFileToolStripMenuItem.Name = "convertHEXFontFileToolStripMenuItem";
-            this.convertHEXFontFileToolStripMenuItem.Size = new System.Drawing.Size(297, 34);
+            this.convertHEXFontFileToolStripMenuItem.Size = new System.Drawing.Size(394, 44);
             this.convertHEXFontFileToolStripMenuItem.Text = "&Convert HEX-Font file...";
             // 
             // direct2dPanel1
             // 
-            this.direct2dPanel1.Location = new System.Drawing.Point(29, 49);
-            this.direct2dPanel1.Name = "direct2dPanel1";
-            this.direct2dPanel1.Size = new System.Drawing.Size(840, 419);
-            this.direct2dPanel1.TabIndex = 3;
-            this.direct2dPanel1.Text = "direct2dPanel1";
+            this._direct2dPanel.Location = new System.Drawing.Point(38, 63);
+            this._direct2dPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._direct2dPanel.Name = "direct2dPanel1";
+            this._direct2dPanel.Size = new System.Drawing.Size(1092, 536);
+            this._direct2dPanel.TabIndex = 3;
+            this._direct2dPanel.Text = "direct2dPanel1";
+            this._direct2dPanel.PaintIGraphics += new System.EventHandler<System.Windows.Forms.Direct2D.GraphicsPaintEventArgs>(this.D2dPanel_PaintIGraphics);
             // 
             // Direct2DTestForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(908, 565);
-            this.Controls.Add(this.direct2dPanel1);
+            this.ClientSize = new System.Drawing.Size(1180, 723);
+            this.Controls.Add(this._direct2dPanel);
             this.Controls.Add(this._btnWritePixels);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Direct2DTestForm";
             this.Text = "D2DTestForm";
             this.menuStrip1.ResumeLayout(false);
@@ -102,6 +107,6 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertHEXFontFileToolStripMenuItem;
-        private System.Windows.Forms.Direct2D.Direct2DPanel direct2dPanel1;
+        private System.Windows.Forms.Direct2D.Direct2DPanel _direct2dPanel;
     }
 }

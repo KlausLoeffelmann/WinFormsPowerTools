@@ -48,7 +48,6 @@ namespace System.Windows.Forms.Direct2D
                         : new Bitmap(image);
                 }
 
-                // TODO: @jeremy: do we need this?
                 var hres = PInvoke.CoInitializeEx(null, COINIT.COINIT_APARTMENTTHREADED);
 
                 // Important: For Win Ver>8 we need to call this with CLSID_WICImagingFactory>>2<<!

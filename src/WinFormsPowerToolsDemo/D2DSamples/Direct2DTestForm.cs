@@ -13,21 +13,21 @@ namespace WinFormsPowerToolsDemo
         public Direct2DTestForm()
         {
             InitializeComponent();
-            direct2dPanel1.HandleCreated += D2dPanel1_HandleCreated;
+            _direct2dPanel.HandleCreated += D2dPanel_HandleCreated;
         }
 
-        private void D2dPanel1_HandleCreated(object? sender, EventArgs e)
+        private void D2dPanel_HandleCreated(object? sender, EventArgs e)
         {
             if (_d2dImage is null)
             {
                 //Image image = Properties.Resources.TestImage;
                 using Image image = new Bitmap(200, 1, PixelFormat.Format32bppArgb);
 
-                _d2dImage = ((IDirect2DImaging)direct2dPanel1.Graphics).FromImage(image);
+                _d2dImage = ((IDirect2DImaging)_direct2dPanel.Graphics).FromImage(image);
             }
         }
 
-        private void d2dPanel1_PaintIGraphics(object sender, GraphicsPaintEventArgs e)
+        private void D2dPanel_PaintIGraphics(object sender, GraphicsPaintEventArgs e)
         {
             e.Graphics.Clear(BackColor);
             e.Graphics.FillRectangle(Brushes.Green, 10, 10, 200, 200);
@@ -57,7 +57,7 @@ namespace WinFormsPowerToolsDemo
             }
 
             _d2dImage.ApplyBitmapBytes();
-            direct2dPanel1.Invalidate();
+            _direct2dPanel.Invalidate();
         }
     }
 }

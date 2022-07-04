@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using Windows.Win32.Graphics.DirectWrite;
 
 namespace System.Windows.Forms.Direct2D
 {
@@ -13,7 +14,7 @@ namespace System.Windows.Forms.Direct2D
 
         [AllowNull]
         private Direct2DLayer _d2dLayer;
-
+        private Direct2DBrush _blackBrush;
         private const int  MaxBrushesCacheSize = 10;
 
         public Direct2DGraphics(Control control)
@@ -127,10 +128,10 @@ namespace System.Windows.Forms.Direct2D
         {
             if (brush is SolidBrush solidBrush)
             {
-                var d2dFont = Direct2DFont.FromFont(font, _d2dLayer.DirectWriteFactory);
+                var d2dFont = Direct2DFont.FromFontAndStringFormat(font, stringFormat, _d2dLayer.DirectWriteFactory);
                 var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
 
-                _d2dLayer.DrawText(s, d2dBrush, d2dFont, x, y, stringFormat);
+                _d2dLayer.DrawText(s, d2dBrush, d2dFont, x, y);
                 return;
             }
 
@@ -139,22 +140,61 @@ namespace System.Windows.Forms.Direct2D
 
         public void DrawString(string? s, Font font, Brush brush, RectangleF layoutRectangle)
         {
-            throw new NotImplementedException();
+            if (brush is SolidBrush solidBrush)
+            {
+                var d2dFont = Direct2DFont.FromFont(font, _d2dLayer.DirectWriteFactory);
+                var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
+
+                _d2dLayer.DrawText(s, d2dBrush, d2dFont, layoutRectangle);
+                return;
+            }
         }
 
         public void DrawString(string? s, Font font, Brush brush, RectangleF layoutRectangle, StringFormat stringFormat)
         {
-            throw new NotImplementedException();
+            if (brush is SolidBrush solidBrush)
+            {
+                var d2dFont = Direct2DFont.FromFontAndStringFormat(
+                    font, 
+                    stringFormat, 
+                    _d2dLayer.DirectWriteFactory);
+
+                var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
+
+                _d2dLayer.DrawText(s, d2dBrush, d2dFont, layoutRectangle);
+                return;
+            }
         }
 
-        public SizeF MeasureString(string? text, Font font, SizeF layoutArea)
+        internal Direct2DBrush BlackBrush
+            => _blackBrush ??= Direct2DBrush.FromSolidBrush((SolidBrush)Brushes.Black, _d2dLayer.RenderTarget);
+
+        public unsafe SizeF MeasureString(string? text, Font font, SizeF layoutArea)
         {
-            throw new NotImplementedException();
+            var d2dFont = Direct2DFont.FromFont(font, _d2dLayer.DirectWriteFactory);
+
+            var textLayout = _d2dLayer.TextLayout(
+                text, BlackBrush, d2dFont,
+                layoutArea.Width, layoutArea.Height);
+
+            DWRITE_TEXT_METRICS textMetrics = new();
+            textLayout!.GetMetrics(&textMetrics);
+
+            return new(textMetrics.width, textMetrics.height);
         }
 
-        public SizeF MeasureString(string? text, Font font, SizeF layoutArea, StringFormat stringFormat)
+        public unsafe SizeF MeasureString(string? text, Font font, SizeF layoutArea, StringFormat stringFormat)
         {
-            throw new NotImplementedException();
+            var d2dFont = Direct2DFont.FromFontAndStringFormat(font, stringFormat, _d2dLayer.DirectWriteFactory);
+
+            var textLayout = _d2dLayer.TextLayout(
+                text, BlackBrush, d2dFont,
+                layoutArea.Width, layoutArea.Height);
+
+            DWRITE_TEXT_METRICS textMetrics = new();
+            textLayout!.GetMetrics(&textMetrics);
+
+            return new(textMetrics.width, textMetrics.height);
         }
 
         protected virtual void Dispose(bool disposing)
