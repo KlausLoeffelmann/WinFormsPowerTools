@@ -14,7 +14,7 @@ namespace System.Windows.Forms.Direct2D
 
         [AllowNull]
         private Direct2DLayer _d2dLayer;
-        private Direct2DBrush _blackBrush;
+        private Direct2DBrush? _blackBrush;
         private const int  MaxBrushesCacheSize = 10;
 
         public Direct2DGraphics(Control control)
@@ -114,10 +114,13 @@ namespace System.Windows.Forms.Direct2D
         {
             if (brush is SolidBrush solidBrush)
             {
-                var d2dFont = Direct2DFont.FromFont(font, _d2dLayer.DirectWriteFactory);
+                var d2dFormat = Direct2DFormat.FromFont(font, _d2dLayer.DirectWriteFactory);
                 var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
 
-                _d2dLayer.DrawText(s, d2dBrush, d2dFont, x, y);
+                // We have no real LayoutRect, so we don't wrap - just render horizontally.
+                d2dFormat.WordWrapping = IDirectWriteTextFormat.WordWrapping.NoWrap;
+
+                _d2dLayer.DrawText(s, d2dBrush, d2dFormat, x, y);
                 return;
             }
 
@@ -128,7 +131,7 @@ namespace System.Windows.Forms.Direct2D
         {
             if (brush is SolidBrush solidBrush)
             {
-                var d2dFont = Direct2DFont.FromFontAndStringFormat(font, stringFormat, _d2dLayer.DirectWriteFactory);
+                var d2dFont = Direct2DFormat.FromFontAndStringFormat(font, stringFormat, _d2dLayer.DirectWriteFactory);
                 var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
 
                 _d2dLayer.DrawText(s, d2dBrush, d2dFont, x, y);
@@ -142,7 +145,7 @@ namespace System.Windows.Forms.Direct2D
         {
             if (brush is SolidBrush solidBrush)
             {
-                var d2dFont = Direct2DFont.FromFont(font, _d2dLayer.DirectWriteFactory);
+                var d2dFont = Direct2DFormat.FromFont(font, _d2dLayer.DirectWriteFactory);
                 var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
 
                 _d2dLayer.DrawText(s, d2dBrush, d2dFont, layoutRectangle);
@@ -154,7 +157,7 @@ namespace System.Windows.Forms.Direct2D
         {
             if (brush is SolidBrush solidBrush)
             {
-                var d2dFont = Direct2DFont.FromFontAndStringFormat(
+                var d2dFont = Direct2DFormat.FromFontAndStringFormat(
                     font, 
                     stringFormat, 
                     _d2dLayer.DirectWriteFactory);
@@ -171,7 +174,7 @@ namespace System.Windows.Forms.Direct2D
 
         public unsafe SizeF MeasureString(string? text, Font font, SizeF layoutArea)
         {
-            var d2dFont = Direct2DFont.FromFont(font, _d2dLayer.DirectWriteFactory);
+            var d2dFont = Direct2DFormat.FromFont(font, _d2dLayer.DirectWriteFactory);
 
             var textLayout = _d2dLayer.TextLayout(
                 text, BlackBrush, d2dFont,
@@ -185,7 +188,7 @@ namespace System.Windows.Forms.Direct2D
 
         public unsafe SizeF MeasureString(string? text, Font font, SizeF layoutArea, StringFormat stringFormat)
         {
-            var d2dFont = Direct2DFont.FromFontAndStringFormat(font, stringFormat, _d2dLayer.DirectWriteFactory);
+            var d2dFont = Direct2DFormat.FromFontAndStringFormat(font, stringFormat, _d2dLayer.DirectWriteFactory);
 
             var textLayout = _d2dLayer.TextLayout(
                 text, BlackBrush, d2dFont,

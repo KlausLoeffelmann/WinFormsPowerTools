@@ -242,25 +242,25 @@ namespace System.Windows.Forms.Direct2D
             RenderTarget.FillEllipse(ellipse, fillColorBrush);
         }
 
-        internal void DrawText(string? s, Direct2DBrush d2dBrush, Direct2DFont d2dFont, float x, float y)
+        internal void DrawText(string? s, Direct2DBrush d2dBrush, Direct2DFormat d2dFormat, float x, float y)
         {
             D2D_RECT_F layoutRect = new();
             layoutRect.left = x;
             layoutRect.top = y;
-            layoutRect.bottom = 0;
-            layoutRect.right = 0;
+            layoutRect.bottom = x+1;
+            layoutRect.right = y+1;
 
             RenderTarget.DrawText(
                 s ?? string.Empty,
                 (uint) (s is null ? 0 : s.Length),
-                d2dFont.TextFormat,
+                d2dFormat.GetInstance(),
                 layoutRect,
                 d2dBrush.Brush,
                 D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_NONE,
                 DWRITE_MEASURING_MODE.DWRITE_MEASURING_MODE_GDI_CLASSIC);
         }
 
-        internal void DrawText(string? s, Direct2DBrush d2dBrush, Direct2DFont d2dFont, RectangleF layoutRectangle)
+        internal void DrawText(string? s, Direct2DBrush d2dBrush, Direct2DFormat d2dFormat, RectangleF layoutRectangle)
         {
             D2D_RECT_F layoutRect = new();
             layoutRect.left = layoutRectangle.Left;
@@ -271,20 +271,20 @@ namespace System.Windows.Forms.Direct2D
             RenderTarget.DrawText(
                 s ?? string.Empty,
                 (uint)(s is null ? 0 : s.Length),
-                d2dFont.TextFormat,
+                d2dFormat.GetInstance(),
                 layoutRect,
                 d2dBrush.Brush,
                 D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_NONE,
                 DWRITE_MEASURING_MODE.DWRITE_MEASURING_MODE_GDI_CLASSIC);
         }
 
-        internal IDWriteTextLayout? TextLayout(string? s, Direct2DBrush d2dBrush, Direct2DFont d2dFont, 
+        internal IDWriteTextLayout? TextLayout(string? s, Direct2DBrush d2dBrush, Direct2DFormat d2dFormat, 
             float maxWidth, float maxHeight)
         {
             DirectWriteFactory.CreateTextLayout(
                 s ?? string.Empty,
                 (uint)(s is null ? 0 : s.Length),
-                d2dFont.TextFormat,
+                d2dFormat.GetInstance(),
                 maxWidth,
                 maxHeight,
                 out IDWriteTextLayout? textLayout);
