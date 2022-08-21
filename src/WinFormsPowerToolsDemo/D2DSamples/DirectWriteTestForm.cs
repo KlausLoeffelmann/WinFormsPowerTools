@@ -15,6 +15,7 @@ namespace WinFormsPowerToolsDemo.D2DSamples
         {
             e.Graphics.Clear(BackColor);
             e.Graphics.DrawString("Teststring", Font, Brushes.Black, 50, 50);
+
         }
     }
 }
