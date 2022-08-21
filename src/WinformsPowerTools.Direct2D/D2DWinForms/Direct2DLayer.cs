@@ -64,8 +64,7 @@ namespace System.Windows.Forms.Direct2D
                 out var pFactory);
 
             // TODO: Check result for errors.
-
-            var factory = Marshal.GetObjectForIUnknown(new IntPtr(pFactory)) as ID2D1Factory;
+            var factory = pFactory as ID2D1Factory; // was: Marshal.GetObjectForIUnknown(new IntPtr((int)pFactory)) 
             return factory;
         }
 
