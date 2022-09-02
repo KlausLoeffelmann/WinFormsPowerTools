@@ -15,7 +15,7 @@ namespace WinFormsPowerToolsDemo
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SkiaSharpDemoForm());
+            Application.Run(new DocumentTestForm());
         }
 
         private static void GenerateForm()
