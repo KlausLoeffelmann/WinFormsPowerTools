@@ -1,5 +1,6 @@
-﻿#nullable disable
+﻿#nullable enable
 
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using Windows.Win32;
@@ -12,10 +13,10 @@ namespace System.Windows.Forms.Documents
     public partial class DocumentControl : Control
     {
         private int _scrollState;
-        private Document _document;
+        private Document? _mainDocument;
 
-        private VDocumentScrollProperties _verticalScroll;
-        private HDocumentScrollProperties _horizontalScroll;
+        private VDocumentScrollProperties? _verticalScroll;
+        private HDocumentScrollProperties? _horizontalScroll;
 
         /// <summary>
         ///  Current size of the displayRect.
@@ -34,7 +35,7 @@ namespace System.Windows.Forms.Documents
         protected const int ScrollStateUserHasScrolled = 0x0008;
         protected const int ScrollStateFullDrag = 0x0010;
 
-        public event ScrollEventHandler ScrollEvent;
+        public event ScrollEventHandler? ScrollEvent;
 
         /// <summary>
         ///  Initializes a new instance of the <see cref='ScrollableControl'/> class.
@@ -43,19 +44,40 @@ namespace System.Windows.Forms.Documents
         {
             SetStyle(ControlStyles.ContainerControl, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint, false);
-            Document = new Document();
+            MainDocument = new Document();
         }
 
-        public Document Document
+        public Document? MainDocument
         {
-            get => _document;
+            get => _mainDocument;
             set
             {
-                _document = value;
-                _displayRect = new Rectangle(0, 0, (int)_document.Width, (int)_document.Height);
+                if (value is null)
+                {
+                    if (_mainDocument is not null)
+                    {
+                        _mainDocument.HostControl = null;
+                    }
+
+                    _mainDocument = null;
+
+                    // TODO: Clear the background.
+
+                    return;
+                }
+
+                _mainDocument = value;
+                _mainDocument.HostControl = this;
+                _displayRect = new Rectangle(0, 0, (int)_mainDocument.Width, (int)_mainDocument.Height);
                 PerformLayout();
             }
         }
+
+        public IEnumerable<DocumentItem>? HorizontalFixedMarginItems { get; }
+
+        public IEnumerable<DocumentItem>? VerticalFixedMarginItems { get; }
+
+        public IEnumerable<DocumentItem>? FixedMarginItems { get; }
 
         protected override void OnLayout(LayoutEventArgs levent)
         {
@@ -686,6 +708,22 @@ namespace System.Windows.Forms.Documents
             UpdateFullDrag();
         }
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            if (MainDocument?.DocumentItems is { } documentItems)
+            {
+                foreach (var documentItem in documentItems)
+                {
+                    if (documentItem is GraphicsDocumentItem graphicsDocumentItem)
+                    {
+                        graphicsDocumentItem.OnRender(new PointF(HorizontalScroll.Value, VerticalScroll.Value), e.Graphics);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         ///  The button's window procedure. Inheriting classes can override this
         ///  to add extra functionality, but should not forget to call
@@ -744,10 +782,10 @@ namespace System.Windows.Forms.Documents
             int maxX = minClient.Width;
             int maxY = minClient.Height;
 
-            if (Document is not null)
+            if (MainDocument is not null)
             {
-                maxX = (int) Document.Width;
-                maxY = (int) Document.Height;
+                maxX = (int) MainDocument.Width;
+                maxY = (int) MainDocument.Height;
                 needHscroll = true;
                 needVscroll = true;
             }
