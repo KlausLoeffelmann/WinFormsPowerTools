@@ -7,19 +7,19 @@ namespace WinFormsPowerTools.AutoLayout
     public interface IAutoLayoutElement<T> where T : IViewController
     {
         string Name { get; set; }
-        object Tag { get; set; }
-        object Group { get; set; }
+        object? Tag { get; set; }
+        object? Group { get; set; }
     }
 
     public interface IAutoLayoutContent<T>
         : IAutoLayoutElement<T> where T : IViewController
     {
-        IAutoLayoutElement<T> Content { get; set; }
+        IAutoLayoutElement<T>? Content { get; set; }
     }
 
     public interface IAutoLayoutContainer<T>
         : IAutoLayoutElement<T> where T : IViewController
     {
-        ICollection<IAutoLayoutElement<T>> Children { get; }
+        ICollection<IAutoLayoutElement<T>>? Children { get; }
     }
 }

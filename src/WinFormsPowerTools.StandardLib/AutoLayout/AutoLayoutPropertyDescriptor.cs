@@ -5,7 +5,7 @@ namespace WinFormsPowerTools.AutoLayout
 {
     public class AutoLayoutPropertyDescriptor : PropertyDescriptor
     {
-        public AutoLayoutPropertyDescriptor(PropertyDescriptor propertyDescriptor, Attribute[] attributes)
+        public AutoLayoutPropertyDescriptor(PropertyDescriptor propertyDescriptor, Attribute[]? attributes)
             : base(propertyDescriptor, attributes)
         {
         }

@@ -5,7 +5,7 @@ namespace WinFormsPowerTools.AutoLayout
     public abstract class AutoLayoutContainer<T> : 
         IAutoLayoutContainer<T> where T : IViewController
     {
-        public AutoLayoutContainer(string name, object tag, object group)
+        public AutoLayoutContainer(string name, object? tag, object? group)
         {
             Name = name;
             Tag = tag;
@@ -13,9 +13,9 @@ namespace WinFormsPowerTools.AutoLayout
         }
 
         public virtual string Name { get; set; }
-        public virtual object Tag { get; set; }
-        public virtual object Group { get; set; }
+        public virtual object? Tag { get; set; }
+        public virtual object? Group { get; set; }
         public AutoLayoutPadding Padding { get; set; }
-        public abstract ICollection<IAutoLayoutElement<T>> Children { get; }
+        public abstract ICollection<IAutoLayoutElement<T>>? Children { get; }
     }
 }

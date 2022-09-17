@@ -6,9 +6,9 @@ namespace WinFormsPowerTools.AutoLayout
     { 
     }
 
-    public abstract class ViewControllerBase : IViewController 
+    public abstract class ViewControllerBase : IViewController
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         virtual protected void OnPropertyChanged(PropertyChangedEventArgs e)
         {
@@ -18,8 +18,8 @@ namespace WinFormsPowerTools.AutoLayout
 
     public class TestModelFoo
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
     }
 
     [ViewController(displayPropertySuffix: "DisplayName")]
@@ -27,9 +27,9 @@ namespace WinFormsPowerTools.AutoLayout
     {
         private double _foo;
 
-        [ViewControllerProperty] private string _firstName;
-        [ViewControllerProperty(propertyName: "LastName", displayName: "Last name:")] private string _lstName;
-        [ViewControllerDisplay("First name", nameof(TestModelFoo.FirstName))] private string _firstNameDisplayName;
+        [ViewControllerProperty] private string? _firstName;
+        [ViewControllerProperty(propertyName: "LastName", displayName: "Last name:")] private string? _lstName;
+        [ViewControllerDisplay("First name", nameof(TestModelFoo.FirstName))] private string? _firstNameDisplayName;
     }
 
     public partial class TestFormsController 
@@ -53,7 +53,7 @@ namespace WinFormsPowerTools.AutoLayout
             }
         }
 
-        private PropertyChangedEventArgs __fooPropertyChangedEventArgs;
+        private PropertyChangedEventArgs? __fooPropertyChangedEventArgs;
         private PropertyChangedEventArgs FooPropertyChangedEventArgs
         {
             get

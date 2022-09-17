@@ -36,7 +36,7 @@ namespace WinFormsPowerTools.CodeGen
                 {
                     var semanticModel = context.Compilation.GetSemanticModel(syntaxTree);
 
-                    var formsControllerSymbol = (INamedTypeSymbol)semanticModel.GetDeclaredSymbol(classDeclaration);
+                    var formsControllerSymbol = (INamedTypeSymbol)semanticModel.GetDeclaredSymbol(classDeclaration)!;
                     var viewControllerNamespace = formsControllerSymbol?.ContainingNamespace;
                     var formsControllerProperties = formsControllerSymbol?.GetMembers().OfType<IPropertySymbol>();
 
@@ -57,8 +57,8 @@ namespace WinFormsPowerTools.CodeGen
                     {
                         try
                         {
-                            modelType = (INamedTypeSymbol)argument.Value;
-                            modelProperties = modelType?.GetMembers().OfType<IPropertySymbol>();
+                            modelType = (INamedTypeSymbol)argument.Value!;
+                            modelProperties = modelType?.GetMembers().OfType<IPropertySymbol>()!;
                         }
                         catch (Exception)
                         {
@@ -94,7 +94,7 @@ namespace WinFormsPowerTools.CodeGen
                         }
                         else
                         {
-                            propertyName = GetPropertyNameFromFieldName(fieldAttributeTuple.field.Name);
+                            propertyName = GetPropertyNameFromFieldName(fieldAttributeTuple.field.Name)!;
                         }
 
                         if (string.IsNullOrEmpty(propertyName))

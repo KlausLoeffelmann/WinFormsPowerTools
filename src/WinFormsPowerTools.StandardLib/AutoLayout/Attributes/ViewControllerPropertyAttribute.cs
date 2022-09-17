@@ -6,9 +6,9 @@ namespace WinFormsPowerTools.AutoLayout
     public class ViewControllerPropertyAttribute : Attribute
     {
         public ViewControllerPropertyAttribute(
-            string propertyName = default, 
-            string displayName = default, 
-            Type converter = default, 
+            string? propertyName = default, 
+            string? displayName = default, 
+            Type? converter = default, 
             Scope getAccessorScope = Scope.@public, 
             Scope setAccessorScope = Scope.@public)
         {
@@ -19,9 +19,9 @@ namespace WinFormsPowerTools.AutoLayout
             SetAccessorScope = setAccessorScope;
         }
 
-        public string PropertyName { get; }
-        public string DisplayName { get; }
-        public Type Converter { get; }
+        public string? PropertyName { get; }
+        public string? DisplayName { get; }
+        public Type? Converter { get; }
 
         // TODO: Implement scope handling.
         public Scope GetAccessorScope { get; }

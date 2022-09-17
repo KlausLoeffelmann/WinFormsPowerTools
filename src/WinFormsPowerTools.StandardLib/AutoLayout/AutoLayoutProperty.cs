@@ -4,12 +4,12 @@ namespace WinFormsPowerTools.AutoLayout
 {
     public class AutoLayoutProperty<T> where T : class
     {
-        public AutoLayoutProperty(T @object, string propertyname)
+        public AutoLayoutProperty(T @object, string? propertyname)
         {
             PropertyName = PropertyName;
         }
 
-        public string PropertyName { get; }
+        public string? PropertyName { get; }
 
         public AutoLayoutPropertyDescriptor PropertyDescriptor
         {

@@ -12,6 +12,6 @@ namespace WinFormsPowerTools.AutoLayout
 
         public string Name { get; set; }
         public string DestinationTypeName { get; set; }
-        public Func<object> Factory { get; set; } // Produces the (WinForms) equivilent out of the structure.
+        public Func<object>? Factory { get; set; } // Produces the (WinForms) equivilent out of the structure.
     }
 }

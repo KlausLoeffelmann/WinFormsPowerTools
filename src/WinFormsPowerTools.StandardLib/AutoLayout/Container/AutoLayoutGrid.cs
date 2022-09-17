@@ -9,11 +9,11 @@ namespace WinFormsPowerTools.AutoLayout
         : AutoLayoutContainer<T> where T : IViewController
     {
         private ObservableCollection<IAutoLayoutElement<T>> _children;
-        private Dictionary<(int row, int column), (GridInfo gridInfo, IAutoLayoutElement<T> layoutElement)> _griddedChildren;
+        private Dictionary<(int row, int column), (GridInfo gridInfo, IAutoLayoutElement<T> layoutElement)> _griddedChildren = new();
 
         private (int lastRow, int lastColumn) _maxCellPosition;
 
-        public AutoLayoutGrid(string name, object tag, object group)
+        public AutoLayoutGrid(string name, object? tag, object? group)
             : base(name, tag, group)
         {
             _children = new ObservableCollection<IAutoLayoutElement<T>>();
@@ -40,10 +40,10 @@ namespace WinFormsPowerTools.AutoLayout
                 }
                 else
                 {
-                    gridInfo = new GridInfo(_maxCellPosition.lastRow + 1, 0, 1, 1, null);
+                    gridInfo = new GridInfo(_maxCellPosition.lastRow + 1, 0, 1, 1, default);
                 }
 
-                _griddedChildren.Add((gridInfo.Row, gridInfo.Column), (gridInfo, item));
+                _griddedChildren?.Add((gridInfo.Row, gridInfo.Column), (gridInfo, item));
             }
         }
 
@@ -82,7 +82,7 @@ namespace WinFormsPowerTools.AutoLayout
         [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
         public class GridInfo
         {
-            public GridInfo(int row, int column, int rowSpan, int columnSpan, object tag = null)
+            public GridInfo(int row, int column, int rowSpan, int columnSpan, object? tag = null)
             {
                 Row = row;
                 Column = column;
@@ -95,7 +95,7 @@ namespace WinFormsPowerTools.AutoLayout
             public int Column { get; }
             public int RowSpan { get; }
             public int ColumnSpan { get; }
-            public object Tag { get; }
+            public object? Tag { get; }
 
             private string GetDebuggerDisplay()
                 => $"Row:{Row} Column:{Column} Tag:{Tag ?? "N/D"}";
