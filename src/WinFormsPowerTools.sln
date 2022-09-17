@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerToolsDemo", "W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.StandardLib", "WinFormsPowerTools.StandardLib\WinFormsPowerTools.StandardLib.csproj", "{6E2A19D4-8801-477A-B04C-061162EA0ECB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrueddelLib", "PrueddelLib\PrueddelLib.csproj", "{05F9F831-4C63-449C-9683-7B957796C64E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{6E2A19D4-8801-477A-B04C-061162EA0ECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E2A19D4-8801-477A-B04C-061162EA0ECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E2A19D4-8801-477A-B04C-061162EA0ECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05F9F831-4C63-449C-9683-7B957796C64E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05F9F831-4C63-449C-9683-7B957796C64E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05F9F831-4C63-449C-9683-7B957796C64E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05F9F831-4C63-449C-9683-7B957796C64E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
