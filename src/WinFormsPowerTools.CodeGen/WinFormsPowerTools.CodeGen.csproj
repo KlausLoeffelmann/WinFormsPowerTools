@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
 	<LangVersion>latest</LangVersion>
-	  <Nullable>enable</Nullable>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WinFormsPowerTools.StandardLib\WinFormsPowerTools.StandardLib.csproj" />
+    <ProjectReference Include="..\WinFormsPowerTools.StandardBaseTypes\WinFormsPowerTools.StandardBaseTypes.csproj" />
   </ItemGroup>
 
 </Project>

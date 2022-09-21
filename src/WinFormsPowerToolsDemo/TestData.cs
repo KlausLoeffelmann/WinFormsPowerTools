@@ -1,5 +1,6 @@
 ﻿using System;
 using WinFormsPowerTools.AutoLayout;
+using WinFormsPowerTools.StandardLib.ViewControllerBaseClasses;
 
 namespace WinFormsPowerToolsDemo
 {
@@ -12,18 +13,48 @@ namespace WinFormsPowerToolsDemo
         public int NoOfChildren { get; set; }
     }
 
-    //[FormsController(typeof(Foo), nameof(Foo.IDContact))]
     [ViewController]
-    public partial class OptionFormsController : ViewControllerBase
+    public partial class OptionFormsController : ObservableObject
     {
-        [ViewControllerProperty] private string _firstName;
-        [ViewControllerProperty] private string _lastName;
+
+        [ViewControllerMapping(displayName: "ID:")] private string _idContact;
+        [ViewControllerMapping(displayName: "First name:")] private string _firstName;
+        [ViewControllerMapping(displayName: "Last name:")] private string _lastName;
+        [ViewControllerMapping(displayName: "DateOfBirth:")] private DateTime? _dateOfBirth;
 
         public OptionFormsController()
         {
-            
         }
 
         public string Test { get; set; }
+
+        public void TestMethod()
+        {
+        }
+
+        static OptionFormsController INotifyPropertyChangedDocumentFactory<OptionFormsController>.CreateDocument()
+        {
+            throw new NotImplementedException();
+        }
+
+    }
+
+    [ViewController]
+    public partial class CascadingFormsController : ObservableObject
+    {
+        [ViewControllerMapping] private OptionFormsController _optionsForms;
+
+        public CascadingFormsController()
+        {
+            _optionsForms = new OptionFormsController();
+            //_optionsForms.FirstName = "John";
+        }
+
+        static CascadingFormsController INotifyPropertyChangedDocumentFactory<CascadingFormsController>.CreateDocument()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
+

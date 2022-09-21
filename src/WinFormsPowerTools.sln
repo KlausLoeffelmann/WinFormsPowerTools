@@ -11,9 +11,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerToolsDemo", "WinFormsPowerToolsDemo\WinFormsPowerToolsDemo.csproj", "{4C7D9500-0747-4103-B040-6428EB973D1B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.StandardLib", "WinFormsPowerTools.StandardLib\WinFormsPowerTools.StandardLib.csproj", "{6E2A19D4-8801-477A-B04C-061162EA0ECB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.AutoLayout", "WinFormsPowerTools.AutoLayout\WinFormsPowerTools.AutoLayout.csproj", "{6E2A19D4-8801-477A-B04C-061162EA0ECB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrueddelLib", "PrueddelLib\PrueddelLib.csproj", "{05F9F831-4C63-449C-9683-7B957796C64E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrueddelLib", "PrueddelLib\PrueddelLib.csproj", "{05F9F831-4C63-449C-9683-7B957796C64E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoLayoutTests", "AutoLayoutTests\AutoLayoutTests.csproj", "{A44215CD-6E22-44D4-BCC3-15A47939620A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{D97EDDB9-F7BD-43CC-89B6-126F3B5BA6CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsPowerTools.StandardBaseTypes", "WinFormsPowerTools.StandardBaseTypes\WinFormsPowerTools.StandardBaseTypes.csproj", "{C8279D53-F81E-4388-9A67-C6A631E37DC9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AutoLayout", "AutoLayout", "{BAD758BD-648A-4A26-8ED1-1ADD9CA31AC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,9 +53,24 @@ Global
 		{05F9F831-4C63-449C-9683-7B957796C64E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05F9F831-4C63-449C-9683-7B957796C64E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05F9F831-4C63-449C-9683-7B957796C64E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A44215CD-6E22-44D4-BCC3-15A47939620A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A44215CD-6E22-44D4-BCC3-15A47939620A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A44215CD-6E22-44D4-BCC3-15A47939620A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A44215CD-6E22-44D4-BCC3-15A47939620A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8279D53-F81E-4388-9A67-C6A631E37DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8279D53-F81E-4388-9A67-C6A631E37DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8279D53-F81E-4388-9A67-C6A631E37DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8279D53-F81E-4388-9A67-C6A631E37DC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E3D6E233-8CE5-4FB8-8066-6D465792AE32} = {BAD758BD-648A-4A26-8ED1-1ADD9CA31AC9}
+		{DA79C2E0-0533-40A3-80F1-7C307B125288} = {D97EDDB9-F7BD-43CC-89B6-126F3B5BA6CF}
+		{6E2A19D4-8801-477A-B04C-061162EA0ECB} = {BAD758BD-648A-4A26-8ED1-1ADD9CA31AC9}
+		{A44215CD-6E22-44D4-BCC3-15A47939620A} = {D97EDDB9-F7BD-43CC-89B6-126F3B5BA6CF}
+		{C8279D53-F81E-4388-9A67-C6A631E37DC9} = {BAD758BD-648A-4A26-8ED1-1ADD9CA31AC9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {942E4F15-B7AF-4D69-B288-5726FBA46079}

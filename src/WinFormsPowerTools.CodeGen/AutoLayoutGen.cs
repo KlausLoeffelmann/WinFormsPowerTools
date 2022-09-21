@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,45 +6,53 @@ using System.Linq;
 using System.Text;
 using WinFormsPowerTools.AutoLayout;
 
+namespace WinFormsPowerTools.AutoLayout
+{
+    public class AutoLayoutFoo
+    {
+    }
+}
+
 namespace WinFormsPowerTools.CodeGen
 {
     [Generator]
     public class AutoLayoutGen : ISourceGenerator
     {
-        internal const string AutoLayoutViewControllerBase = nameof(AutoLayoutViewControllerBase);
+        internal const string In0 = "";
+        internal const string In1 = "    ";
+        internal const string In2 = "        ";
+        internal const string In3 = "            ";
 
         public void Execute(GeneratorExecutionContext context)
         {
-                if (context.SyntaxReceiver is not AutoLayoutSyntaxReceiver syntaxReceiver)
-                {
-                    throw new InvalidOperationException("Got the wrong syntax receiver type.");
-                }
+            if (context.SyntaxReceiver is not AutoLayoutSyntaxReceiver syntaxReceiver)
+            {
+                throw new InvalidOperationException("Got the wrong syntax receiver type.");
+            }
 
-                if (syntaxReceiver.foundModelClasses.Count == 0)
-                {
-                    return;
-                }
+            if (syntaxReceiver.foundModelClasses.Count == 0)
+            {
+                return;
+            }
 
-                var identifiersAndClasses = syntaxReceiver.foundModelClasses;
-
-                string ind = "    ";
+            var identifiersAndClasses = syntaxReceiver.foundModelClasses;
 
             try
             {
-                foreach (var (classDeclaration, identifier, syntaxTree,fieldDictionary) in identifiersAndClasses)
+                foreach (var (classDeclaration, identifier, syntaxTree, fieldDictionary) in identifiersAndClasses)
                 {
                     var semanticModel = context.Compilation.GetSemanticModel(syntaxTree);
 
-                    var formsControllerSymbol = (INamedTypeSymbol)semanticModel.GetDeclaredSymbol(classDeclaration)!;
-                    var viewControllerNamespace = formsControllerSymbol?.ContainingNamespace;
-                    var formsControllerProperties = formsControllerSymbol?.GetMembers().OfType<IPropertySymbol>();
+                    var viewControllerSymbol = (INamedTypeSymbol)semanticModel.GetDeclaredSymbol(classDeclaration)!;
+                    var viewControllerNamespace = viewControllerSymbol?.ContainingNamespace;
+                    var formsControllerProperties = viewControllerSymbol?.GetMembers().OfType<IPropertySymbol>();
 
-                    var formsControllerFields = formsControllerSymbol?.GetMembers()
+                    var formsControllerFields = viewControllerSymbol?.GetMembers()
                         .OfType<IFieldSymbol>()
                         .SelectMany(field => field.GetAttributes(), (field, attributeData) => (field, attributeData))
-                        .Where(fieldAttributeTuple => fieldAttributeTuple.attributeData.AttributeClass.Name == nameof(ViewControllerPropertyAttribute));
+                        .Where(fieldAttributeTuple => fieldAttributeTuple.attributeData.AttributeClass.Name == nameof(ViewControllerMappingAttribute));
 
-                    var formsControllerAttribute = formsControllerSymbol?.GetAttributes()
+                    var viewControllerAttribute = viewControllerSymbol?.GetAttributes()
                         .OfType<AttributeData>()
                         .Where(attribute => attribute.AttributeClass.Name == nameof(ViewControllerAttribute))
                         .FirstOrDefault();
@@ -53,7 +60,9 @@ namespace WinFormsPowerTools.CodeGen
                     INamedTypeSymbol modelType;
                     IEnumerable<IPropertySymbol> modelProperties;
 
-                    if (formsControllerAttribute?.ConstructorArguments.FirstOrDefault() is { } argument)
+                    string cacheVarName = $"__{ classDeclaration.Identifier.Text}";
+
+                    if (viewControllerAttribute?.ConstructorArguments.FirstOrDefault() is { } argument)
                     {
                         try
                         {
@@ -65,96 +74,112 @@ namespace WinFormsPowerTools.CodeGen
                         }
                     }
 
+                    string cacheTypeName = $"{classDeclaration.Identifier.Text}_Cache";
+                    
+                    StringBuilder viewModelCachingClass = new();
+                    viewModelCachingClass.AppendLine($"{In1}file class {cacheTypeName}");
+                    viewModelCachingClass.AppendLine($"{In1}{{");
+                    viewModelCachingClass.AppendLine();
+                    viewModelCachingClass.AppendLine($"{In2}private static {cacheTypeName} _instance;");
+                    viewModelCachingClass.AppendLine();
+                    viewModelCachingClass.AppendLine($"{In2}public static {cacheTypeName} GetInstance()");
+                    viewModelCachingClass.AppendLine($"{In2}{{");
+                    viewModelCachingClass.AppendLine($"{In2}    return _instance ??= new {cacheTypeName}();");
+                    viewModelCachingClass.AppendLine($"{In2}}}");
+                    
                     StringBuilder extensionClass = new();
                     extensionClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
                     extensionClass.AppendLine($"using System.Collections.Generic;");
                     extensionClass.AppendLine($"using System.Runtime.CompilerServices;");
-                    extensionClass.AppendLine($"");
+                    extensionClass.AppendLine();
                     extensionClass.AppendLine($"namespace {viewControllerNamespace}");
                     extensionClass.AppendLine($"{{");
-                    extensionClass.AppendLine($"public static class {classDeclaration.Identifier.Text}Extensions");
-                    extensionClass.AppendLine($"{{");
+                    extensionClass.AppendLine($"    public static class {classDeclaration.Identifier.Text}Extensions");
+                    extensionClass.AppendLine($"    {{");
 
                     StringBuilder viewModelClass = new();
+                    viewModelClass.AppendLine($"using WinFormsPowerTools.StandardLib.ViewControllerBaseClasses;");
                     viewModelClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
                     viewModelClass.AppendLine($"using System.ComponentModel;");
                     viewModelClass.AppendLine($"using System.Runtime.CompilerServices;");
+                    viewModelClass.AppendLine();
                     viewModelClass.AppendLine($"namespace {viewControllerNamespace}");
                     viewModelClass.AppendLine($"{{");
-                    viewModelClass.AppendLine($"public partial class {classDeclaration.Identifier.Text}");
-                    viewModelClass.AppendLine($"{{");
+                    viewModelClass.AppendLine($"{In1}public partial class {classDeclaration.Identifier.Text} : INotifyPropertyChangedDocumentFactory<{classDeclaration.Identifier.Text}>");
+                    viewModelClass.AppendLine($"{In1}{{");
 
                     foreach (var fieldAttributeTuple in formsControllerFields!)
                     {
-                        string propertyName;
+                        var mappingAttribute = GetMappingAttribute(fieldAttributeTuple);
 
-                        if (fieldAttributeTuple.attributeData.ConstructorArguments.FirstOrDefault() is { } constructorArgument && constructorArgument.Value is not null)
-                        {
-                            propertyName = constructorArgument.Value.ToString();
-                        }
-                        else
-                        {
-                            propertyName = GetPropertyNameFromFieldName(fieldAttributeTuple.field.Name)!;
-                        }
+                        string eventPropertyBackingField = $"_{fieldAttributeTuple.field.Name}";
+                        string eventPropertyName = $"{fieldAttributeTuple.field.Name}";
 
-                        if (string.IsNullOrEmpty(propertyName))
-                            continue;
-                        
-                        // TODO: Convert to correct NullableFlowState depending on backing field.
+                        viewModelClass.AppendLine($"{In2}public {fieldAttributeTuple.field.Type.ToDisplayString(NullableFlowState.None)} {mappingAttribute.PropertyName}");
+                        viewModelClass.AppendLine($"{In2}{{");
+                        viewModelClass.AppendLine($"{In2}    get");
+                        viewModelClass.AppendLine($"{In2}    {{");
+                        viewModelClass.AppendLine($"{In2}        return {fieldAttributeTuple.field.Name};");
+                        viewModelClass.AppendLine($"{In2}    }}");
+                        viewModelClass.AppendLine($"{In2}    set");
+                        viewModelClass.AppendLine($"{In2}    {{");
+                        viewModelClass.AppendLine($"{In2}        if (!object.Equals({fieldAttributeTuple.field.Name}, value))");
+                        viewModelClass.AppendLine($"{In2}        {{");
+                        viewModelClass.AppendLine($"{In2}            {fieldAttributeTuple.field.Name} = value;");
+                        viewModelClass.AppendLine($"{In2}            OnPropertyChanged({cacheTypeName}.GetInstance().{fieldAttributeTuple.field.Name}PropertyChangedEventArgs);");
+                        viewModelClass.AppendLine($"{In2}        }}");
+                        viewModelClass.AppendLine($"{In2}    }}");
+                        viewModelClass.AppendLine($"{In2}}}");
                         viewModelClass.AppendLine();
-                        viewModelClass.AppendLine($"{ind}{ind}public {fieldAttributeTuple.field.Type.ToDisplayString(NullableFlowState.None)} {propertyName}");
-                        viewModelClass.AppendLine($"{ind}{ind}{{");
-                        viewModelClass.AppendLine($"{ind}{ind}    get");
-                        viewModelClass.AppendLine($"{ind}{ind}    {{");
-                        viewModelClass.AppendLine($"{ind}{ind}        return {fieldAttributeTuple.field.Name};");
-                        viewModelClass.AppendLine($"{ind}{ind}    }}");
-                        viewModelClass.AppendLine($"{ind}{ind}    set");
-                        viewModelClass.AppendLine($"{ind}{ind}    {{");
-                        viewModelClass.AppendLine($"{ind}{ind}        if (!object.Equals({fieldAttributeTuple.field.Name} ,value))");
-                        viewModelClass.AppendLine($"{ind}{ind}        {{");
-                        viewModelClass.AppendLine($"{ind}{ind}        {fieldAttributeTuple.field.Name} = value;");
-                        viewModelClass.AppendLine($"{ind}{ind}        OnPropertyChanged(__{fieldAttributeTuple.field.Name}PropertyChangedEventArgs);");
-                        viewModelClass.AppendLine($"{ind}{ind}        }}");
-                        viewModelClass.AppendLine($"{ind}{ind}    }}");
-                        viewModelClass.AppendLine($"{ind}{ind}}}");
-                        viewModelClass.AppendLine();
-                        viewModelClass.AppendLine($"{ind}{ind}[CompilerGenerated] private PropertyChangedEventArgs ___{fieldAttributeTuple.field.Name}PropertyChangedEventArgs;");
-                        viewModelClass.AppendLine($"{ind}{ind}[CompilerGenerated] private PropertyChangedEventArgs __{fieldAttributeTuple.field.Name}PropertyChangedEventArgs");
-                        viewModelClass.AppendLine($"{ind}{ind}{{");
-                        viewModelClass.AppendLine($"{ind}{ind}    get");
-                        viewModelClass.AppendLine($"{ind}{ind}    {{");
-                        viewModelClass.AppendLine($"{ind}{ind}        if (___{fieldAttributeTuple.field.Name}PropertyChangedEventArgs is null)");
-                        viewModelClass.AppendLine($"{ind}{ind}        {{");
-                        viewModelClass.AppendLine($"{ind}{ind}            ___{fieldAttributeTuple.field.Name}PropertyChangedEventArgs = new PropertyChangedEventArgs(nameof({propertyName}));");
-                        viewModelClass.AppendLine($"{ind}{ind}        }}");
-                        viewModelClass.AppendLine($"{ind}{ind}        return ___{fieldAttributeTuple.field.Name}PropertyChangedEventArgs;");
-                        viewModelClass.AppendLine($"{ind}{ind}    }}");
-                        viewModelClass.AppendLine($"{ind}{ind}}}");
-                        viewModelClass.AppendLine();
+                        viewModelCachingClass.AppendLine($"{In2}// Backing field for {eventPropertyName}PropertyChangedEventArgs property:");
+                        viewModelCachingClass.AppendLine($"{In2}private PropertyChangedEventArgs {eventPropertyBackingField}PropertyChangedEventArgs;");
+                        viewModelCachingClass.AppendLine();
+                        viewModelCachingClass.AppendLine($"{In2}// Actual {eventPropertyName}PropertyChangedEventArgs property:");
+                        viewModelCachingClass.AppendLine($"{In2}public PropertyChangedEventArgs {eventPropertyName}PropertyChangedEventArgs");
+                        viewModelCachingClass.AppendLine($"{In2}{{");
+                        viewModelCachingClass.AppendLine($"{In2}    get");
+                        viewModelCachingClass.AppendLine($"{In2}    {{");
+                        viewModelCachingClass.AppendLine($"{In2}        if ({eventPropertyBackingField}PropertyChangedEventArgs is null)");
+                        viewModelCachingClass.AppendLine($"{In2}        {{");
+                        viewModelCachingClass.AppendLine($"{In2}            {eventPropertyBackingField}PropertyChangedEventArgs = new PropertyChangedEventArgs(\"{mappingAttribute.PropertyName}\");");
+                        viewModelCachingClass.AppendLine($"{In2}        }}");
+                        viewModelCachingClass.AppendLine($"{In2}        return {eventPropertyBackingField}PropertyChangedEventArgs;");
+                        viewModelCachingClass.AppendLine($"{In2}    }}");
+                        viewModelCachingClass.AppendLine($"{In2}}}");
+                        viewModelCachingClass.AppendLine();
+
+                        // TODO: Adding extension methods for each generated property (see **)
                     }
 
                     if (formsControllerProperties is not null)
                     {
+                        
+                        // **Adding extension methods for each existing property:
                         foreach (IPropertySymbol symbol in formsControllerProperties)
                         {
-                            extensionClass.AppendLine($"{ind}public static AutoLayoutComponents<{classDeclaration.Identifier.Text}> Add{symbol.Name}(this AutoLayoutComponents<{classDeclaration.Identifier.Text}> components)");
-                            extensionClass.AppendLine($"{ind}{{");
-                            extensionClass.AppendLine($"{ind + ind}if (components is null)");
-                            extensionClass.AppendLine($"{ind + ind}{{");
-                            extensionClass.AppendLine($"{ind + ind + ind}components = new AutoLayoutComponents<{classDeclaration.Identifier.Text}>() {{ Components = new List<AutoLayoutComponent<{classDeclaration.Identifier.Text}>>() }};");
-                            extensionClass.AppendLine($"{ind + ind}}}");
-                            extensionClass.AppendLine($"{ind + ind}var component = new AutoLayoutComponent<{classDeclaration.Identifier.Text}>(\"{symbol.Name}\");");
-                            extensionClass.AppendLine($"{ind + ind}components.Components.Add(component);");
-                            extensionClass.AppendLine($"{ind + ind}components.LastComponent = component;");
-                            extensionClass.AppendLine($"{ind + ind}return components;");
-                            extensionClass.AppendLine($"{ind}}}");
+                            extensionClass.AppendLine($"{In2}public static AutoLayoutComponents<{classDeclaration.Identifier.Text}> Add{symbol.Name}Component(this AutoLayoutComponents<{classDeclaration.Identifier.Text}> components)");
+                            extensionClass.AppendLine($"{In2}{{");
+                            extensionClass.AppendLine($"{In2}    if (components is null)");
+                            extensionClass.AppendLine($"{In2}    {{");
+                            extensionClass.AppendLine($"{In2}        components = new AutoLayoutComponents<{classDeclaration.Identifier.Text}>() {{ Components = new List<AutoLayoutComponent<{classDeclaration.Identifier.Text}>>() }};");
+                            extensionClass.AppendLine($"{In2}    }}");
+                            extensionClass.AppendLine();
+                            extensionClass.AppendLine($"{In2}    var component = new AutoLayoutComponent<{classDeclaration.Identifier.Text}>(\"{symbol.Name}\");");
+                            extensionClass.AppendLine($"{In2}    components.Components.Add(component);");
+                            extensionClass.AppendLine($"{In2}    components.LastComponent = component;");
+                            extensionClass.AppendLine();
+                            extensionClass.AppendLine($"{In2}    return components;");
+                            extensionClass.AppendLine($"{In2}}}");
                         }
                     }
 
-                    extensionClass.AppendLine("}");
-                    extensionClass.AppendLine("}");
-                    viewModelClass.AppendLine("}");
-                    viewModelClass.AppendLine("}");
+                    extensionClass.AppendLine($"{In1}}}");
+                    extensionClass.AppendLine($"}}");
+
+                    viewModelClass.AppendLine($"{In1}}}");
+                    viewModelClass.Append(viewModelCachingClass);
+                    viewModelClass.AppendLine($"{In1}}}");
+                    viewModelClass.AppendLine($"}}");
 
                     var viewModelClassString = viewModelClass.ToString();
                     var extensionClassString = extensionClass.ToString();
@@ -174,18 +199,63 @@ namespace WinFormsPowerTools.CodeGen
                     }
                 }
             }
-            catch(Exception codeGenEx)
+            catch (Exception codeGenEx)
             {
                 StringBuilder extensionClass = new();
                 extensionClass.AppendLine($"class CodeGenExceptionPrinter");
                 extensionClass.AppendLine("{");
                 extensionClass.AppendLine($"   private string errorMessage=@\"{codeGenEx.Message}");
                 extensionClass.AppendLine($"");
-                extensionClass.AppendLine($"{codeGenEx.StackTrace.Replace("\"","\\\"")}");
+                extensionClass.AppendLine($"{codeGenEx.StackTrace.Replace("\"", "\\\"")}");
                 extensionClass.AppendLine($"\";");
                 extensionClass.AppendLine("}");
                 context.AddSource(hintName: $"CodeGenExceptionPrinter.g.cs", extensionClass.ToString());
             }
+        }
+
+        private ViewControllerMappingAttribute GetMappingAttribute((IFieldSymbol field, AttributeData attributeData) fieldAttributeTuple)
+        {
+            if (Debugger.IsAttached)
+                Debugger.Break();
+
+            if (fieldAttributeTuple.attributeData is null)
+            {
+                return new ViewControllerMappingAttribute(
+                    AutoLayoutTarget.Implicit,
+                    GetPropertyNameFromFieldName(fieldAttributeTuple.field.Name)!);
+            }
+
+            var attributeToReturn = new ViewControllerMappingAttribute();
+
+            if (fieldAttributeTuple.attributeData.NamedArguments.Length>0)
+            {
+                foreach (var namedArgument in fieldAttributeTuple.attributeData.NamedArguments) 
+                {
+                    switch (namedArgument.Key)
+                    {
+                        case nameof(ViewControllerMappingAttribute.TargetHint):
+                            attributeToReturn.TargetHint = (AutoLayoutTarget)namedArgument.Value.Value!;
+                            break;
+                        case nameof(ViewControllerMappingAttribute.PropertyName):
+                            attributeToReturn.PropertyName = (string)namedArgument.Value.Value!;
+                            break;
+                        case nameof(ViewControllerMappingAttribute.DisplayName):
+                            attributeToReturn.DisplayName = (string)namedArgument.Value.Value!;
+                            break;
+                        case nameof(ViewControllerMappingAttribute.MapsToModelProperty):
+                            attributeToReturn.MapsToModelProperty = (string)namedArgument.Value.Value!;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                return attributeToReturn;
+            }
+
+            return new ViewControllerMappingAttribute(
+                targetHint: AutoLayoutTarget.Implicit,
+                propertyName: GetPropertyNameFromFieldName(fieldAttributeTuple.field.Name)!);
         }
 
         private string? GetPropertyNameFromFieldName(string fieldName)
@@ -212,59 +282,6 @@ namespace WinFormsPowerTools.CodeGen
         public void Initialize(GeneratorInitializationContext context)
         {
             context.RegisterForSyntaxNotifications(() => new AutoLayoutSyntaxReceiver());
-        }
-    }
-
-    internal class AutoLayoutSyntaxReceiver : ISyntaxReceiver
-    {
-        internal List<(
-            ClassDeclarationSyntax classDeclaration, 
-            AttributeSyntax classAttribute,
-            SyntaxTree syntaxTree,
-            Dictionary<FieldDeclarationSyntax, AttributeSyntax> fieldLookup)> foundModelClasses = new();
-
-        public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
-        {
-            if (syntaxNode is ClassDeclarationSyntax classDeclaration && classDeclaration.AttributeLists.Count > 0)
-            {
-                //if (classDeclaration.BaseList?.Types.Count == 1)
-                //{
-                //    if (classDeclaration.BaseList.Types[0] is SimpleBaseTypeSyntax baseType &&
-                //        baseType.Type is GenericNameSyntax genericType &&
-                //        genericType.Identifier.Text == AutoLayoutGen.AutoLayoutFormsControllerBase)
-                //    {
-                //        var templateType = genericType.TypeArgumentList.Arguments[0] as IdentifierNameSyntax;
-                //        foundModelClasses.Add((classDeclaration, templateType));
-                //    }
-                //}
-
-                var attribute = classDeclaration
-                    .AttributeLists
-                    .SelectMany(lists => lists.Attributes)
-                    .FirstOrDefault(attribute => ((IdentifierNameSyntax)attribute.Name).Identifier.ValueText == "ViewController");
-
-                if (attribute is not null)
-                {
-                    var fieldDictionary = new Dictionary<FieldDeclarationSyntax, AttributeSyntax>();
-                    foundModelClasses.Add((classDeclaration, attribute, syntaxNode.SyntaxTree, fieldDictionary));
-
-                    foreach (var nodeItem in classDeclaration.ChildNodes())
-                    {
-                        if (nodeItem is FieldDeclarationSyntax fieldDeclaration)
-                        {
-                            var fieldAttribute = fieldDeclaration
-                                .AttributeLists
-                                .SelectMany(lists => lists.Attributes)
-                                .FirstOrDefault(attribute => ((IdentifierNameSyntax)attribute.Name).Identifier.ValueText == "ViewControllerProperty");
-
-                            if (fieldAttribute is not null)
-                            {
-                                fieldDictionary.Add(fieldDeclaration, fieldAttribute);
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
