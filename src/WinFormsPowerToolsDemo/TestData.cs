@@ -16,7 +16,6 @@ namespace WinFormsPowerToolsDemo
     [ViewController]
     public partial class OptionFormsController : ObservableObject
     {
-
         [ViewControllerMapping(displayName: "ID:")] private string _idContact;
         [ViewControllerMapping(displayName: "First name:")] private string _firstName;
         [ViewControllerMapping(displayName: "Last name:")] private string _lastName;

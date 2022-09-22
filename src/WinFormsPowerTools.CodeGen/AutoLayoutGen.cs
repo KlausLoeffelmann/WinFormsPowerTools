@@ -112,41 +112,30 @@ namespace WinFormsPowerTools.CodeGen
                     {
                         var mappingAttribute = GetMappingAttribute(fieldAttributeTuple);
 
-                        string eventPropertyBackingField = $"_{fieldAttributeTuple.field.Name}";
-                        string eventPropertyName = $"{fieldAttributeTuple.field.Name}";
 
-                        viewModelClass.AppendLine($"{In2}public {fieldAttributeTuple.field.Type.ToDisplayString(NullableFlowState.None)} {mappingAttribute.PropertyName}");
-                        viewModelClass.AppendLine($"{In2}{{");
-                        viewModelClass.AppendLine($"{In2}    get");
-                        viewModelClass.AppendLine($"{In2}    {{");
-                        viewModelClass.AppendLine($"{In2}        return {fieldAttributeTuple.field.Name};");
-                        viewModelClass.AppendLine($"{In2}    }}");
-                        viewModelClass.AppendLine($"{In2}    set");
-                        viewModelClass.AppendLine($"{In2}    {{");
-                        viewModelClass.AppendLine($"{In2}        if (!object.Equals({fieldAttributeTuple.field.Name}, value))");
-                        viewModelClass.AppendLine($"{In2}        {{");
-                        viewModelClass.AppendLine($"{In2}            {fieldAttributeTuple.field.Name} = value;");
-                        viewModelClass.AppendLine($"{In2}            OnPropertyChanged({cacheTypeName}.GetInstance().{fieldAttributeTuple.field.Name}PropertyChangedEventArgs);");
-                        viewModelClass.AppendLine($"{In2}        }}");
-                        viewModelClass.AppendLine($"{In2}    }}");
-                        viewModelClass.AppendLine($"{In2}}}");
-                        viewModelClass.AppendLine();
-                        viewModelCachingClass.AppendLine($"{In2}// Backing field for {eventPropertyName}PropertyChangedEventArgs property:");
-                        viewModelCachingClass.AppendLine($"{In2}private PropertyChangedEventArgs {eventPropertyBackingField}PropertyChangedEventArgs;");
-                        viewModelCachingClass.AppendLine();
-                        viewModelCachingClass.AppendLine($"{In2}// Actual {eventPropertyName}PropertyChangedEventArgs property:");
-                        viewModelCachingClass.AppendLine($"{In2}public PropertyChangedEventArgs {eventPropertyName}PropertyChangedEventArgs");
-                        viewModelCachingClass.AppendLine($"{In2}{{");
-                        viewModelCachingClass.AppendLine($"{In2}    get");
-                        viewModelCachingClass.AppendLine($"{In2}    {{");
-                        viewModelCachingClass.AppendLine($"{In2}        if ({eventPropertyBackingField}PropertyChangedEventArgs is null)");
-                        viewModelCachingClass.AppendLine($"{In2}        {{");
-                        viewModelCachingClass.AppendLine($"{In2}            {eventPropertyBackingField}PropertyChangedEventArgs = new PropertyChangedEventArgs(\"{mappingAttribute.PropertyName}\");");
-                        viewModelCachingClass.AppendLine($"{In2}        }}");
-                        viewModelCachingClass.AppendLine($"{In2}        return {eventPropertyBackingField}PropertyChangedEventArgs;");
-                        viewModelCachingClass.AppendLine($"{In2}    }}");
-                        viewModelCachingClass.AppendLine($"{In2}}}");
-                        viewModelCachingClass.AppendLine();
+                        // Generating the Property based of the attributed backing field the User provided.
+                        GenerateNotifyChangedProperty(
+                            cacheTypeName,
+                            fieldAttributeTuple.field.Type.ToDisplayString(), 
+                            viewModelClass,
+                            viewModelCachingClass,
+                            mappingAttribute.PropertyName!,
+                            fieldAttributeTuple.field.Name);
+
+                        // Generated the correlating Property for the Display value (which leads to a Label), 
+                        // if the user provided a Display value through the MappingAttribute.
+                        if (!string.IsNullOrEmpty(mappingAttribute.DisplayName))
+                        {
+                            GenerateNotifyChangedProperty(
+                                cacheTypeName,
+                                "string",
+                                viewModelClass,
+                                viewModelCachingClass,
+                                mappingAttribute.PropertyName! + "Caption",
+                                fieldAttributeTuple.field.Name + "Caption",
+                                createBackingField: !string.IsNullOrEmpty(mappingAttribute.DisplayName),
+                                defaultValueAssignment: mappingAttribute.DisplayName);
+                        }
 
                         // TODO: Adding extension methods for each generated property (see **)
                     }
@@ -213,6 +202,80 @@ namespace WinFormsPowerTools.CodeGen
             }
         }
 
+        /// <summary>
+        /// Generates the c# source code for INotifyPropertyChanged compatible properties from backing field definition.
+        /// </summary>
+        /// <param name="cacheTypeName">The type name of the caching support class. This is where we get the cached EventArgs for each properties from.</param>
+        /// <param name="propertyTypeName">The type of the property as string.</param>
+        /// <param name="sourceCode">A stringbilder containing the class which the property should be added to.</param>
+        /// <param name="cachingClassSourceCode">A stringbuilder containing a file class, which the optional EventArgs property for caching purposes should be adding to.</param>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="backingFieldName">The name of the backing field.</param>
+        /// <param name="indentString">The indent string.</param>
+        /// <param name="createBackingField">true, if a backing field does not exist and should be created.</param>
+        /// <param name="defaultValueAssignment">A default value which should be assigned to the property (only if string).</param>
+        private static void GenerateNotifyChangedProperty(
+            string cacheTypeName,
+            string propertyTypeName,
+            StringBuilder sourceCode,
+            StringBuilder cachingClassSourceCode,
+            string propertyName,
+            string backingFieldName,
+            string indentString = In2,
+            bool createBackingField = false,
+            string? defaultValueAssignment = null)
+        {
+            if (createBackingField)
+            {
+                sourceCode.Append($"{indentString}private {propertyTypeName} {backingFieldName}");
+                if (!string.IsNullOrEmpty(defaultValueAssignment))
+                {
+                    sourceCode.AppendLine($" = \"{defaultValueAssignment}\";");
+                }
+                else
+                {
+                    sourceCode.AppendLine();
+                }
+            }
+
+            sourceCode.AppendLine($"{indentString}public {propertyTypeName} {propertyName}");
+            sourceCode.AppendLine($"{indentString}{{");
+            sourceCode.AppendLine($"{indentString}    get");
+            sourceCode.AppendLine($"{indentString}    {{");
+            sourceCode.AppendLine($"{indentString}        return {backingFieldName};");
+            sourceCode.AppendLine($"{indentString}    }}");
+            sourceCode.AppendLine($"{indentString}    set");
+            sourceCode.AppendLine($"{indentString}    {{");
+            sourceCode.AppendLine($"{indentString}        if (!object.Equals({backingFieldName}, value))");
+            sourceCode.AppendLine($"{indentString}        {{");
+            sourceCode.AppendLine($"{indentString}            {backingFieldName} = value;");
+            sourceCode.AppendLine($"{indentString}            OnPropertyChanged({cacheTypeName}.GetInstance().{propertyName}PropertyChangedEventArgs);");
+            sourceCode.AppendLine($"{indentString}        }}");
+            sourceCode.AppendLine($"{indentString}    }}");
+            sourceCode.AppendLine($"{indentString}}}");
+            sourceCode.AppendLine();
+
+            string eventPropertyBackingField = $"_{GetPropertyNameFromFieldName(backingFieldName, true)}PropertyChangedEventArgs";
+            string eventPropertyName = $"{GetPropertyNameFromFieldName(backingFieldName)}PropertyChangedEventArgs";
+
+            cachingClassSourceCode.AppendLine($"{In2}// Backing field for {eventPropertyName} property:");
+            cachingClassSourceCode.AppendLine($"{In2}private PropertyChangedEventArgs {eventPropertyBackingField};");
+            cachingClassSourceCode.AppendLine();
+            cachingClassSourceCode.AppendLine($"{In2}// Actual {eventPropertyName} property:");
+            cachingClassSourceCode.AppendLine($"{In2}public PropertyChangedEventArgs {eventPropertyName}");
+            cachingClassSourceCode.AppendLine($"{In2}{{");
+            cachingClassSourceCode.AppendLine($"{In2}    get");
+            cachingClassSourceCode.AppendLine($"{In2}    {{");
+            cachingClassSourceCode.AppendLine($"{In2}        if ({eventPropertyBackingField} is null)");
+            cachingClassSourceCode.AppendLine($"{In2}        {{");
+            cachingClassSourceCode.AppendLine($"{In2}            {eventPropertyBackingField} = new PropertyChangedEventArgs(\"{propertyName}\");");
+            cachingClassSourceCode.AppendLine($"{In2}        }}");
+            cachingClassSourceCode.AppendLine($"{In2}        return {eventPropertyBackingField};");
+            cachingClassSourceCode.AppendLine($"{In2}    }}");
+            cachingClassSourceCode.AppendLine($"{In2}}}");
+            cachingClassSourceCode.AppendLine();
+        }
+
         private ViewControllerMappingAttribute GetMappingAttribute((IFieldSymbol field, AttributeData attributeData) fieldAttributeTuple)
         {
             if (Debugger.IsAttached)
@@ -253,27 +316,70 @@ namespace WinFormsPowerTools.CodeGen
                 return attributeToReturn;
             }
 
+            if (fieldAttributeTuple.attributeData.ConstructorArguments.Length > 0)
+            {
+                int count = 0;
+                
+                foreach (var constructorArgument in fieldAttributeTuple.attributeData.ConstructorArguments)
+                {
+                    switch (count++)
+                    {
+                        case 0:
+                            attributeToReturn.TargetHint = (AutoLayoutTarget)constructorArgument.Value!;
+                            break;
+                        case 1:
+                            attributeToReturn.DisplayName = (string)constructorArgument.Value!;
+                            break;
+                        case 2:
+                            attributeToReturn.PropertyName = (string)constructorArgument.Value!;
+                            if (string.IsNullOrWhiteSpace(attributeToReturn.PropertyName))
+                            {
+                                // We need a property name unconditionally.
+                                attributeToReturn.PropertyName=GetPropertyNameFromFieldName(fieldAttributeTuple.field.Name!);
+                            }
+                            break;
+                        case 3:
+                            attributeToReturn.MapsToModelProperty = (string)constructorArgument.Value!;
+                            break;
+                        case 4:
+                            attributeToReturn.GetAccessorScope = (Scope)constructorArgument.Value!;
+                            break;
+                        case 5:
+                            attributeToReturn.SetAccessorScope = (Scope)constructorArgument.Value!;
+                            break;
+                    }
+                }
+                
+                return attributeToReturn;
+            }
+
             return new ViewControllerMappingAttribute(
                 targetHint: AutoLayoutTarget.Implicit,
                 propertyName: GetPropertyNameFromFieldName(fieldAttributeTuple.field.Name)!);
         }
 
-        private string? GetPropertyNameFromFieldName(string fieldName)
+        private static string? GetPropertyNameFromFieldName(string fieldName, bool lowerFirstChar = false)
         {
             if (string.IsNullOrEmpty(fieldName) || fieldName == "_")
             {
-                return null;
+                return $"_{new Guid():N}";
             }
 
             var propertyName = string.Empty;
 
             if (fieldName.StartsWith("_"))
             {
-                propertyName = fieldName.Substring(1, 1).ToUpper() + fieldName.Substring(2);
+                propertyName = (lowerFirstChar
+                    ? fieldName.Substring(1, 1).ToLower()
+                    : fieldName.Substring(1, 1).ToUpper())
+                    + fieldName.Substring(2);
             }
             else
             {
-                propertyName = fieldName.Substring(0, 1).ToUpper() + fieldName.Substring(1);
+                propertyName = (lowerFirstChar
+                    ? fieldName.Substring(0, 1).ToLower()
+                    : fieldName.Substring(0, 1).ToUpper())
+                    + fieldName.Substring(1);
             }
 
             return propertyName;
