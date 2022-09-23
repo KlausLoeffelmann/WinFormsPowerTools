@@ -3,11 +3,11 @@ using System.Windows.Input;
 
 namespace WinFormsPowerTools.AutoLayout
 {
-    public class AutoLayoutButton<T>
-        : AutoLayoutComponent<T> where T : INotifyPropertyChanged
+    public class AutoLayoutMenuEntry<T>
+    : AutoLayoutComponent<T> where T : INotifyPropertyChanged
     {
-        public AutoLayoutButton(
-            string? name = "buttonName1",
+        public AutoLayoutMenuEntry(
+            string? name = "menuEntryName1",
             string? text = default,
             string? bindingPath = default,
             ICommand? command = default) : base(name, text: text, bindingPath: bindingPath)

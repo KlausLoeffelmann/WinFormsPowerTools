@@ -2,15 +2,17 @@
 
 namespace WinFormsPowerTools.AutoLayout
 {
-    public class AutoLayoutLabel<T>
+    public class AutoLayoutTextEntry<T>
         : AutoLayoutComponent<T> where T : INotifyPropertyChanged
     {
-        public AutoLayoutLabel(
-            string? name = "labelName1",
+        public AutoLayoutTextEntry(
+            string? name = "textEntryName1",
             string? text = default,
             string? bindingPath = default)
-            : base(name, text: text, bindingPath: bindingPath)
+            : base(name, text, bindingPath)
         {
         }
+
+        public bool IsReadOnly { get; set; }
     }
 }

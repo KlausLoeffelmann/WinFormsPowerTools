@@ -2,11 +2,11 @@
 
 namespace WinFormsPowerTools.AutoLayout
 {
-    public class AutoLayoutLabel<T>
-        : AutoLayoutComponent<T> where T : INotifyPropertyChanged
+    public class AutoLayoutMultilineEntry<T>
+        : AutoLayoutTextEntry<T> where T : INotifyPropertyChanged
     {
-        public AutoLayoutLabel(
-            string? name = "labelName1",
+        public AutoLayoutMultilineEntry(
+            string? name = "multilineEntryName1",
             string? text = default,
             string? bindingPath = default)
             : base(name, text: text, bindingPath: bindingPath)

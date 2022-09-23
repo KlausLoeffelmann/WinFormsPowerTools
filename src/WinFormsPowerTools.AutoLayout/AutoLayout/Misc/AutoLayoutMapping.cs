@@ -14,7 +14,7 @@ namespace WinFormsPowerTools.StandardLib.AutoLayout.Misc
             {
                 myMapping ??= new Dictionary<Type, Type>();
 
-                myMapping.Add(typeof(string), typeof(AutoLayoutDataEntry<>));
+                myMapping.Add(typeof(string), typeof(AutoLayoutTextEntry<>));
                 myMapping.Add(typeof(int), typeof(AutoLayoutIntegerEntry<>));
             }
             return myMapping;

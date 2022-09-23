@@ -358,6 +358,15 @@ namespace WinFormsPowerTools.CodeGen
                 propertyName: GetPropertyNameFromFieldName(fieldAttributeTuple.field.Name)!);
         }
 
+        private static AutoLayoutTarget GetTargetFromType(ITypeSymbol typeSymbol)
+        {
+            return typeSymbol switch
+            {
+                
+            }
+            
+        }
+
         private static string? GetPropertyNameFromFieldName(string fieldName, bool lowerFirstChar = false)
         {
             if (string.IsNullOrEmpty(fieldName) || fieldName == "_")
@@ -389,5 +398,7 @@ namespace WinFormsPowerTools.CodeGen
         {
             context.RegisterForSyntaxNotifications(() => new AutoLayoutSyntaxReceiver());
         }
+
+        
     }
 }

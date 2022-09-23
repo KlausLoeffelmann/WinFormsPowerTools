@@ -13,12 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="AutoLayout\**" />
-    <EmbeddedResource Remove="AutoLayout\**" />
-    <None Remove="AutoLayout\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Resources\DataEntry.bmp" />
     <None Remove="Resources\DecimalEntryFormatter.bmp" />
   </ItemGroup>
@@ -37,6 +31,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WinFormsPowerTools.AutoLayout\WinFormsPowerTools.AutoLayout.csproj" />
   </ItemGroup>
 
   <ItemGroup>

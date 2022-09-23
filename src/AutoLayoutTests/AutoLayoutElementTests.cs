@@ -7,7 +7,6 @@ namespace WinFormsPowerTools.UnitTests.AutoLayout
     {
         public void SimpleElementTest()
         {
-            var element = new AutoLayoutDocument<OptionFormsController>("OptionFormController", "Options");
         }
     }
 }

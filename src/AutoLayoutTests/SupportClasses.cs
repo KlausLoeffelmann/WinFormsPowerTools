@@ -4,26 +4,19 @@ using WinFormsPowerTools.StandardLib.ViewControllerBaseClasses;
 namespace WinFormsPowerTools.UnitTests.Support
 {
     [ViewController]
-    public partial class OptionFormsController : ObservableObject
+    public partial class ContactController : ObservableObject
     {
 
-        [ViewControllerMapping()] internal string? _firstName;
-        [ViewControllerMapping()] internal string? _lastName;
-        [ViewControllerMapping()] internal string? __anotherName;
-
-        public OptionFormsController()
-        {
-        }
+        [ViewControllerMapping(displayName:"First name:")] internal string? _firstName;
+        [ViewControllerMapping(displayName:"Last name:")] internal string? _lastName;
+        [ViewControllerMapping(displayName: "Date of birth:")] internal DateTime? _dateOfBirth;
 
         public string? Test { get; set; }
 
-        static OptionFormsController INotifyPropertyChangedDocumentFactory<OptionFormsController>.CreateDocument()
+        public static ContactController CreateDocument()
         {
-            throw new NotImplementedException();
-        }
-
-        public void TestMethod()
-        {
+            ContactController contact = new();
+            return contact;
         }
     }
 }

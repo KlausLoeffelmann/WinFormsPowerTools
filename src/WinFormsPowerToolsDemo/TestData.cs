@@ -4,22 +4,13 @@ using WinFormsPowerTools.StandardLib.ViewControllerBaseClasses;
 
 namespace WinFormsPowerToolsDemo
 {
-    public class Foo
-    {
-        public Guid IDContact { get; set; }
-        public string Lastname { get; set; }
-        public string Firstname { get; set; }
-        public DateTime DateOfBirth { get; set; }
-        public int NoOfChildren { get; set; }
-    }
-
     [ViewController]
     public partial class OptionFormsController : ObservableObject
     {
-        [ViewControllerMapping(displayName: "ID:")] private string _idContact;
-        [ViewControllerMapping(displayName: "First name:")] private string _firstName;
-        [ViewControllerMapping(displayName: "Last name:")] private string _lastName;
-        [ViewControllerMapping(displayName: "DateOfBirth:")] private DateTime? _dateOfBirth;
+        [ViewControllerMapping(displayName: "Integer value:")] private int? _integerValue;
+        [ViewControllerMapping(displayName: "String value:")] private string? _stringValue;
+        [ViewControllerMapping(displayName: "Date value:")] private DateTime _dateValue;
+        [ViewControllerMapping(displayName: "boolValue:")] private bool? _boolValue;
 
         public OptionFormsController()
         {
@@ -31,11 +22,10 @@ namespace WinFormsPowerToolsDemo
         {
         }
 
-        static OptionFormsController INotifyPropertyChangedDocumentFactory<OptionFormsController>.CreateDocument()
+        public static OptionFormsController CreateDocument()
         {
             throw new NotImplementedException();
         }
-
     }
 
     [ViewController]
@@ -53,7 +43,6 @@ namespace WinFormsPowerToolsDemo
         {
             throw new NotImplementedException();
         }
-
     }
 }
 

@@ -1,29 +1,27 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace WinFormsPowerTools.AutoLayout
 {
     public class AutoLayoutDocument<T>
-        : AutoLayoutContent<T> where T : INotifyPropertyChanged
+        : AutoLayoutComponent<T> where T : INotifyPropertyChanged
     {
         public AutoLayoutDocument(
            string name,
            string title) : this(name, title, default)
         { 
         }
-        
+
         internal AutoLayoutDocument(
-            string name,
-            string? title,
-            T? dataContext,
-            object? tag = null,
-            object? group = null)
-            : base(name, tag)
+            string? name = default,
+            string? title = default,
+            T? dataContext = default) : base(name)
         {
             Title = title;
             DataContext = dataContext;
         }
 
         public string? Title { get; }
-        public T? DataContext { get; }
+        public AutoLayoutComponent<T>? Content { get; set; }
     }
 }

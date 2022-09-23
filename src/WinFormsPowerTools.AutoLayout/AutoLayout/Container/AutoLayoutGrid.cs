@@ -9,7 +9,7 @@ namespace WinFormsPowerTools.AutoLayout
     public class AutoLayoutGrid<T>
         : AutoLayoutContainer<T> where T : INotifyPropertyChanged
     {
-        private ObservableCollection<IAutoLayoutElement<T>> _children;
+        private ObservableCollection<AutoLayoutComponent<T>> _children;
         private Dictionary<(int row, int column), (GridInfo gridInfo, IAutoLayoutElement<T> layoutElement)> _griddedChildren = new();
 
         private (int lastRow, int lastColumn) _maxCellPosition;
@@ -17,7 +17,7 @@ namespace WinFormsPowerTools.AutoLayout
         public AutoLayoutGrid(string name, object? tag, object? group)
             : base(name, tag, group)
         {
-            _children = new ObservableCollection<IAutoLayoutElement<T>>();
+            _children = new ObservableCollection<AutoLayoutComponent<T>>();
             _children.CollectionChanged += Children_CollectionChanged;
         }
 
@@ -53,13 +53,13 @@ namespace WinFormsPowerTools.AutoLayout
             }
         }
 
-        public override ICollection<IAutoLayoutElement<T>> Children
+        public override ICollection<AutoLayoutComponent<T>> Children
             => _children;
 
         public void AddChild(
             int row,
             int column,
-            IAutoLayoutElement<T> child,
+            AutoLayoutComponent<T> child,
             int rowSpan = 1,
             int columnSpan = 1)
         {
