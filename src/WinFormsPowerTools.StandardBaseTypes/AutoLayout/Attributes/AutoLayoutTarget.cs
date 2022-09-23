@@ -4,7 +4,7 @@
     {
         Implicit,
         Label,
-        DataEntry,
+        TextEntry,
         DateEntry,
         IntegerEntry,
         FloatEntry,

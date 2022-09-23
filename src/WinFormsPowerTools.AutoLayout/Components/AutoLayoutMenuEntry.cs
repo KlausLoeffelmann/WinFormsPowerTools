@@ -7,7 +7,7 @@ namespace WinFormsPowerTools.AutoLayout
     : AutoLayoutComponent<T> where T : INotifyPropertyChanged
     {
         public AutoLayoutMenuEntry(
-            string? name = "menuEntryName1",
+            string? name = "menuEntry1",
             string? text = default,
             string? bindingPath = default,
             ICommand? command = default) : base(name, text: text, bindingPath: bindingPath)

@@ -7,18 +7,14 @@ namespace WinFormsPowerTools.AutoLayout
         : AutoLayoutComponent<T> where T : INotifyPropertyChanged
     {
         public AutoLayoutDocument(
-           string name,
-           string title) : this(name, title, default)
-        { 
-        }
-
-        internal AutoLayoutDocument(
-            string? name = default,
-            string? title = default,
-            T? dataContext = default) : base(name)
+           string? name = "document1",
+           string? title = "document1",
+           AutoLayoutComponent<T>? content = default,
+           T? dataContext = default) : base(name)
         {
             Title = title;
             DataContext = dataContext;
+            Content = content;
         }
 
         public string? Title { get; }

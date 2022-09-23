@@ -7,7 +7,7 @@ namespace WinFormsPowerTools.AutoLayout
         : AutoLayoutComponent<T> where T : INotifyPropertyChanged
     {
         public AutoLayoutButton(
-            string? name = "buttonName1",
+            string? name = "button1",
             string? text = default,
             string? bindingPath = default,
             ICommand? command = default) : base(name, text: text, bindingPath: bindingPath)

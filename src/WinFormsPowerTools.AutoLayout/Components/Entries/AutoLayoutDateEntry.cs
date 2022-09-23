@@ -3,17 +3,18 @@ using System.ComponentModel;
 
 namespace WinFormsPowerTools.AutoLayout
 {
-    public class AutoLayoutIntegerEntry<T>
+    public class AutoLayoutDateEntry<T>
         : AutoLayoutTextEntry<T> where T : INotifyPropertyChanged
     {
-        public AutoLayoutIntegerEntry(
-            string? name = "integerEntryName1",
-            long? value = default,
+        public AutoLayoutDateEntry(
+            string? name = "dateEntry1",
+            DateTime? value = default,
             string? bindingPath = default)
             : base(name, bindingPath: bindingPath)
         {
             Value = value;
         }
-        public long? Value { get; private set; }
+        
+        public DateTime? Value { get; private set; }
     }
 }

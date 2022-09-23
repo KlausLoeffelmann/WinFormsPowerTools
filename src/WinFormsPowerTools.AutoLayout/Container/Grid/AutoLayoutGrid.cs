@@ -2,20 +2,23 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
+using WinFormsPowerTools.AutoLayout.AutoLayout.Misc;
 
 namespace WinFormsPowerTools.AutoLayout
 {
-    public class AutoLayoutGrid<T>
+    public partial class AutoLayoutGrid<T>
         : AutoLayoutContainer<T> where T : INotifyPropertyChanged
     {
         private ObservableCollection<AutoLayoutComponent<T>> _children;
-        private Dictionary<(int row, int column), (GridInfo gridInfo, IAutoLayoutElement<T> layoutElement)> _griddedChildren = new();
+        private Dictionary<AutoLayoutPosition, (GridInfo gridInfo, IAutoLayoutElement<T> layoutElement)> _griddedChildren = new();
 
-        private (int lastRow, int lastColumn) _maxCellPosition;
+        private AutoLayoutPosition _maxCellPosition;
+        private AutoLayoutPosition _currentPosition;
 
-        public AutoLayoutGrid(string name, object? tag, object? group)
-            : base(name, tag, group)
+        public AutoLayoutGrid(
+            string? name = "grid1", 
+            string? bindingPath = default)
+            : base(name, bindingPath: bindingPath)
         {
             _children = new ObservableCollection<AutoLayoutComponent<T>>();
             _children.CollectionChanged += Children_CollectionChanged;
@@ -41,22 +44,21 @@ namespace WinFormsPowerTools.AutoLayout
 
                 if (item.Tag is GridInfo gridInfoItem)
                 {
-                    item.Tag = gridInfoItem.Tag;
                     gridInfo = gridInfoItem;
                 }
                 else
                 {
-                    gridInfo = new GridInfo(_maxCellPosition.lastRow + 1, 0, 1, 1, default);
+                    gridInfo = new GridInfo(_maxCellPosition.Row + 1, 0, 1, 1);
                 }
 
-                _griddedChildren?.Add((gridInfo.Row, gridInfo.Column), (gridInfo, item));
+                _griddedChildren?.Add(new AutoLayoutPosition(gridInfo.Row, gridInfo.Column), (gridInfo, item));
             }
         }
 
         public override ICollection<AutoLayoutComponent<T>> Children
             => _children;
 
-        public void AddChild(
+        public void AddComponent(
             int row,
             int column,
             AutoLayoutComponent<T> child,
@@ -64,47 +66,25 @@ namespace WinFormsPowerTools.AutoLayout
             int columnSpan = 1)
         {
             // Check, if that cell if already occupied:
-            if (_griddedChildren.ContainsKey((row, column)))
+            if (_griddedChildren.ContainsKey(new AutoLayoutPosition(row, column)))
             {
                 throw new ArgumentException($"Cell {row}/{column} does already exist.");
             }
 
             // We need to use the element's tag, so we copy that to the GridInfo's tag.
-            var rowColumnTag = new GridInfo(row, column, rowSpan, columnSpan, child.Tag);
+            var rowColumnTag = new GridInfo(row, column, rowSpan, columnSpan);
 
             // And then use the element's tag to store the GridInfo. Temporarily, until
             // the CollectionChange event occurs in which we sync everything with out
             // internal Layout dictionary.
             child.Tag = rowColumnTag;
             _children.Add(child);
-            _maxCellPosition = (
-                Math.Max(row, _maxCellPosition.lastRow),
-                Math.Max(column, _maxCellPosition.lastColumn));
+            _maxCellPosition = new AutoLayoutPosition(
+                Math.Max(row, _maxCellPosition.Row),
+                Math.Max(column, _maxCellPosition.Column));
         }
 
-        public int LastRow => _maxCellPosition.lastRow;
-        public int LastColumn => _maxCellPosition.lastColumn;
-
-        [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-        public class GridInfo
-        {
-            public GridInfo(int row, int column, int rowSpan, int columnSpan, object? tag = null)
-            {
-                Row = row;
-                Column = column;
-                RowSpan = rowSpan;
-                ColumnSpan = columnSpan;
-                Tag = tag;
-            }
-
-            public int Row { get; }
-            public int Column { get; }
-            public int RowSpan { get; }
-            public int ColumnSpan { get; }
-            public object? Tag { get; }
-
-            private string GetDebuggerDisplay()
-                => $"Row:{Row} Column:{Column} Tag:{Tag ?? "N/D"}";
-        }
+        public int LastRow => _maxCellPosition.Row;
+        public int LastColumn => _maxCellPosition.Column;
     }
 }

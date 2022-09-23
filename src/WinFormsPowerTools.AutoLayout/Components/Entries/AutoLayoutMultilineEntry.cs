@@ -6,7 +6,7 @@ namespace WinFormsPowerTools.AutoLayout
         : AutoLayoutTextEntry<T> where T : INotifyPropertyChanged
     {
         public AutoLayoutMultilineEntry(
-            string? name = "multilineEntryName1",
+            string? name = "multilineEntry1",
             string? text = default,
             string? bindingPath = default)
             : base(name, text: text, bindingPath: bindingPath)

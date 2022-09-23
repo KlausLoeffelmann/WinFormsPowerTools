@@ -6,13 +6,6 @@ using System.Linq;
 using System.Text;
 using WinFormsPowerTools.AutoLayout;
 
-namespace WinFormsPowerTools.AutoLayout
-{
-    public class AutoLayoutFoo
-    {
-    }
-}
-
 namespace WinFormsPowerTools.CodeGen
 {
     [Generator]
@@ -142,7 +135,6 @@ namespace WinFormsPowerTools.CodeGen
 
                     if (formsControllerProperties is not null)
                     {
-                        
                         // **Adding extension methods for each existing property:
                         foreach (IPropertySymbol symbol in formsControllerProperties)
                         {
@@ -362,9 +354,24 @@ namespace WinFormsPowerTools.CodeGen
         {
             return typeSymbol switch
             {
-                
-            }
-            
+                // TODO: Combo/ListBoxes.
+                { SpecialType: SpecialType.System_Boolean } => AutoLayoutTarget.CheckBox,
+                { SpecialType: SpecialType.System_Int32 } => AutoLayoutTarget.IntegerEntry,
+                { SpecialType: SpecialType.System_Double } => AutoLayoutTarget.FloatEntry,
+                { SpecialType: SpecialType.System_Single } => AutoLayoutTarget.FloatEntry,
+                { SpecialType: SpecialType.System_String } => AutoLayoutTarget.TextEntry,
+                { SpecialType: SpecialType.System_DateTime } => AutoLayoutTarget.DateEntry,
+                { SpecialType: SpecialType.System_Decimal } => AutoLayoutTarget.DecimalEntry,
+                { SpecialType: SpecialType.System_Byte } => AutoLayoutTarget.IntegerEntry,
+                { SpecialType: SpecialType.System_SByte } => AutoLayoutTarget.IntegerEntry,
+                { SpecialType: SpecialType.System_Int16 } => AutoLayoutTarget.IntegerEntry,
+                { SpecialType: SpecialType.System_UInt16 } => AutoLayoutTarget.IntegerEntry,
+                { SpecialType: SpecialType.System_UInt32 } => AutoLayoutTarget.IntegerEntry,
+                { SpecialType: SpecialType.System_Int64 } => AutoLayoutTarget.IntegerEntry,
+                { SpecialType: SpecialType.System_UInt64 } => AutoLayoutTarget.IntegerEntry,
+                { SpecialType: SpecialType.System_Char } => AutoLayoutTarget.TextEntry,
+                _ => AutoLayoutTarget.TextEntry
+            };
         }
 
         private static string? GetPropertyNameFromFieldName(string fieldName, bool lowerFirstChar = false)
@@ -398,7 +405,5 @@ namespace WinFormsPowerTools.CodeGen
         {
             context.RegisterForSyntaxNotifications(() => new AutoLayoutSyntaxReceiver());
         }
-
-        
     }
 }

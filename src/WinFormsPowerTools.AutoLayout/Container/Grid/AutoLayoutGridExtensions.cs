@@ -12,7 +12,7 @@ namespace WinFormsPowerTools.AutoLayout
             int rowSpan = 1,
             int columnSpan = 1) where T : INotifyPropertyChanged
         {
-            grid.AddChild(row, column, child, rowSpan, columnSpan);
+            grid.AddComponent(row, column, child, rowSpan, columnSpan);
             return grid;
         }
     }

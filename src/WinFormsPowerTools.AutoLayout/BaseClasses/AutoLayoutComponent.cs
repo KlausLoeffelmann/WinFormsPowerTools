@@ -6,7 +6,7 @@ namespace WinFormsPowerTools.AutoLayout
         : IAutoLayoutElement<T> where T : INotifyPropertyChanged
     {
         public AutoLayoutComponent(
-            string? name = "componentName", 
+            string? name = "component1", 
             string? text = default, 
             string? bindingPath = default)
         {

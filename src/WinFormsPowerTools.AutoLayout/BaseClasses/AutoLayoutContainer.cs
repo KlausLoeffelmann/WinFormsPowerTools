@@ -7,7 +7,7 @@ namespace WinFormsPowerTools.AutoLayout
         AutoLayoutComponent<T>, IAutoLayoutContainer<T> where T : INotifyPropertyChanged
     {
         public AutoLayoutContainer(
-            string? name = "container",
+            string? name = "container1",
             string? text = default,
             string? bindingPath = default) : base(name, text, bindingPath)
         {
