@@ -138,18 +138,10 @@ namespace WinFormsPowerTools.CodeGen
                         // **Adding extension methods for each existing property:
                         foreach (IPropertySymbol symbol in formsControllerProperties)
                         {
-                            extensionClass.AppendLine($"{In2}public static AutoLayoutComponents<{classDeclaration.Identifier.Text}> Add{symbol.Name}Component(this AutoLayoutComponents<{classDeclaration.Identifier.Text}> components)");
+                            extensionClass.AppendLine($"{In2}public static AutoLayoutGrid<{classDeclaration.Identifier.Text}> Add{symbol.Name}Component(this AutoLayoutGrid<{classDeclaration.Identifier.Text}> grid, AutoLayoutComponent<{classDeclaration.Identifier.Text}> child, int row, int column, int rowSpan = 1, int columnSpan = 1)");
                             extensionClass.AppendLine($"{In2}{{");
-                            extensionClass.AppendLine($"{In2}    if (components is null)");
-                            extensionClass.AppendLine($"{In2}    {{");
-                            extensionClass.AppendLine($"{In2}        components = new AutoLayoutComponents<{classDeclaration.Identifier.Text}>() {{ Components = new List<AutoLayoutComponent<{classDeclaration.Identifier.Text}>>() }};");
-                            extensionClass.AppendLine($"{In2}    }}");
-                            extensionClass.AppendLine();
-                            extensionClass.AppendLine($"{In2}    var component = new AutoLayoutComponent<{classDeclaration.Identifier.Text}>(\"{symbol.Name}\");");
-                            extensionClass.AppendLine($"{In2}    components.Components.Add(component);");
-                            extensionClass.AppendLine($"{In2}    components.LastComponent = component;");
-                            extensionClass.AppendLine();
-                            extensionClass.AppendLine($"{In2}    return components;");
+                            extensionClass.AppendLine($"{In2}    grid.AddComponent(row, column, child, rowSpan, columnSpan);");
+                            extensionClass.AppendLine($"{In2}    return grid;");
                             extensionClass.AppendLine($"{In2}}}");
                         }
                     }

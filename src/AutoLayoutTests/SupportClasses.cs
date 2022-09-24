@@ -6,7 +6,6 @@ namespace WinFormsPowerTools.UnitTests.Support
     [ViewController]
     public partial class ContactController : ObservableObject
     {
-
         [ViewControllerMapping(displayName:"First name:")] internal string? _firstName;
         [ViewControllerMapping(displayName:"Last name:")] internal string? _lastName;
         [ViewControllerMapping(displayName: "Date of birth:")] internal DateTime? _dateOfBirth;
