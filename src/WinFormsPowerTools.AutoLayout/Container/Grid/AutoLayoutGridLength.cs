@@ -2,7 +2,7 @@
 {
     public struct AutoLayoutGridLength
     {
-        public double Value { get; set; }
+        public double? Value { get; set; }
         public bool IsAbsolut { get; set; }
         public bool IsAuto { get; set; }
         public bool IsStar { get; set; }
@@ -38,7 +38,9 @@
                         gridLength.IsStar = true;
                         gridLength.IsAuto = false;
                         gridLength.IsAbsolut = false;
-                        gridLength.Value = double.Parse(value[..^1]);
+                        gridLength.Value = value.Length > 1 
+                            ? double.Parse(value[..^1]) 
+                            : 1;
                     }
                     else
                     {

@@ -4,20 +4,20 @@
     {
         public AutoLayoutGridLength Width
         {
-            get => ((IAutoLayoutGridElementDefinition<AutoLayoutRowDefinition>)this).Value;
-            set => ((IAutoLayoutGridElementDefinition<AutoLayoutRowDefinition>)this).Value = value;
+            get => ((IAutoLayoutGridElementDefinition<AutoLayoutColumnDefinition>)this).Value;
+            set => ((IAutoLayoutGridElementDefinition<AutoLayoutColumnDefinition>)this).Value = value;
         }
 
         public double? MinWidth
         {
-            get => ((IAutoLayoutGridElementDefinition<AutoLayoutRowDefinition>)this).Min;
-            set => ((IAutoLayoutGridElementDefinition<AutoLayoutRowDefinition>)this).Min = value;
+            get => ((IAutoLayoutGridElementDefinition<AutoLayoutColumnDefinition>)this).Min;
+            set => ((IAutoLayoutGridElementDefinition<AutoLayoutColumnDefinition>)this).Min = value;
         }
 
         public double? MaxWidth
         {
-            get => ((IAutoLayoutGridElementDefinition<AutoLayoutRowDefinition>)this).Max;
-            set => ((IAutoLayoutGridElementDefinition<AutoLayoutRowDefinition>)this).Max = value;
+            get => ((IAutoLayoutGridElementDefinition<AutoLayoutColumnDefinition>)this).Max;
+            set => ((IAutoLayoutGridElementDefinition<AutoLayoutColumnDefinition>)this).Max = value;
         }
 
         AutoLayoutGridLength IAutoLayoutGridElementDefinition<AutoLayoutColumnDefinition>.Value { get; set; }

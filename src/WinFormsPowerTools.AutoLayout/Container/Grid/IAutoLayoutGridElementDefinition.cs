@@ -8,6 +8,7 @@
 
         protected static bool TryParse(string value, out TSelf elementDefinition)
         {
+            value = value.Trim();
             elementDefinition = new();
 
             if (string.IsNullOrWhiteSpace(value))
@@ -17,20 +18,20 @@
 
             if (valueItems.Length == 0)
             {
-                return GetGridLength(value, elementDefinition);
+                return GetGridLength(value.Trim(), elementDefinition);
             }
 
             // First element must be GridLength
-            var result = GetGridLength(valueItems[0], elementDefinition);
+            var result = GetGridLength(valueItems[0].Trim(), elementDefinition);
 
             if (valueItems.Length > 1)
             {
-                result &= TryParseMinOrMaxHeight(valueItems[1], ref elementDefinition);
+                result &= TryParseMinOrMaxHeight(valueItems[1].Trim(), ref elementDefinition);
             }
 
             if (valueItems.Length > 2)
             {
-                result &= TryParseMinOrMaxHeight(valueItems[2], ref elementDefinition);
+                result &= TryParseMinOrMaxHeight(valueItems[2].Trim(), ref elementDefinition);
             }
 
             return result;

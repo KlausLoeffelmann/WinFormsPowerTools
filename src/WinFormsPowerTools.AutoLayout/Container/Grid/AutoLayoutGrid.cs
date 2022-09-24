@@ -16,12 +16,22 @@ namespace WinFormsPowerTools.AutoLayout
         private AutoLayoutPosition _currentPosition;
 
         public AutoLayoutGrid(
-            string? name = "grid1", 
-            string? bindingPath = default)
+            string? name = "grid1",
+            string? bindingPath = default,
+            IEnumerable<AutoLayoutRowDefinition>? rowDefinitions = default,
+            IEnumerable<AutoLayoutColumnDefinition>? columnDefinitions = default)
             : base(name, bindingPath: bindingPath)
         {
             _children = new ObservableCollection<AutoLayoutComponent<T>>();
             _children.CollectionChanged += Children_CollectionChanged;
+
+            RowDefinitions = rowDefinitions is not null
+                ? new List<AutoLayoutRowDefinition>(rowDefinitions)
+                : new List<AutoLayoutRowDefinition>();
+
+            ColumnDefinitions = columnDefinitions is not null
+                ? new List<AutoLayoutColumnDefinition>(columnDefinitions)
+                : new List<AutoLayoutColumnDefinition>();
         }
 
         // This gets called when ever the Children collection got changed.
@@ -37,7 +47,7 @@ namespace WinFormsPowerTools.AutoLayout
             {
                 return;
             }
-            
+
             foreach (IAutoLayoutElement<T> item in e.NewItems)
             {
                 GridInfo gridInfo;
@@ -83,7 +93,8 @@ namespace WinFormsPowerTools.AutoLayout
                 Math.Max(row, _maxCellPosition.Row),
                 Math.Max(column, _maxCellPosition.Column));
         }
-
+        public List<AutoLayoutRowDefinition> RowDefinitions { get; }
+        public List<AutoLayoutColumnDefinition> ColumnDefinitions { get; } 
         public int LastRow => _maxCellPosition.Row;
         public int LastColumn => _maxCellPosition.Column;
     }
