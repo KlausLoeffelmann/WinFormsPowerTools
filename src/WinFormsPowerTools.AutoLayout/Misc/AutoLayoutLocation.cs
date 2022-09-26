@@ -1,6 +1,6 @@
 ﻿namespace WinFormsPowerTools.AutoLayout.AutoLayout.Misc
 {
-    internal record struct AutoLayoutPosition
+    public record struct AutoLayoutPosition
     {
         public AutoLayoutPosition(int row, int column)
         {

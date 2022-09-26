@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -81,9 +82,10 @@ namespace WinFormsPowerTools.CodeGen
                     viewModelCachingClass.AppendLine($"{In2}}}");
                     
                     StringBuilder extensionClass = new();
-                    extensionClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
+                    extensionClass.AppendLine($"using System;");
                     extensionClass.AppendLine($"using System.Collections.Generic;");
                     extensionClass.AppendLine($"using System.Runtime.CompilerServices;");
+                    extensionClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
                     extensionClass.AppendLine();
                     extensionClass.AppendLine($"namespace {viewControllerNamespace}");
                     extensionClass.AppendLine($"{{");
@@ -91,14 +93,15 @@ namespace WinFormsPowerTools.CodeGen
                     extensionClass.AppendLine($"    {{");
 
                     StringBuilder viewModelClass = new();
-                    viewModelClass.AppendLine($"using WinFormsPowerTools.StandardLib.ViewControllerBaseClasses;");
-                    viewModelClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
+                    viewModelClass.AppendLine($"using System;");
                     viewModelClass.AppendLine($"using System.ComponentModel;");
                     viewModelClass.AppendLine($"using System.Runtime.CompilerServices;");
+                    viewModelClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
+                    viewModelClass.AppendLine($"using WinFormsPowerTools.StandardLib.ViewControllerBaseClasses;");
                     viewModelClass.AppendLine();
                     viewModelClass.AppendLine($"namespace {viewControllerNamespace}");
                     viewModelClass.AppendLine($"{{");
-                    viewModelClass.AppendLine($"{In1}public partial class {classDeclaration.Identifier.Text} : INotifyPropertyChangedDocumentFactory<{classDeclaration.Identifier.Text}>");
+                    viewModelClass.AppendLine($"{In1}public partial class {classDeclaration.Identifier.Text}");
                     viewModelClass.AppendLine($"{In1}{{");
 
                     foreach (var fieldAttributeTuple in formsControllerFields!)
@@ -109,11 +112,14 @@ namespace WinFormsPowerTools.CodeGen
                         // Generating the Property based of the attributed backing field the User provided.
                         GenerateNotifyChangedProperty(
                             cacheTypeName,
-                            fieldAttributeTuple.field.Type.ToDisplayString(), 
+                            fieldAttributeTuple.field.Type,
+                            classDeclaration,
                             viewModelClass,
                             viewModelCachingClass,
+                            extensionClass,
                             mappingAttribute.PropertyName!,
-                            fieldAttributeTuple.field.Name);
+                            fieldAttributeTuple.field.Name,
+                            autoLayoutTarget: mappingAttribute.TargetHint);
 
                         // Generated the correlating Property for the Display value (which leads to a Label), 
                         // if the user provided a Display value through the MappingAttribute.
@@ -121,30 +127,33 @@ namespace WinFormsPowerTools.CodeGen
                         {
                             GenerateNotifyChangedProperty(
                                 cacheTypeName,
-                                "string",
+                                context.Compilation.GetTypeByMetadataName("System.String")!,
+                                classDeclaration,
                                 viewModelClass,
                                 viewModelCachingClass,
+                                extensionClass,
                                 mappingAttribute.PropertyName! + "Caption",
                                 fieldAttributeTuple.field.Name + "Caption",
                                 createBackingField: !string.IsNullOrEmpty(mappingAttribute.DisplayName),
-                                defaultValueAssignment: mappingAttribute.DisplayName);
+                                defaultValueAssignment: mappingAttribute.DisplayName,
+                                autoLayoutTarget: AutoLayoutTarget.Label);
                         }
 
                         // TODO: Adding extension methods for each generated property (see **)
                     }
 
-                    if (formsControllerProperties is not null)
-                    {
-                        // **Adding extension methods for each existing property:
-                        foreach (IPropertySymbol symbol in formsControllerProperties)
-                        {
-                            extensionClass.AppendLine($"{In2}public static AutoLayoutGrid<{classDeclaration.Identifier.Text}> Add{symbol.Name}Component(this AutoLayoutGrid<{classDeclaration.Identifier.Text}> grid, AutoLayoutComponent<{classDeclaration.Identifier.Text}> child, int row, int column, int rowSpan = 1, int columnSpan = 1)");
-                            extensionClass.AppendLine($"{In2}{{");
-                            extensionClass.AppendLine($"{In2}    grid.AddComponent(row, column, child, rowSpan, columnSpan);");
-                            extensionClass.AppendLine($"{In2}    return grid;");
-                            extensionClass.AppendLine($"{In2}}}");
-                        }
-                    }
+                    //if (formsControllerProperties is not null)
+                    //{
+                    //    // **Adding extension methods for each existing property:
+                    //    foreach (IPropertySymbol symbol in formsControllerProperties)
+                    //    {
+                    //        extensionClass.AppendLine($"{In2}public static AutoLayoutGrid<{classDeclaration.Identifier.Text}> Add{symbol.Name}Component(this AutoLayoutGrid<{classDeclaration.Identifier.Text}> grid, AutoLayoutComponent<{classDeclaration.Identifier.Text}> child, int row, int column, int rowSpan = 1, int columnSpan = 1)");
+                    //        extensionClass.AppendLine($"{In2}{{");
+                    //        extensionClass.AppendLine($"{In2}    grid.AddComponent(row, column, child, rowSpan, columnSpan);");
+                    //        extensionClass.AppendLine($"{In2}    return grid;");
+                    //        extensionClass.AppendLine($"{In2}}}");
+                    //    }
+                    //}
 
                     extensionClass.AppendLine($"{In1}}}");
                     extensionClass.AppendLine($"}}");
@@ -200,18 +209,21 @@ namespace WinFormsPowerTools.CodeGen
         /// <param name="defaultValueAssignment">A default value which should be assigned to the property (only if string).</param>
         private static void GenerateNotifyChangedProperty(
             string cacheTypeName,
-            string propertyTypeName,
+            ITypeSymbol propertyType,
+            ClassDeclarationSyntax viewModelClass,
             StringBuilder sourceCode,
             StringBuilder cachingClassSourceCode,
+            StringBuilder extensionClassSourceCode,
             string propertyName,
             string backingFieldName,
             string indentString = In2,
             bool createBackingField = false,
-            string? defaultValueAssignment = null)
+            string? defaultValueAssignment = null,
+            AutoLayoutTarget autoLayoutTarget = AutoLayoutTarget.Implicit)
         {
             if (createBackingField)
             {
-                sourceCode.Append($"{indentString}private {propertyTypeName} {backingFieldName}");
+                sourceCode.Append($"{indentString}private {propertyType.Name} {backingFieldName}");
                 if (!string.IsNullOrEmpty(defaultValueAssignment))
                 {
                     sourceCode.AppendLine($" = \"{defaultValueAssignment}\";");
@@ -222,7 +234,7 @@ namespace WinFormsPowerTools.CodeGen
                 }
             }
 
-            sourceCode.AppendLine($"{indentString}public {propertyTypeName} {propertyName}");
+            sourceCode.AppendLine($"{indentString}public {propertyType.ToDisplayString()} {propertyName}");
             sourceCode.AppendLine($"{indentString}{{");
             sourceCode.AppendLine($"{indentString}    get");
             sourceCode.AppendLine($"{indentString}    {{");
@@ -258,6 +270,41 @@ namespace WinFormsPowerTools.CodeGen
             cachingClassSourceCode.AppendLine($"{In2}    }}");
             cachingClassSourceCode.AppendLine($"{In2}}}");
             cachingClassSourceCode.AppendLine();
+
+            if (autoLayoutTarget==AutoLayoutTarget.Implicit)
+            {
+                autoLayoutTarget = GetTargetFromType(propertyType);
+            }
+
+            string vmTypeName = viewModelClass.Identifier.Text;
+
+            if (autoLayoutTarget == AutoLayoutTarget.Label)
+            {
+                extensionClassSourceCode.AppendLine($"{In2}public static AutoLayoutGrid<{vmTypeName}> Add{propertyName}Label(");
+                extensionClassSourceCode.AppendLine($"{In2}    this AutoLayoutGrid<{vmTypeName}> grid,");
+                extensionClassSourceCode.AppendLine($"{In2}    int row, int column, int rowSpan = 1, int columnSpan = 1)");
+                extensionClassSourceCode.AppendLine($"{In2}    {{");
+                extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutLabel<{vmTypeName}> label = new(name: \"{propertyName}Label\", bindingPath: \"{propertyName}\");");
+                extensionClassSourceCode.AppendLine($"{In2}        grid.AddComponent(label, row, column, rowSpan, columnSpan);");
+                extensionClassSourceCode.AppendLine($"");
+                extensionClassSourceCode.AppendLine($"{In2}        return grid;");
+                extensionClassSourceCode.AppendLine($"{In2}    }}");
+                extensionClassSourceCode.AppendLine($"");
+            }
+
+            if (autoLayoutTarget == AutoLayoutTarget.TextEntry)
+            {
+                extensionClassSourceCode.AppendLine($"{In2}public static AutoLayoutGrid<{vmTypeName}> Add{propertyName}TextEntry(");
+                extensionClassSourceCode.AppendLine($"{In2}    this AutoLayoutGrid<{vmTypeName}> grid,");
+                extensionClassSourceCode.AppendLine($"{In2}    int row, int column, int rowSpan = 1, int columnSpan = 1)");
+                extensionClassSourceCode.AppendLine($"{In2}    {{");
+                extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutTextEntry<{vmTypeName}> textEntry = new(name: \"{propertyName}Label\", bindingPath: \"{propertyName}\");");
+                extensionClassSourceCode.AppendLine($"{In2}        grid.AddComponent(textEntry, row, column, rowSpan, columnSpan);");
+                extensionClassSourceCode.AppendLine($"");
+                extensionClassSourceCode.AppendLine($"{In2}        return grid;");
+                extensionClassSourceCode.AppendLine($"{In2}    }}");
+                extensionClassSourceCode.AppendLine($"");
+            }
         }
 
         private ViewControllerMappingAttribute GetMappingAttribute((IFieldSymbol field, AttributeData attributeData) fieldAttributeTuple)

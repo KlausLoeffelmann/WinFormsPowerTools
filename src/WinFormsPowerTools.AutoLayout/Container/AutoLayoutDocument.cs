@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace WinFormsPowerTools.AutoLayout
 {
@@ -17,7 +16,7 @@ namespace WinFormsPowerTools.AutoLayout
             Content = content;
         }
 
-        public string? Title { get; }
+        public string? Title { get; internal set; }
         public AutoLayoutComponent<T>? Content { get; set; }
     }
 }

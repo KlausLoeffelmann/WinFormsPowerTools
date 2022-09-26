@@ -14,6 +14,15 @@ namespace WinFormsPowerTools.AutoLayout
         }
 
         public AutoLayoutPadding Padding { get; set; }
-        public abstract ICollection<AutoLayoutComponent<T>>? Children { get; }
+
+        public abstract IEnumerable<AutoLayoutComponent<T>> Components { get; }
+
+        protected abstract void OnAddComponent(AutoLayoutComponent<T> component);
+
+        void IAutoLayoutContainer<T>.AddComponent(AutoLayoutComponent<T> component, string? bindingPath)
+        {
+            component.BindingPath = bindingPath;
+            OnAddComponent(component);
+        }
     }
 }

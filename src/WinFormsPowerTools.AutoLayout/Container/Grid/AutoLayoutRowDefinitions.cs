@@ -24,5 +24,8 @@ namespace WinFormsPowerTools.AutoLayout
         {
             AddRange(rowDefinitions);
         }
+
+        public static AutoLayoutRowDefinitions Default
+            => new AutoLayoutRowDefinitions("*");
     }
 }

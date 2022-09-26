@@ -12,10 +12,14 @@ namespace WinFormsPowerTools.UnitTests.Support
 
         public string? Test { get; set; }
 
-        public static ContactController CreateDocument()
+        public static void CreateDocuments()
         {
-            ContactController contact = new();
-            return contact;
+            
         }
+    }
+
+    public static class ContactView
+    {
+        
     }
 }

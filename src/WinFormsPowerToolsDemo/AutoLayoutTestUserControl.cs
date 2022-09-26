@@ -4,11 +4,12 @@ namespace WinFormsPowerToolsDemo
 {
     public partial class AutoLayoutTestUserControl : AutoLayoutUserControl<OptionFormsController>
     {
-        protected override AutoLayoutDocument<OptionFormsController> CreateDocument(out string name, out string text)
+        public override AutoLayoutDocument<OptionFormsController> GetDocument()
         {
-            name = "";
-            text = "Options";
-            var document = new AutoLayoutDocument<OptionFormsController>(name, text);
+            var document = new AutoLayoutDocument<OptionFormsController>(
+                nameof(AutoLayoutTestUserControl),
+                "Options");
+            
             //document.SetGridContent("mainGrid").AddChild()
             return document;
         }

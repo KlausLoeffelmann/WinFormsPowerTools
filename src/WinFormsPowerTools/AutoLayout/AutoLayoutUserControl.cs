@@ -2,16 +2,15 @@
 using System.Windows.Forms;
 using WinFormsPowerTools.AutoLayout;
 
+#nullable enable
+
 public abstract class AutoLayoutUserControl<T> : UserControl where T : INotifyPropertyChanged
 {
     private readonly AutoLayoutDocument<T> _document;
 
     public AutoLayoutUserControl()
     {
-        string name, text;
-        _document = CreateDocument(out name, out text);
-        this.Name = name;
-        this.Text = text;
+        _document = GetDocument();
         GenerateComponents();
     }
 
@@ -25,5 +24,8 @@ public abstract class AutoLayoutUserControl<T> : UserControl where T : INotifyPr
         set => base.DataContext = value;
     }
 
-    protected abstract AutoLayoutDocument<T> CreateDocument(out string name, out string text);
+    protected static AutoLayoutDocument<T> NewDocument
+        => new AutoLayoutDocument<T>();
+
+    public abstract AutoLayoutDocument<T> GetDocument();
 }

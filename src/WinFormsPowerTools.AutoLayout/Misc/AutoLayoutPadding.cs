@@ -16,6 +16,7 @@ namespace WinFormsPowerTools.AutoLayout
             Right = right;
         }
 
+        public static AutoLayoutPadding Default { get; } = new(5, 5, 5, 5);
         public float Top { get; }
         public float Bottom { get; }
         public float Left { get; }

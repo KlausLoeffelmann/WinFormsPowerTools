@@ -11,7 +11,12 @@ namespace WinFormsPowerTools.AutoLayout
         {
         }
 
-        public override ICollection<AutoLayoutComponent<T>> Children
+        public override IEnumerable<AutoLayoutComponent<T>> Components 
             => throw new System.NotImplementedException();
+
+        protected override void OnAddComponent(AutoLayoutComponent<T> component)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

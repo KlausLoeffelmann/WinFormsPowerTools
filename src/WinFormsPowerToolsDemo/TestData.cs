@@ -12,11 +12,7 @@ namespace WinFormsPowerToolsDemo
         [ViewControllerMapping(displayName: "Date value:")] private DateTime _dateValue;
         [ViewControllerMapping(displayName: "boolValue:")] private bool? _boolValue;
 
-        public OptionFormsController()
-        {
-        }
-
-        public string Test { get; set; }
+        public string? Test { get; set; }
 
         public void TestMethod()
         {
@@ -29,20 +25,33 @@ namespace WinFormsPowerToolsDemo
     }
 
     [ViewController]
-    public partial class CascadingFormsController : ObservableObject
+    public partial class ContactController : ObservableObject
     {
-        [ViewControllerMapping] private OptionFormsController _optionsForms;
+        [ViewControllerMapping(displayName: "First name:", targetHint: AutoLayoutTarget.Label)]
+        private Guid _idContext;
+        
+        [ViewControllerMapping(displayName: "First name:")] 
+        private string? _firstName;
+        
+        [ViewControllerMapping(displayName: "First name:")] 
+        private string? _lastName;
 
-        public CascadingFormsController()
-        {
-            _optionsForms = new OptionFormsController();
-            //_optionsForms.FirstName = "John";
-        }
+        [ViewControllerMapping(displayName: "Address line 1:")]
+        private string? _addressline1;
 
-        static CascadingFormsController INotifyPropertyChangedDocumentFactory<CascadingFormsController>.CreateDocument()
-        {
-            throw new NotImplementedException();
-        }
+        [ViewControllerMapping(displayName: "Address line 2:")]
+        private string? _addressline2;
+
+        [ViewControllerMapping(displayName: "City:")]
+        private string? _city;
+
+        [ViewControllerMapping(displayName: "Zip:")]
+        private string? _zip;
+
+        [ViewControllerMapping(displayName: "Date of Birth:")] 
+        private DateTime? _dateOfBirth;
+
+        [ViewControllerMapping()]
+        private bool? _isActiveContact;
     }
 }
-

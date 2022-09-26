@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using WinFormsPowerTools.AutoLayout.AutoLayout.Misc;
 
 namespace WinFormsPowerTools.AutoLayout
@@ -9,93 +9,105 @@ namespace WinFormsPowerTools.AutoLayout
     public partial class AutoLayoutGrid<T>
         : AutoLayoutContainer<T> where T : INotifyPropertyChanged
     {
-        private ObservableCollection<AutoLayoutComponent<T>> _children;
-        private Dictionary<AutoLayoutPosition, (GridInfo gridInfo, IAutoLayoutElement<T> layoutElement)> _griddedChildren = new();
+        private Dictionary<AutoLayoutPosition, (AutoLayoutFencedPosition gridPosition, AutoLayoutComponent<T> layoutElement)> _griddedChildren = new();
+        private List<AutoLayoutComponent<T>>? _cachedComponents;
 
-        private AutoLayoutPosition _maxCellPosition;
-        private AutoLayoutPosition _currentPosition;
+        private AutoLayoutFencedPosition _currentPosition;
+        private AutoLayoutFencedPosition? _passedGridPosition;
 
         public AutoLayoutGrid(
             string? name = "grid1",
             string? bindingPath = default,
-            IEnumerable<AutoLayoutRowDefinition>? rowDefinitions = default,
-            IEnumerable<AutoLayoutColumnDefinition>? columnDefinitions = default)
+            AutoLayoutRowDefinitions? rowDefinitions = default,
+            AutoLayoutColumnDefinitions? columnDefinitions = default)
             : base(name, bindingPath: bindingPath)
         {
-            _children = new ObservableCollection<AutoLayoutComponent<T>>();
-            _children.CollectionChanged += Children_CollectionChanged;
+            ColumnDefinitions = columnDefinitions ?? new("Auto", "*:<200");
+            RowDefinitions = rowDefinitions ?? new("*");
 
-            RowDefinitions = rowDefinitions is not null
-                ? new List<AutoLayoutRowDefinition>(rowDefinitions)
-                : new List<AutoLayoutRowDefinition>();
-
-            ColumnDefinitions = columnDefinitions is not null
-                ? new List<AutoLayoutColumnDefinition>(columnDefinitions)
-                : new List<AutoLayoutColumnDefinition>();
+            _currentPosition = new(0, 0, RowDefinitions.Count, ColumnDefinitions.Count);
         }
 
-        // This gets called when ever the Children collection got changed.
-        // So, either items have been added here via AddChild, and in that 
-        // case, there is a RowColumnTag Object instead of the original Tag
-        // object in the Tag, and we can now synchronize the Row and the
-        // column info.
-        // Or the children have been added directly. In this case, we assume
-        // lastrow+1, column=0, and again, we sync. Nothing to do with the tag then.
-        private void Children_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        public override IEnumerable<AutoLayoutComponent<T>> Components
         {
-            if (e.NewItems is null)
+            get
             {
-                return;
-            }
-
-            foreach (IAutoLayoutElement<T> item in e.NewItems)
-            {
-                GridInfo gridInfo;
-
-                if (item.Tag is GridInfo gridInfoItem)
+                if (_cachedComponents is null) 
                 {
-                    gridInfo = gridInfoItem;
-                }
-                else
-                {
-                    gridInfo = new GridInfo(_maxCellPosition.Row + 1, 0, 1, 1);
+                    _cachedComponents= _griddedChildren.Select(item=>item.Value.layoutElement).ToList();
                 }
 
-                _griddedChildren?.Add(new AutoLayoutPosition(gridInfo.Row, gridInfo.Column), (gridInfo, item));
+                return _cachedComponents;
             }
         }
-
-        public override ICollection<AutoLayoutComponent<T>> Children
-            => _children;
 
         public void AddComponent(
+            AutoLayoutComponent<T> component,
+            AutoLayoutFencedPosition? gridPosition)
+        {
+            _passedGridPosition = gridPosition;
+            ((IAutoLayoutContainer<T>)this).AddComponent(component);
+        }
+
+        public void AddComponent(
+            AutoLayoutComponent<T> component,
             int row,
             int column,
-            AutoLayoutComponent<T> child,
             int rowSpan = 1,
             int columnSpan = 1)
         {
-            // Check, if that cell if already occupied:
-            if (_griddedChildren.ContainsKey(new AutoLayoutPosition(row, column)))
+            _passedGridPosition = new AutoLayoutFencedPosition(row, column, rowSpan, columnSpan);
+            ((IAutoLayoutContainer<T>)this).AddComponent(component);
+        }
+
+        public void AddComponent(
+            AutoLayoutComponent<T> component,
+            AutoLayoutPosition? gridPosition,
+            int rowSpan = 1,
+            int columnSpan = 1)
+        {
+            if (!gridPosition.HasValue)
             {
-                throw new ArgumentException($"Cell {row}/{column} does already exist.");
+                _passedGridPosition = new AutoLayoutFencedPosition(_currentPosition.Row, _currentPosition.Column, rowSpan, columnSpan);
+            }
+            else
+            {
+                _passedGridPosition = new AutoLayoutFencedPosition(gridPosition.Value.Row, gridPosition.Value.Column, rowSpan, columnSpan);
             }
 
-            // We need to use the element's tag, so we copy that to the GridInfo's tag.
-            var rowColumnTag = new GridInfo(row, column, rowSpan, columnSpan);
-
-            // And then use the element's tag to store the GridInfo. Temporarily, until
-            // the CollectionChange event occurs in which we sync everything with out
-            // internal Layout dictionary.
-            child.Tag = rowColumnTag;
-            _children.Add(child);
-            _maxCellPosition = new AutoLayoutPosition(
-                Math.Max(row, _maxCellPosition.Row),
-                Math.Max(column, _maxCellPosition.Column));
+            ((IAutoLayoutContainer<T>)this).AddComponent(component);
         }
-        public List<AutoLayoutRowDefinition> RowDefinitions { get; }
-        public List<AutoLayoutColumnDefinition> ColumnDefinitions { get; } 
-        public int LastRow => _maxCellPosition.Row;
-        public int LastColumn => _maxCellPosition.Column;
+
+        protected override void OnAddComponent(AutoLayoutComponent<T> component)
+        {
+            if (!_passedGridPosition.HasValue)
+            {
+                _currentPosition++;
+                if (_currentPosition.Overflew)
+                {
+                    throw new ArgumentException("Grid is full.");
+                }
+
+                _passedGridPosition = new AutoLayoutFencedPosition(_currentPosition.Position, new(1, 1));
+            }
+
+            var position = _passedGridPosition.Value.Position;
+
+            // Check, if that cell if already occupied:
+            if (_griddedChildren.ContainsKey(position))
+            {
+                throw new ArgumentException($"A control at Cell {position.Row}/{position.Column} does already exist.");
+            }
+
+            _cachedComponents = null;
+            _griddedChildren.Add(position, (_passedGridPosition.Value, component));
+        }
+
+        public AutoLayoutRowDefinitions RowDefinitions { get; }
+        public AutoLayoutColumnDefinitions ColumnDefinitions { get; } 
+        public int LastRow => _currentPosition.RowSpan;
+        public int LastColumn => _currentPosition.ColumnSpan;
+        public int CurrentRow => _currentPosition.Row;
+        public int CurrentColumn => _currentPosition.Column;
     }
 }
