@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace WinFormsPowerTools.AutoLayout.AutoLayout.Misc
+namespace WinFormsPowerTools.AutoLayout
 {
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public record struct AutoLayoutFencedPosition

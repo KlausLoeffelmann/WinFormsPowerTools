@@ -29,13 +29,13 @@
         private void InitializeComponent()
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this._okButton = new System.Windows.Forms.Button();
             this._cancelButton = new System.Windows.Forms.Button();
+            this._okButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -60,28 +60,17 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(334, 149);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(424, 149);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // label1
+            // textBox2
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 9);
-            this.label1.Margin = new System.Windows.Forms.Padding(6);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(155, 20);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "First name:";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(173, 6);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(6);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(155, 27);
-            this.textBox1.TabIndex = 1;
+            this.textBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox2.Location = new System.Drawing.Point(218, 45);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(6);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(200, 27);
+            this.textBox2.TabIndex = 3;
             // 
             // label2
             // 
@@ -90,18 +79,30 @@
             this.label2.Location = new System.Drawing.Point(6, 48);
             this.label2.Margin = new System.Windows.Forms.Padding(6);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(155, 20);
+            this.label2.Size = new System.Drawing.Size(200, 20);
             this.label2.TabIndex = 2;
             this.label2.Text = "Last name:";
             // 
-            // textBox2
+            // label1
             // 
-            this.textBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox2.Location = new System.Drawing.Point(173, 45);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(6);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(155, 27);
-            this.textBox2.TabIndex = 3;
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 9);
+            this.label1.Margin = new System.Windows.Forms.Padding(6);
+            this.label1.MinimumSize = new System.Drawing.Size(200, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(200, 20);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "First name:";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox1.Location = new System.Drawing.Point(218, 6);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(6);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(200, 27);
+            this.textBox1.TabIndex = 1;
             // 
             // flowLayoutPanel1
             // 
@@ -117,28 +118,28 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 81);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(0, 20, 0, 0);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(328, 65);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(418, 65);
             this.flowLayoutPanel1.TabIndex = 4;
-            // 
-            // _okButton
-            // 
-            this._okButton.Location = new System.Drawing.Point(127, 23);
-            this._okButton.Name = "_okButton";
-            this._okButton.Padding = new System.Windows.Forms.Padding(5);
-            this._okButton.Size = new System.Drawing.Size(96, 39);
-            this._okButton.TabIndex = 0;
-            this._okButton.Text = "OK";
-            this._okButton.UseVisualStyleBackColor = true;
             // 
             // _cancelButton
             // 
-            this._cancelButton.Location = new System.Drawing.Point(229, 23);
+            this._cancelButton.Location = new System.Drawing.Point(319, 23);
             this._cancelButton.Name = "_cancelButton";
             this._cancelButton.Padding = new System.Windows.Forms.Padding(5);
             this._cancelButton.Size = new System.Drawing.Size(96, 39);
             this._cancelButton.TabIndex = 1;
             this._cancelButton.Text = "Cancel";
             this._cancelButton.UseVisualStyleBackColor = true;
+            // 
+            // _okButton
+            // 
+            this._okButton.Location = new System.Drawing.Point(217, 23);
+            this._okButton.Name = "_okButton";
+            this._okButton.Padding = new System.Windows.Forms.Padding(5);
+            this._okButton.Size = new System.Drawing.Size(96, 39);
+            this._okButton.TabIndex = 0;
+            this._okButton.Text = "OK";
+            this._okButton.UseVisualStyleBackColor = true;
             // 
             // ManualTestUserControl
             // 
@@ -149,7 +150,7 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "ManualTestUserControl";
             this.Padding = new System.Windows.Forms.Padding(10);
-            this.Size = new System.Drawing.Size(354, 169);
+            this.Size = new System.Drawing.Size(444, 169);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);

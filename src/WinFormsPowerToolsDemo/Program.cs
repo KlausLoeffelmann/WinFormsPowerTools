@@ -1,3 +1,4 @@
+using AutoLayoutDemo;
 using System;
 using System.Windows.Forms;
 using WinFormsPowerTools.AutoLayout;
@@ -15,7 +16,7 @@ namespace WinFormsPowerToolsDemo
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DocumentTestForm());
+            Application.Run(new AutoLayoutTestForm());
         }
 
         private static void GenerateForm()

@@ -15,7 +15,7 @@ namespace WinFormsPowerToolsDemo
 
             AutoLayoutGrid<ContactController> grid = document.
                 SetGrid(
-                    columnDefinitions: new("*", "*:<200"),
+                    columnDefinitions: new("*:>100", "*:>200"),
                     rowDefinitions: new("*"),
                     padding: new AutoLayoutPadding(10, 10, 10, 10)).
                     AddFirstNameCaptionLabel(row: 0, column: 0).AddFirstNameTextEntry(row: 0, column: 1).

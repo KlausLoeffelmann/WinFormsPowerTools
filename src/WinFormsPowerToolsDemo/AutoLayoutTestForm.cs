@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using WinFormsPowerTools.AutoLayout;
 using WinFormsPowerToolsDemo;
 
-namespace ExtenderPropertiesTest
+namespace AutoLayoutDemo
 {
     public partial class AutoLayoutTestForm : Form
     {

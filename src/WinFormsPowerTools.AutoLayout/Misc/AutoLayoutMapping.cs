@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using WinFormsPowerTools.AutoLayout;
 
-namespace WinFormsPowerTools.StandardLib.AutoLayout.Misc
+namespace WinFormsPowerTools.AutoLayout
 {
     public static class AutoLayoutTypeMapping
     {

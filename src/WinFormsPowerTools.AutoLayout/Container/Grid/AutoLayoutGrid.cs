@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using WinFormsPowerTools.AutoLayout.AutoLayout.Misc;
 
 namespace WinFormsPowerTools.AutoLayout
 {
     public partial class AutoLayoutGrid<T>
         : AutoLayoutContainer<T> where T : INotifyPropertyChanged
     {
-        private Dictionary<AutoLayoutPosition, (AutoLayoutFencedPosition gridPosition, AutoLayoutComponent<T> layoutElement)> _griddedChildren = new();
+        private Dictionary<AutoLayoutPosition, AutoLayoutComponent<T>> _components = new();
+        private Dictionary<AutoLayoutComponent<T>, AutoLayoutFencedPosition> _positionLookup = new();
         private List<AutoLayoutComponent<T>>? _cachedComponents;
 
         private AutoLayoutFencedPosition _currentPosition;
@@ -28,13 +28,23 @@ namespace WinFormsPowerTools.AutoLayout
             _currentPosition = new(0, 0, RowDefinitions.Count, ColumnDefinitions.Count);
         }
 
+        public AutoLayoutFencedPosition? GetFencedPosition(AutoLayoutComponent<T> component)
+        {
+            if (_positionLookup.TryGetValue(component, out var value))
+            {
+                return value;
+            }
+
+            return null;
+        }
+
         public override IEnumerable<AutoLayoutComponent<T>> Components
         {
             get
             {
                 if (_cachedComponents is null) 
                 {
-                    _cachedComponents= _griddedChildren.Select(item=>item.Value.layoutElement).ToList();
+                    _cachedComponents= _components.Select(item=>item.Value).ToList();
                 }
 
                 return _cachedComponents;
@@ -94,13 +104,14 @@ namespace WinFormsPowerTools.AutoLayout
             var position = _passedGridPosition.Value.Position;
 
             // Check, if that cell if already occupied:
-            if (_griddedChildren.ContainsKey(position))
+            if (_components.ContainsKey(position))
             {
                 throw new ArgumentException($"A control at Cell {position.Row}/{position.Column} does already exist.");
             }
 
             _cachedComponents = null;
-            _griddedChildren.Add(position, (_passedGridPosition.Value, component));
+            _components.Add(position, component);
+            _positionLookup.Add(component, _passedGridPosition.Value);
         }
 
         public AutoLayoutRowDefinitions RowDefinitions { get; }

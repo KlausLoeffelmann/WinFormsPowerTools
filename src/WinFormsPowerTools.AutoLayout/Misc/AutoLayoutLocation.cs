@@ -1,4 +1,4 @@
-﻿namespace WinFormsPowerTools.AutoLayout.AutoLayout.Misc
+﻿namespace WinFormsPowerTools.AutoLayout
 {
     public record struct AutoLayoutPosition
     {

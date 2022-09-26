@@ -33,11 +33,11 @@ namespace WinFormsPowerTools.CodeGen
 
             try
             {
-                foreach (var (classDeclaration, identifier, syntaxTree, fieldDictionary) in identifiersAndClasses)
+                foreach (var viewModelItem in identifiersAndClasses)
                 {
-                    var semanticModel = context.Compilation.GetSemanticModel(syntaxTree);
+                    var semanticModel = context.Compilation.GetSemanticModel(viewModelItem.SyntaxTree);
 
-                    var viewControllerSymbol = (INamedTypeSymbol)semanticModel.GetDeclaredSymbol(classDeclaration)!;
+                    var viewControllerSymbol = (INamedTypeSymbol)semanticModel.GetDeclaredSymbol(viewModelItem.ClassDeclaration)!;
                     var viewControllerNamespace = viewControllerSymbol?.ContainingNamespace;
                     var formsControllerProperties = viewControllerSymbol?.GetMembers().OfType<IPropertySymbol>();
 
@@ -54,7 +54,7 @@ namespace WinFormsPowerTools.CodeGen
                     INamedTypeSymbol modelType;
                     IEnumerable<IPropertySymbol> modelProperties;
 
-                    string cacheVarName = $"__{ classDeclaration.Identifier.Text}";
+                    string cacheVarName = $"__{viewModelItem.ClassDeclaration.Identifier.Text}";
 
                     if (viewControllerAttribute?.ConstructorArguments.FirstOrDefault() is { } argument)
                     {
@@ -68,7 +68,7 @@ namespace WinFormsPowerTools.CodeGen
                         }
                     }
 
-                    string cacheTypeName = $"{classDeclaration.Identifier.Text}_Cache";
+                    string cacheTypeName = $"{viewModelItem.ClassDeclaration.Identifier.Text}_Cache";
                     
                     StringBuilder viewModelCachingClass = new();
                     viewModelCachingClass.AppendLine($"{In1}file class {cacheTypeName}");
@@ -89,7 +89,7 @@ namespace WinFormsPowerTools.CodeGen
                     extensionClass.AppendLine();
                     extensionClass.AppendLine($"namespace {viewControllerNamespace}");
                     extensionClass.AppendLine($"{{");
-                    extensionClass.AppendLine($"    public static class {classDeclaration.Identifier.Text}Extensions");
+                    extensionClass.AppendLine($"    public static class {viewModelItem.ClassDeclaration.Identifier.Text}Extensions");
                     extensionClass.AppendLine($"    {{");
 
                     StringBuilder viewModelClass = new();
@@ -101,7 +101,7 @@ namespace WinFormsPowerTools.CodeGen
                     viewModelClass.AppendLine();
                     viewModelClass.AppendLine($"namespace {viewControllerNamespace}");
                     viewModelClass.AppendLine($"{{");
-                    viewModelClass.AppendLine($"{In1}public partial class {classDeclaration.Identifier.Text}");
+                    viewModelClass.AppendLine($"{In1}public partial class {viewModelItem.ClassDeclaration.Identifier.Text}");
                     viewModelClass.AppendLine($"{In1}{{");
 
                     foreach (var fieldAttributeTuple in formsControllerFields!)
@@ -113,7 +113,7 @@ namespace WinFormsPowerTools.CodeGen
                         GenerateNotifyChangedProperty(
                             cacheTypeName,
                             fieldAttributeTuple.field.Type,
-                            classDeclaration,
+                            viewModelItem.ClassDeclaration,
                             viewModelClass,
                             viewModelCachingClass,
                             extensionClass,
@@ -128,7 +128,7 @@ namespace WinFormsPowerTools.CodeGen
                             GenerateNotifyChangedProperty(
                                 cacheTypeName,
                                 context.Compilation.GetTypeByMetadataName("System.String")!,
-                                classDeclaration,
+                                viewModelItem.ClassDeclaration,
                                 viewModelClass,
                                 viewModelCachingClass,
                                 extensionClass,
@@ -173,11 +173,11 @@ namespace WinFormsPowerTools.CodeGen
 
                     if (extensionClass is not null)
                     {
-                        context.AddSource(hintName: $"{classDeclaration.Identifier.Text}Extensions.g.cs", extensionClass.ToString());
+                        context.AddSource(hintName: $"{viewModelItem.ClassDeclaration.Identifier.Text}Extensions.g.cs", extensionClass.ToString());
                     }
                     if (viewModelClass is not null)
                     {
-                        context.AddSource(hintName: $"{classDeclaration.Identifier.Text}.g.cs", viewModelClass.ToString());
+                        context.AddSource(hintName: $"{viewModelItem.ClassDeclaration.Identifier.Text}.g.cs", viewModelClass.ToString());
                     }
                 }
             }
@@ -284,7 +284,14 @@ namespace WinFormsPowerTools.CodeGen
                 extensionClassSourceCode.AppendLine($"{In2}    this AutoLayoutGrid<{vmTypeName}> grid,");
                 extensionClassSourceCode.AppendLine($"{In2}    int row, int column, int rowSpan = 1, int columnSpan = 1)");
                 extensionClassSourceCode.AppendLine($"{In2}    {{");
-                extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutLabel<{vmTypeName}> label = new(name: \"{propertyName}Label\", bindingPath: \"{propertyName}\");");
+                if (defaultValueAssignment is not null)
+                {
+                    extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutLabel<{vmTypeName}> label = new(name: \"{propertyName}Label\", text: \"{defaultValueAssignment}\", bindingPath: \"{propertyName}\");");
+                }
+                else
+                {
+                    extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutLabel<{vmTypeName}> label = new(name: \"{propertyName}Label\", bindingPath: \"{propertyName}\");");
+                }
                 extensionClassSourceCode.AppendLine($"{In2}        grid.AddComponent(label, row, column, rowSpan, columnSpan);");
                 extensionClassSourceCode.AppendLine($"");
                 extensionClassSourceCode.AppendLine($"{In2}        return grid;");
@@ -427,14 +434,14 @@ namespace WinFormsPowerTools.CodeGen
                 propertyName = (lowerFirstChar
                     ? fieldName.Substring(1, 1).ToLower()
                     : fieldName.Substring(1, 1).ToUpper())
-                    + fieldName.Substring(2);
+                    + fieldName[2..];
             }
             else
             {
                 propertyName = (lowerFirstChar
-                    ? fieldName.Substring(0, 1).ToLower()
-                    : fieldName.Substring(0, 1).ToUpper())
-                    + fieldName.Substring(1);
+                    ? fieldName[..1].ToLower()
+                    : fieldName[..1].ToUpper())
+                    + fieldName[1..];
             }
 
             return propertyName;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using WinFormsPowerTools.AutoLayout.AutoLayout.Misc;
 
 namespace WinFormsPowerTools.AutoLayout
 {
