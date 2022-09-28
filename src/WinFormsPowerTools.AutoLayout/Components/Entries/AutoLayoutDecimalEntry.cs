@@ -9,11 +9,13 @@ namespace WinFormsPowerTools.AutoLayout
         public AutoLayoutDecimalEntry(
             string? name = "decimalEntryName1", 
             Decimal? value = default,
-            string? bindingPath = default)
-            : base(name, bindingPath: bindingPath)
+            bool isReadOnly = default,
+            params AutoLayoutBinding[] bindings)
+            : base(name, bindings: bindings, isReadOnly: isReadOnly)
         {
             Value = value;
         }
+        
         public Decimal? Value { get; private set; }
     }
 }

@@ -7,41 +7,70 @@ using WinFormsPowerTools.AutoLayout;
 
 namespace WinFormsPowerTools.CodeGen
 {
-    internal class AutoLayoutSyntaxReceiver : ISyntaxReceiver
+    internal class AutoLayoutSyntaxReceiver : ISyntaxContextReceiver
     {
         private readonly string ShortenedViewControllerAttributeName = nameof(ViewControllerAttribute).Replace("Attribute", string.Empty);
-        private readonly string ShortenedViewControllerMappingAttributeName = nameof(ViewControllerMappingAttribute).Replace("Attribute", string.Empty);
+        private readonly string ShortenedViewControllerMappingAttributeName = nameof(PropertyMappingAttribute).Replace("Attribute", string.Empty);
+        private readonly string ShortenedCommandMappingAttributeName = nameof(CommandMappingAttribute).Replace("Attribute", string.Empty);
 
-        internal List<ViewModelInfo> foundModelClasses = new();
+        internal List<ViewModelClassInfo> viewModelClassesInfo = new();
 
-        public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
+        public void OnVisitSyntaxNode(GeneratorSyntaxContext syntaxContext)
         {
+            var syntaxNode = syntaxContext.Node;
+
             if (syntaxNode is ClassDeclarationSyntax classDeclaration && classDeclaration.AttributeLists.Count > 0)
             {
-                var attribute = classDeclaration
+                var viewControllerAttribute = classDeclaration
                     .AttributeLists
                     .SelectMany(lists => lists.Attributes)
                     .FirstOrDefault(attribute => TestAttributeName(attribute, ShortenedViewControllerAttributeName));
 
-                if (attribute is not null)
+                if (viewControllerAttribute is not null)
                 {
-                    var fieldDictionary = new Dictionary<FieldDeclarationSyntax, AttributeSyntax>();
-                    foundModelClasses.Add(new(classDeclaration, attribute, syntaxNode.SyntaxTree, fieldDictionary));
+                    var fieldDictionary = new Dictionary<IFieldSymbol, AttributeData>(SymbolEqualityComparer.Default);
+                    var methodDictionary = new Dictionary<IMethodSymbol, AttributeData>(SymbolEqualityComparer.Default);
 
-                    foreach (var nodeItem in classDeclaration.ChildNodes())
+                    viewModelClassesInfo.Add(new(
+                        classDeclaration,
+                        viewControllerAttribute,
+                        syntaxNode.SyntaxTree,
+                        fieldDictionary,
+                        methodDictionary));
+
+                    var viewControllerSymbol = (INamedTypeSymbol)syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration)!;
+
+                    foreach (var memberSymbol in viewControllerSymbol.GetMembers())
                     {
-                        if (nodeItem is FieldDeclarationSyntax fieldDeclaration)
+                        if (memberSymbol is IFieldSymbol fieldSymbol)
                         {
-                            var fieldViewControllerMappingAttribute = fieldDeclaration
-                                .AttributeLists
-                                .SelectMany(lists => lists.Attributes)
-
-                                // This throws in some cases: We can't reliably cast this to IdentifierNameSyntax.
-                                .FirstOrDefault(attribute => TestAttributeName(attribute, ShortenedViewControllerMappingAttributeName));
+                            var fieldViewControllerMappingAttribute = fieldSymbol.GetAttributes()
+                                .FirstOrDefault(attribute => attribute?.AttributeClass?.Name == nameof(PropertyMappingAttribute));
 
                             if (fieldViewControllerMappingAttribute is not null)
                             {
-                                fieldDictionary.Add(fieldDeclaration, fieldViewControllerMappingAttribute);
+                                fieldDictionary.Add(fieldSymbol, fieldViewControllerMappingAttribute);
+                            }
+                        }
+
+                        // Let's find all methods which are attributed with the CommandMappingAttribute.
+                        if (memberSymbol is IMethodSymbol methodSymbol)
+                        {
+                            if (Debugger.IsAttached)
+                            {
+                                Debugger.Break();
+                            }
+
+                            if (methodSymbol.Parameters.Length == 1 &&
+                                methodSymbol.Parameters[0].Type.SpecialType == SpecialType.System_Object)
+                            {
+                                var commandMappingAttribute = methodSymbol.GetAttributes()
+                                    .FirstOrDefault(attribute => attribute?.AttributeClass?.Name == nameof(CommandMappingAttribute));
+
+                                if (commandMappingAttribute is not null)
+                                {
+                                    methodDictionary.Add(methodSymbol, commandMappingAttribute);
+                                }
                             }
                         }
                     }
@@ -49,9 +78,6 @@ namespace WinFormsPowerTools.CodeGen
 
                 bool TestAttributeName(AttributeSyntax attribute, string name)
                 {
-                    if (Debugger.IsAttached)
-                        Debugger.Break();
-                        
                     if (attribute is null || attribute.Name is not IdentifierNameSyntax identifierName)
                     {
                         return false;

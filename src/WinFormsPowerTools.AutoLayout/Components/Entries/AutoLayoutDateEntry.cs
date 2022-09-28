@@ -9,12 +9,13 @@ namespace WinFormsPowerTools.AutoLayout
         public AutoLayoutDateEntry(
             string? name = "dateEntry1",
             DateTime? value = default,
-            string? bindingPath = default)
-            : base(name, bindingPath: bindingPath)
+            bool isReadOnly = default,
+            params AutoLayoutBinding[] bindings)
+            : base(name, bindings: bindings, isReadOnly: isReadOnly)
         {
             Value = value;
         }
-        
+
         public DateTime? Value { get; private set; }
     }
 }

@@ -8,11 +8,12 @@ namespace WinFormsPowerTools.AutoLayout
         public AutoLayoutTextEntry(
             string? name = "textEntry1",
             string? text = default,
-            string? bindingPath = default)
-            : base(name, text, bindingPath)
+            bool isReadOnly = default,
+            params AutoLayoutBinding[] bindings) : base(name, text, bindings)
         {
+            IsReadOnly = isReadOnly;
         }
 
-        public bool IsReadOnly { get; set; }
+        public bool IsReadOnly { get; init; }
     }
 }

@@ -17,10 +17,10 @@ namespace WinFormsPowerTools.AutoLayout
 
         public AutoLayoutGrid(
             string? name = "grid1",
-            string? bindingPath = default,
             AutoLayoutRowDefinitions? rowDefinitions = default,
-            AutoLayoutColumnDefinitions? columnDefinitions = default)
-            : base(name, bindingPath: bindingPath)
+            AutoLayoutColumnDefinitions? columnDefinitions = default,
+            params AutoLayoutBinding[] bindings) 
+            : base(name, bindings: bindings)
         {
             ColumnDefinitions = columnDefinitions ?? new("Auto", "*:<200");
             RowDefinitions = rowDefinitions ?? new("*");

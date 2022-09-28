@@ -8,8 +8,8 @@ namespace WinFormsPowerTools.AutoLayout
         public AutoLayoutMultilineEntry(
             string? name = "multilineEntry1",
             string? text = default,
-            string? bindingPath = default)
-            : base(name, text: text, bindingPath: bindingPath)
+            bool isReadOnly = default,
+            params AutoLayoutBinding[] bindings) : base(name, text, isReadOnly, bindings)
         {
         }
     }

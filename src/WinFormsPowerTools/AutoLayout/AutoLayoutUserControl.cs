@@ -85,6 +85,7 @@ public abstract class AutoLayoutUserControl<T> : UserControl where T : INotifyPr
     private Control GenerateLabel(AutoLayoutLabel<T> label)
     {
         var control = new Label();
+        control.Name = label.Name;
         control.Text = label.Text;
         return control;
     }
@@ -92,6 +93,7 @@ public abstract class AutoLayoutUserControl<T> : UserControl where T : INotifyPr
     private Control GenerateTextBox(AutoLayoutTextEntry<T> textBox)
     {
         var control = new TextBox();
+        control.Name = textBox.Name;
         control.Text = textBox.Text;
         return control;
     }
@@ -100,6 +102,7 @@ public abstract class AutoLayoutUserControl<T> : UserControl where T : INotifyPr
     private Control GenerateTextBox(AutoLayoutDateEntry<T> dateEntry)
     {
         var control = new TextBox();
+        control.Name = dateEntry.Name;
         control.Text = dateEntry.Value.ToString();
         return control;
     }

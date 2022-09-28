@@ -8,9 +8,8 @@ namespace WinFormsPowerTools.AutoLayout
         public AutoLayoutLabel(
             string? name = "label1",
             string? text = default,
-            string? bindingPath = default)
-            : base(name, text: text, bindingPath: bindingPath)
-        {
-        }
+            bool isReadOnly = default,
+            params AutoLayoutBinding[] bindings) : base(name, text, bindings)
+        { }
     }
 }

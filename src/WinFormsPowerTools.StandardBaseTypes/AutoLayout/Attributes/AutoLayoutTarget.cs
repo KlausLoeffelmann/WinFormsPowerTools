@@ -9,8 +9,6 @@
         IntegerEntry,
         FloatEntry,
         DecimalEntry,
-        Button,
-        MenuItem,
         CheckBox,
         OptionButton,
         ComboBox,

@@ -9,9 +9,7 @@ namespace WinFormsPowerTools.AutoLayout
         public AutoLayoutContainer(
             string? name = "container1",
             string? text = default,
-            string? bindingPath = default) : base(name, text, bindingPath)
-        {
-        }
+            params AutoLayoutBinding[] bindings) : base(name, text, bindings) { }
 
         public AutoLayoutPadding Padding { get; set; }
 

@@ -15,9 +15,9 @@ namespace WinFormsPowerTools.AutoLayout
     {
         private double _foo;
 
-        [ViewControllerMapping(AutoLayoutTarget.TextEntry,"First Name")] private string? _firstName;
-        [ViewControllerMapping(propertyName: "LastName", displayName: "Last name:")] private string? _lstName;
-        [ViewControllerMapping(displayName: "First name", mapsToModelProperty: nameof(TestModelFoo.FirstName))] private string? _firstNameDisplayName;
+        [PropertyMapping(AutoLayoutTarget.TextEntry,"First Name")] private string? _firstName;
+        [PropertyMapping(propertyName: "LastName", displayName: "Last name:")] private string? _lstName;
+        [PropertyMapping(displayName: "First name", mapsToModelProperty: nameof(TestModelFoo.FirstName))] private string? _firstNameDisplayName;
 
         public string? ExistingProperty { get; set; }
     }

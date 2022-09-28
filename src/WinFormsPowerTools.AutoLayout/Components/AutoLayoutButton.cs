@@ -9,8 +9,9 @@ namespace WinFormsPowerTools.AutoLayout
         public AutoLayoutButton(
             string? name = "button1",
             string? text = default,
-            string? bindingPath = default,
-            ICommand? command = default) : base(name, text: text, bindingPath: bindingPath)
+            ICommand? command = default,
+            params AutoLayoutBinding[] bindings)
+            : base(name, text, bindings: bindings)
         {
             Command = command;
         }

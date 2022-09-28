@@ -2,21 +2,18 @@
 
 namespace WinFormsPowerTools.AutoLayout
 {
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public class PropertyMappingAttribute : Attribute
+    public class CommandMappingAttribute : Attribute
     {
-        public PropertyMappingAttribute(
-            AutoLayoutTarget targetHint = AutoLayoutTarget.Implicit, 
-            string? displayName = null, 
-            string? propertyName = default, 
-            string? mapsToModelProperty = null,
+        public CommandMappingAttribute(
+            AutoLayoutTarget targetHint = AutoLayoutTarget.Implicit,
+            string? displayName = null,
+            string? propertyName = default,
             Scope getAccessorScope = Scope.@public,
             Scope setAccessorScope = Scope.@public)
         {
             TargetHint = targetHint;
             DisplayName = displayName;
             PropertyName = propertyName;
-            MapsToModelProperty = mapsToModelProperty;
             GetAccessorScope = getAccessorScope;
             SetAccessorScope = setAccessorScope;
         }
@@ -24,7 +21,6 @@ namespace WinFormsPowerTools.AutoLayout
         public AutoLayoutTarget TargetHint { get; set; }
         public string? DisplayName { get; set; }
         public string? PropertyName { get; set; }
-        public string? MapsToModelProperty { get; set; }
 
         // TODO: Implement scope handling.
         public Scope GetAccessorScope { get; set; }

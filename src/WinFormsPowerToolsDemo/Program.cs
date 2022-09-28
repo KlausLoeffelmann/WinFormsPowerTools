@@ -18,14 +18,5 @@ namespace WinFormsPowerToolsDemo
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new AutoLayoutTestForm());
         }
-
-        private static void GenerateForm()
-        {
-            var autoForm = new Form();
-            var view = new OptionFormsController();
-            //view.GetDocument().Group
-
-
-        }
     }
 }
