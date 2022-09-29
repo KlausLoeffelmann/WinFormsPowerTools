@@ -35,7 +35,7 @@ namespace WinFormsPowerToolsDemo
         private bool? _isActiveContact;
 
         [CommandMapping(displayName: "OK")]
-        public void ExecuteDialogCommand(object parameter)
+        public void ExecuteOKCommand(object? parameter)
         {
         }
     }

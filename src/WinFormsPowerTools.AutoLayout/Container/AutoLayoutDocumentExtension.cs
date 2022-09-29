@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Threading;
 
 namespace WinFormsPowerTools.AutoLayout
 {
@@ -57,6 +58,18 @@ namespace WinFormsPowerTools.AutoLayout
             document.Content = grid;
             
             return (AutoLayoutGrid<T>)document.Content;
+        }
+
+        public static AutoLayoutMenu<T> SetMenu<T>(
+            this AutoLayoutDocument<T> document,
+            string? name,
+            params AutoLayoutMenuItem<T>[] menuItems)
+            where T : INotifyPropertyChanged
+        {
+
+            var menu = new AutoLayoutMenu<T>(name, menuItems);
+            document.Content = menu;
+            return menu;
         }
     }
 }

@@ -112,9 +112,37 @@ namespace WinFormsPowerTools.CodeGen
                     bindingExtensionClass.AppendLine($"    public static class {viewModelItem.ClassDeclaration.Identifier.Text}BindingExtensions");
                     bindingExtensionClass.AppendLine($"    {{");
 
+                    StringBuilder viewModelRelayCommandInitializer = new();
+                    viewModelRelayCommandInitializer.AppendLine($"{In2}private void InitializeRelayCommands()");
+                    viewModelRelayCommandInitializer.AppendLine($"{In2}{{");
+
+                    foreach (var commandMethodInfo in viewModelItem.CommandMethodDefinitions)
+                    {
+                        var mappingAttribute = GetCommandMappingAttribute(commandMethodInfo.Key, commandMethodInfo.Value.CommandAttribute);
+
+                        // No Command backing field was defined, we have to create it.
+                        if (commandMethodInfo.Value.FieldSymbol is null)
+                        {
+                            GenerateNotifyChangedProperty(
+                                cacheTypeName,
+                                context.Compilation.GetTypeByMetadataName("System.Windows.Input.ICommand")!,
+                                viewModelItem.ClassDeclaration,
+                                viewModelClass,
+                                viewModelCachingClass,
+                                extensionClass,
+                                bindingExtensionClass,
+                                commandMethodInfo.Value.BaseLineName,
+                                GetFieldNameFromPropertyName(commandMethodInfo.Value.BaseLineName),
+                                commandMethods: (commandMethodInfo.Value.ExecuteMethodSymbol!, commandMethodInfo.Value.CanExecuteMethodSymbol),
+                                viewModelRelayCommandInitializerSourceCode: viewModelRelayCommandInitializer,
+                                createBackingField: true,
+                                autoLayoutTarget: mappingAttribute.TargetHint);
+                        }
+                    }
+
                     foreach (var fieldAttributeTuple in formsControllerFields!)
                     {
-                        var mappingAttribute = GetMappingAttribute(fieldAttributeTuple.Key, fieldAttributeTuple.Value);
+                        var mappingAttribute = GetPropertyMappingAttribute(fieldAttributeTuple.Key.Name, fieldAttributeTuple.Value);
 
                         // Generating the Property based of the attributed backing field the User provided.
                         GenerateNotifyChangedProperty(
@@ -151,26 +179,19 @@ namespace WinFormsPowerTools.CodeGen
                         // TODO: Adding extension methods for each generated property (see **)
                     }
 
-                    //if (formsControllerProperties is not null)
-                    //{
-                    //    // **Adding extension methods for each existing property:
-                    //    foreach (IPropertySymbol symbol in formsControllerProperties)
-                    //    {
-                    //        extensionClass.AppendLine($"{In2}public static AutoLayoutGrid<{classDeclaration.Identifier.Text}> Add{symbol.Name}Component(this AutoLayoutGrid<{classDeclaration.Identifier.Text}> grid, AutoLayoutComponent<{classDeclaration.Identifier.Text}> child, int row, int column, int rowSpan = 1, int columnSpan = 1)");
-                    //        extensionClass.AppendLine($"{In2}{{");
-                    //        extensionClass.AppendLine($"{In2}    grid.AddComponent(row, column, child, rowSpan, columnSpan);");
-                    //        extensionClass.AppendLine($"{In2}    return grid;");
-                    //        extensionClass.AppendLine($"{In2}}}");
-                    //    }
-                    //}
-
                     extensionClass.AppendLine($"{In1}}}");
                     extensionClass.AppendLine($"}}");
 
                     bindingExtensionClass.AppendLine($"{In1}}}");
                     bindingExtensionClass.AppendLine($"}}");
 
+                    viewModelRelayCommandInitializer.AppendLine($"{In2}}}");
+                    viewModelRelayCommandInitializer.AppendLine();
+
+                    viewModelClass.AppendLine();
+                    viewModelClass.Append(viewModelRelayCommandInitializer);
                     viewModelClass.AppendLine($"{In1}}}");
+                    viewModelClass.AppendLine();
                     viewModelClass.Append(viewModelCachingClass);
                     viewModelClass.AppendLine($"{In1}}}");
                     viewModelClass.AppendLine($"}}");
@@ -228,6 +249,8 @@ namespace WinFormsPowerTools.CodeGen
             StringBuilder bindingExtensionClassSourceCode,
             string propertyName,
             string backingFieldName,
+            StringBuilder? viewModelRelayCommandInitializerSourceCode=default,
+            (IMethodSymbol executeCommand, IMethodSymbol? canExecuteCommand)? commandMethods=default,
             string indentString = In2,
             bool createBackingField = false,
             string? defaultValueAssignment = null,
@@ -235,14 +258,27 @@ namespace WinFormsPowerTools.CodeGen
         {
             if (createBackingField)
             {
-                sourceCode.Append($"{indentString}private {propertyType.Name} {backingFieldName}");
+                sourceCode.Append($"{indentString}private {propertyType.ToDisplayString()} {backingFieldName}");
                 if (!string.IsNullOrEmpty(defaultValueAssignment))
                 {
                     sourceCode.AppendLine($" = \"{defaultValueAssignment}\";");
                 }
                 else
                 {
-                    sourceCode.AppendLine();
+                    sourceCode.AppendLine(";");
+                }
+
+                if (viewModelRelayCommandInitializerSourceCode != null)
+                {
+                    viewModelRelayCommandInitializerSourceCode.Append($"{indentString}    {backingFieldName} = new RelayCommand({commandMethods!.Value.executeCommand.Name}");
+                    if (commandMethods!.Value.canExecuteCommand != null)
+                    {
+                        viewModelRelayCommandInitializerSourceCode.AppendLine($", {commandMethods!.Value.canExecuteCommand.Name});");
+                    }
+                    else
+                    {
+                        viewModelRelayCommandInitializerSourceCode.AppendLine($");");
+                    }
                 }
             }
 
@@ -334,7 +370,7 @@ namespace WinFormsPowerTools.CodeGen
             }
         }
 
-        private PropertyMappingAttribute GetMappingAttribute(IFieldSymbol field, AttributeData attributeData)
+        private PropertyMappingAttribute GetPropertyMappingAttribute(string fieldName, AttributeData attributeData)
         {
             if (Debugger.IsAttached)
                 Debugger.Break();
@@ -343,7 +379,7 @@ namespace WinFormsPowerTools.CodeGen
             {
                 return new PropertyMappingAttribute(
                     AutoLayoutTarget.Implicit,
-                    GetPropertyNameFromFieldName(field.Name)!);
+                    fieldName);
             }
 
             var attributeToReturn = new PropertyMappingAttribute();
@@ -393,7 +429,7 @@ namespace WinFormsPowerTools.CodeGen
                             if (string.IsNullOrWhiteSpace(attributeToReturn.PropertyName))
                             {
                                 // We need a property name unconditionally.
-                                attributeToReturn.PropertyName = GetPropertyNameFromFieldName(field.Name!);
+                                attributeToReturn.PropertyName = GetPropertyNameFromFieldName(fieldName);
                             }
                             break;
                         case 3:
@@ -413,7 +449,83 @@ namespace WinFormsPowerTools.CodeGen
 
             return new PropertyMappingAttribute(
                 targetHint: AutoLayoutTarget.Implicit,
-                propertyName: GetPropertyNameFromFieldName(field.Name)!);
+                propertyName: GetPropertyNameFromFieldName(fieldName));
+        }
+
+        private CommandMappingAttribute GetCommandMappingAttribute(string fieldName, AttributeData attributeData)
+        {
+            if (Debugger.IsAttached)
+                Debugger.Break();
+
+            if (attributeData is null)
+            {
+                return new CommandMappingAttribute(
+                    AutoLayoutTarget.Implicit,
+                    fieldName);
+            }
+
+            var attributeToReturn = new CommandMappingAttribute();
+
+            if (attributeData.NamedArguments.Length > 0)
+            {
+                foreach (var namedArgument in attributeData.NamedArguments)
+                {
+                    switch (namedArgument.Key)
+                    {
+                        case nameof(PropertyMappingAttribute.TargetHint):
+                            attributeToReturn.TargetHint = (AutoLayoutTarget)namedArgument.Value.Value!;
+                            break;
+                        case nameof(PropertyMappingAttribute.PropertyName):
+                            attributeToReturn.PropertyName = (string)namedArgument.Value.Value!;
+                            break;
+                        case nameof(PropertyMappingAttribute.DisplayName):
+                            attributeToReturn.DisplayName = (string)namedArgument.Value.Value!;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                return attributeToReturn;
+            }
+
+            if (attributeData.ConstructorArguments.Length > 0)
+            {
+                int count = 0;
+
+                foreach (var constructorArgument in attributeData.ConstructorArguments)
+                {
+                    switch (count++)
+                    {
+                        case 0:
+                            attributeToReturn.TargetHint = (AutoLayoutTarget)constructorArgument.Value!;
+                            break;
+                        case 1:
+                            attributeToReturn.DisplayName = (string)constructorArgument.Value!;
+                            break;
+                        case 2:
+                            attributeToReturn.PropertyName = (string)constructorArgument.Value!;
+                            if (string.IsNullOrWhiteSpace(attributeToReturn.PropertyName))
+                            {
+                                // We need a property name unconditionally.
+                                attributeToReturn.PropertyName = GetPropertyNameFromFieldName(fieldName);
+                            }
+                            break;
+                        case 3:
+                            attributeToReturn.GetAccessorScope = (Scope)constructorArgument.Value!;
+                            break;
+                        case 4:
+                            attributeToReturn.SetAccessorScope = (Scope)constructorArgument.Value!;
+                            break;
+                    }
+                }
+
+                return attributeToReturn;
+            }
+
+            return new CommandMappingAttribute(
+                targetHint: AutoLayoutTarget.Implicit,
+                propertyName: GetPropertyNameFromFieldName(fieldName));
         }
 
         private static AutoLayoutTarget GetTargetFromType(ITypeSymbol typeSymbol)
@@ -439,6 +551,9 @@ namespace WinFormsPowerTools.CodeGen
                 _ => AutoLayoutTarget.TextEntry
             };
         }
+
+        private static string GetFieldNameFromPropertyName(string propertyName)
+            => "_" + propertyName[..1].ToLower() + propertyName[1..];
 
         private static string? GetPropertyNameFromFieldName(string fieldName, bool lowerFirstChar = false)
         {

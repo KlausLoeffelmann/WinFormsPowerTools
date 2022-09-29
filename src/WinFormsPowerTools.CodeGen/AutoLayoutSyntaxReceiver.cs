@@ -13,6 +13,11 @@ namespace WinFormsPowerTools.CodeGen
         private readonly string ShortenedViewControllerMappingAttributeName = nameof(PropertyMappingAttribute).Replace("Attribute", string.Empty);
         private readonly string ShortenedCommandMappingAttributeName = nameof(CommandMappingAttribute).Replace("Attribute", string.Empty);
 
+        private const string CanExecute = nameof(CanExecute);
+        private const string Execute = nameof(Execute);
+        private readonly int CanExecuteLength = CanExecute.Length;
+        private readonly int ExecuteLength = Execute.Length;
+
         internal List<ViewModelClassInfo> viewModelClassesInfo = new();
 
         public void OnVisitSyntaxNode(GeneratorSyntaxContext syntaxContext)
@@ -28,8 +33,9 @@ namespace WinFormsPowerTools.CodeGen
 
                 if (viewControllerAttribute is not null)
                 {
-                    var fieldDictionary = new Dictionary<IFieldSymbol, AttributeData>(SymbolEqualityComparer.Default);
-                    var methodDictionary = new Dictionary<IMethodSymbol, AttributeData>(SymbolEqualityComparer.Default);
+                    Dictionary<IFieldSymbol, AttributeData> fieldDictionary = new(SymbolEqualityComparer.Default);
+                    Dictionary<string, CommandInfo> methodDictionary = new();
+                    // Dictionary<string, IMethodSymbol> methodLookupList = new();
 
                     viewModelClassesInfo.Add(new(
                         classDeclaration,
@@ -69,22 +75,62 @@ namespace WinFormsPowerTools.CodeGen
 
                                 if (commandMappingAttribute is not null)
                                 {
-                                    methodDictionary.Add(methodSymbol, commandMappingAttribute);
+                                    string baseLineName;
+
+                                    if (methodSymbol.Name.StartsWith(CanExecute))
+                                    {
+                                        // Check if method returns bool.
+                                        // TODO: We would need an analyzer which points out that this doesn't have the correct signature.
+                                        if (methodSymbol.ReturnType.SpecialType == SpecialType.System_Boolean)
+                                        {
+                                            baseLineName = methodSymbol.Name[CanExecuteLength..];
+                                            var commandInfo = GetOrAddCommandInfo(methodDictionary, commandMappingAttribute, baseLineName);
+                                            commandInfo.CanExecuteMethodSymbol = methodSymbol;
+                                        }
+                                    }
+
+                                    if (methodSymbol.Name.StartsWith(Execute))
+                                    {
+                                        // Check if method returns void.
+                                        // TODO: We would need an analyzer which points out that this doesn't have the correct signature.
+                                        if (methodSymbol.ReturnType.SpecialType == SpecialType.System_Void)
+                                        {
+                                            baseLineName = methodSymbol.Name[ExecuteLength..];
+                                            var commandInfo = GetOrAddCommandInfo(methodDictionary, commandMappingAttribute, baseLineName);
+                                            commandInfo.ExecuteMethodSymbol = methodSymbol;
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }
 
-                bool TestAttributeName(AttributeSyntax attribute, string name)
+            static bool TestAttributeName(AttributeSyntax attribute, string name)
+            {
+                if (attribute is null || attribute.Name is not IdentifierNameSyntax identifierName)
                 {
-                    if (attribute is null || attribute.Name is not IdentifierNameSyntax identifierName)
-                    {
-                        return false;
-                    }
-
-                    return identifierName.Identifier.ValueText == name;
+                    return false;
                 }
+
+                return identifierName.Identifier.ValueText == name;
+            }
+
+            static CommandInfo GetOrAddCommandInfo(Dictionary<string, CommandInfo> methodDictionary, AttributeData commandMappingAttribute, string baseLineName)
+            {
+                CommandInfo commandInfo;
+
+                if (methodDictionary.TryGetValue(baseLineName, out commandInfo))
+                {
+                }
+                else
+                {
+                    commandInfo = new(baseLineName, commandMappingAttribute, null, null, null);
+                    methodDictionary.Add(baseLineName, commandInfo);
+                }
+
+                return commandInfo;
             }
         }
     }

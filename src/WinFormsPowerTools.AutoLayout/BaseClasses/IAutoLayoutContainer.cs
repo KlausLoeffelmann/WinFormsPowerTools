@@ -8,7 +8,7 @@ namespace WinFormsPowerTools.AutoLayout
         : IAutoLayoutElement<T> where T : INotifyPropertyChanged
     {
         IEnumerable<AutoLayoutComponent<T>> Components { get; }
-        void AddComponent(AutoLayoutComponent<T> component, string? bindingPath = default);
+        void AddComponent(AutoLayoutComponent<T> component);
         AutoLayoutPadding Padding { get; set; }
     }
 }
