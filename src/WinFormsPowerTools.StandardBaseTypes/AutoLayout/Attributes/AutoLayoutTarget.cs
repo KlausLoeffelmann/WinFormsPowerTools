@@ -2,6 +2,7 @@
 {
     public enum AutoLayoutTarget
     {
+        None,
         Implicit,
         Label,
         TextEntry,
@@ -12,6 +13,8 @@
         CheckBox,
         OptionButton,
         ComboBox,
-        ListBox
+        ListBox,
+        Button,
+        MenuItem
     }
 }

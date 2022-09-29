@@ -118,7 +118,18 @@ namespace WinFormsPowerTools.CodeGen
 
                     foreach (var commandMethodInfo in viewModelItem.CommandMethodDefinitions)
                     {
+                        if (Debugger.IsAttached)
+                            Debugger.Break();
+                        
                         var mappingAttribute = GetCommandMappingAttribute(commandMethodInfo.Key, commandMethodInfo.Value.CommandAttribute);
+                        var displayName = mappingAttribute.DisplayName;
+                        
+                        // We only allow MenuItems and Buttons to be bound to commands.
+                        mappingAttribute.TargetHint = mappingAttribute.TargetHint switch
+                        {
+                            AutoLayoutTarget.MenuItem => AutoLayoutTarget.MenuItem,
+                            _ => AutoLayoutTarget.Button
+                        };
 
                         // No Command backing field was defined, we have to create it.
                         if (commandMethodInfo.Value.FieldSymbol is null)
@@ -136,7 +147,25 @@ namespace WinFormsPowerTools.CodeGen
                                 commandMethods: (commandMethodInfo.Value.ExecuteMethodSymbol!, commandMethodInfo.Value.CanExecuteMethodSymbol),
                                 viewModelRelayCommandInitializerSourceCode: viewModelRelayCommandInitializer,
                                 createBackingField: true,
-                                autoLayoutTarget: mappingAttribute.TargetHint);
+                                autoLayoutTarget: mappingAttribute.TargetHint,
+                                forcedTextPropertyContentInExtensionMethod: displayName);
+
+                            if (!string.IsNullOrEmpty(displayName))
+                            {
+                                GenerateNotifyChangedProperty(
+                                    cacheTypeName,
+                                    context.Compilation.GetTypeByMetadataName("System.String")!,
+                                    viewModelItem.ClassDeclaration,
+                                    viewModelClass,
+                                    viewModelCachingClass,
+                                    extensionClass,
+                                    bindingExtensionClass,
+                                    commandMethodInfo.Value.BaseLineName + "Caption",
+                                    GetFieldNameFromPropertyName(commandMethodInfo.Value.BaseLineName) + "Caption",
+                                    createBackingField: true,
+                                    defaultValueAssignment: displayName,
+                                    autoLayoutTarget: AutoLayoutTarget.None);
+                            }
                         }
                     }
 
@@ -254,7 +283,8 @@ namespace WinFormsPowerTools.CodeGen
             string indentString = In2,
             bool createBackingField = false,
             string? defaultValueAssignment = null,
-            AutoLayoutTarget autoLayoutTarget = AutoLayoutTarget.Implicit)
+            AutoLayoutTarget autoLayoutTarget = AutoLayoutTarget.Implicit,
+            string? forcedTextPropertyContentInExtensionMethod=default)
         {
             if (createBackingField)
             {
@@ -368,6 +398,62 @@ namespace WinFormsPowerTools.CodeGen
                 extensionClassSourceCode.AppendLine($"{In2}    }}");
                 extensionClassSourceCode.AppendLine($"");
             }
+
+            if (autoLayoutTarget == AutoLayoutTarget.Button)
+            {
+                if (string.IsNullOrWhiteSpace(forcedTextPropertyContentInExtensionMethod))
+                {
+                    forcedTextPropertyContentInExtensionMethod = "Not defined.";
+                }
+
+                extensionClassSourceCode.AppendLine($"{In2}public static AutoLayoutGrid<{vmTypeName}> Add{propertyName}Button(");
+                extensionClassSourceCode.AppendLine($"{In2}    this AutoLayoutGrid<{vmTypeName}> grid,");
+                extensionClassSourceCode.AppendLine($"{In2}    int row, int column, int rowSpan = 1, int columnSpan = 1)");
+                extensionClassSourceCode.AppendLine($"{In2}    {{");
+                extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutButton<{vmTypeName}> button = new(name: \"{propertyName}Button\", text: \"{forcedTextPropertyContentInExtensionMethod}\", null,");
+                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}(nameof(AutoLayoutButton<{vmTypeName}>.Command)),");
+                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}Caption(nameof(AutoLayoutButton<{vmTypeName}>.Text)));");
+                extensionClassSourceCode.AppendLine($"");
+                extensionClassSourceCode.AppendLine($"{In2}        grid.AddComponent(button, row, column, rowSpan, columnSpan);");
+                extensionClassSourceCode.AppendLine($"");
+                extensionClassSourceCode.AppendLine($"{In2}        return grid;");
+                extensionClassSourceCode.AppendLine($"{In2}    }}");
+                extensionClassSourceCode.AppendLine($"");
+            }
+
+            if (autoLayoutTarget == AutoLayoutTarget.MenuItem)
+            {
+                if (string.IsNullOrWhiteSpace(forcedTextPropertyContentInExtensionMethod))
+                {
+                    forcedTextPropertyContentInExtensionMethod = "Not defined.";
+                }
+
+                extensionClassSourceCode.AppendLine($"{In2}public static AutoLayoutMenu<{vmTypeName}> Add{propertyName}MenuItem(");
+                extensionClassSourceCode.AppendLine($"{In2}    this AutoLayoutMenu<{vmTypeName}> menu)");
+                extensionClassSourceCode.AppendLine($"{In2}    {{");
+                extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutMenuItem<{vmTypeName}> menuItem = new(name: \"{propertyName}MenuItem\", text: \"{forcedTextPropertyContentInExtensionMethod}\", null, true, false, ");
+                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}(nameof(AutoLayoutMenuItem<{vmTypeName}>.Command)),");
+                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}Caption(nameof(AutoLayoutMenuItem<{vmTypeName}>.Text)));");
+                extensionClassSourceCode.AppendLine($"");
+                extensionClassSourceCode.AppendLine($"{In2}        menu.Add(menuItem);");
+                extensionClassSourceCode.AppendLine($"");
+                extensionClassSourceCode.AppendLine($"{In2}        return menu;");
+                extensionClassSourceCode.AppendLine($"{In2}    }}");
+                extensionClassSourceCode.AppendLine($"");
+
+                extensionClassSourceCode.AppendLine($"{In2}public static AutoLayoutMenuItem<{vmTypeName}> Add{propertyName}MenuItem(");
+                extensionClassSourceCode.AppendLine($"{In2}    this AutoLayoutMenuItem<{vmTypeName}> menuItem)");
+                extensionClassSourceCode.AppendLine($"{In2}    {{");
+                extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutMenuItem<{vmTypeName}> subMenuItem = new(name: \"{propertyName}MenuItem\", text: \"{forcedTextPropertyContentInExtensionMethod}\", null, true, false,");
+                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}(nameof(AutoLayoutMenuItem<{vmTypeName}>.Command)),");
+                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}Caption(nameof(AutoLayoutMenuItem<{vmTypeName}>.Text)));");
+                extensionClassSourceCode.AppendLine($"");
+                extensionClassSourceCode.AppendLine($"{In2}        menuItem.Add(subMenuItem);");
+                extensionClassSourceCode.AppendLine($"");
+                extensionClassSourceCode.AppendLine($"{In2}        return menuItem;");
+                extensionClassSourceCode.AppendLine($"{In2}    }}");
+                extensionClassSourceCode.AppendLine($"");
+            }
         }
 
         private PropertyMappingAttribute GetPropertyMappingAttribute(string fieldName, AttributeData attributeData)
@@ -465,6 +551,7 @@ namespace WinFormsPowerTools.CodeGen
             }
 
             var attributeToReturn = new CommandMappingAttribute();
+            attributeToReturn.DisplayName = fieldName;
 
             if (attributeData.NamedArguments.Length > 0)
             {

@@ -34,6 +34,12 @@ namespace WinFormsPowerToolsDemo
         [PropertyMapping(displayName: "Is active contact")]
         private bool? _isActiveContact;
 
+        [CommandMapping(displayName: "New document",  TargetHint = AutoLayoutTarget.MenuItem)]
+        public void ExecuteNewDocumentCommand(object? parameter)
+        {
+        }
+
+
         [CommandMapping(displayName: "OK")]
         public void ExecuteOKCommand(object? parameter)
         {
