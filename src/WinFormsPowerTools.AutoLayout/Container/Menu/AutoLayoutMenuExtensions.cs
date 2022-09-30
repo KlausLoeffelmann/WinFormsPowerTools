@@ -24,6 +24,15 @@ namespace WinFormsPowerTools.AutoLayout
             return menu;
         }
 
+        public static AutoLayoutMenu<T> AddMenuItem<T>(
+            this AutoLayoutMenu<T> menu,
+            AutoLayoutMenuItem<T> menuItem,
+            params AutoLayoutBinding[] bindings) where T : INotifyPropertyChanged
+        {
+            menu.Add(menuItem);
+            return menu;
+        }
+
         public static AutoLayoutMenuItem<T> AddMenuItem<T>(
         this AutoLayoutMenuItem<T> menuItem,
         string? name = "menuEntry1",

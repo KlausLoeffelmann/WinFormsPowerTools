@@ -6,6 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
 	<RootNamespace>WinFormsPowerTools</RootNamespace>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	<EnablePreviewFeatures>true</EnablePreviewFeatures>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

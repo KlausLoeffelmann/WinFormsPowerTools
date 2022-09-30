@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 using WinFormsPowerTools.AutoLayout;
@@ -7,12 +8,13 @@ using WinFormsPowerTools.AutoLayout;
 
 public abstract class AutoLayoutUserControl<T> : UserControl where T : INotifyPropertyChanged
 {
-    private readonly AutoLayoutDocument<T> _document;
+    private BindingSource _bindingSource;
 
     public AutoLayoutUserControl()
     {
+        _bindingSource = new BindingSource();
+        _bindingSource.DataSource = typeof(T);
         InitializeComponentsInternal();
-        _document = GetDocument();
         GenerateComponents();
     }
 
@@ -87,6 +89,12 @@ public abstract class AutoLayoutUserControl<T> : UserControl where T : INotifyPr
         var control = new Label();
         control.Name = label.Name;
         control.Text = label.Text;
+
+        if (label.Bindings.TryGetBinding(nameof(control.Text), out var textBinding))
+        {
+            control.DataBindings.Add(nameof(Label.Text), _bindingSource, textBinding!.BindingPath);
+        }
+
         return control;
     }
 
@@ -95,6 +103,12 @@ public abstract class AutoLayoutUserControl<T> : UserControl where T : INotifyPr
         var control = new TextBox();
         control.Name = textBox.Name;
         control.Text = textBox.Text;
+
+        if (textBox.Bindings.TryGetBinding(nameof(control.Text), out var controlBinding))
+        {
+            control.DataBindings.Add(nameof(TextBox.Text), _bindingSource, controlBinding!.BindingPath);
+        }
+
         return control;
     }
     
@@ -104,7 +118,38 @@ public abstract class AutoLayoutUserControl<T> : UserControl where T : INotifyPr
         var control = new TextBox();
         control.Name = dateEntry.Name;
         control.Text = dateEntry.Value.ToString();
+
+        if (dateEntry.Bindings.TryGetBinding(nameof(control.Text), out var controlBinding))
+        {
+            control.DataBindings.Add(nameof(TextBox.Text), _bindingSource, controlBinding!.BindingPath);
+        }
+
         return control;
+    }
+    
+    private Control GenerateButton(AutoLayoutButton<T> button)
+    {
+        var control = new Button();
+        control.Name = button.Name;
+        control.Text = button.Text;
+
+        if (button.Bindings.TryGetBinding(nameof(button.Command), out var commandBinding))
+        {
+            control.DataBindings.Add(nameof(Button.Command), _bindingSource, commandBinding!.BindingPath);
+        }
+
+        if (button.Bindings.TryGetBinding(nameof(button.Text), out var textBinding))
+        {
+            control.DataBindings.Add(nameof(TextBox.Text), _bindingSource, textBinding!.BindingPath);
+        }
+
+        return control;
+    }
+
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+        _bindingSource.DataSource = DataContext;
     }
 
     public new T? DataContext

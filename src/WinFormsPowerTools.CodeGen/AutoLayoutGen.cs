@@ -551,7 +551,6 @@ namespace WinFormsPowerTools.CodeGen
             }
 
             var attributeToReturn = new CommandMappingAttribute();
-            attributeToReturn.DisplayName = fieldName;
 
             if (attributeData.NamedArguments.Length > 0)
             {
@@ -570,6 +569,18 @@ namespace WinFormsPowerTools.CodeGen
                             break;
                         default:
                             break;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(attributeToReturn.DisplayName))
+                {
+                    try
+                    {
+                        attributeToReturn.DisplayName = attributeData.ConstructorArguments[1].Value!.ToString();
+                    }
+                    catch (Exception)
+                    {
+                        attributeToReturn.DisplayName = fieldName;
                     }
                 }
 

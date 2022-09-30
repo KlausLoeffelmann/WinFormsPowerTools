@@ -9,11 +9,14 @@ namespace WinFormsPowerToolsDemo
     {
         [PropertyMapping(displayName: "ID:", targetHint: AutoLayoutTarget.Label)]
         private Guid _idContext;
-        
-        [PropertyMapping(displayName: "First name:")] 
+
+        [PropertyMapping(displayName: "Middle name:")]
+        private string? _middleName;
+
+        [PropertyMapping(displayName: "First name:")]
         private string? _firstName;
-        
-        [PropertyMapping(displayName: "Last name:")] 
+
+        [PropertyMapping(displayName: "Last name:")]
         private string? _lastName;
 
         [PropertyMapping(displayName: "Address line 1:")]
@@ -28,13 +31,10 @@ namespace WinFormsPowerToolsDemo
         [PropertyMapping(displayName: "Zip:")]
         private string? _zip;
 
-        [PropertyMapping(displayName: "Date of Birth:")] 
+        [PropertyMapping(displayName: "Date of Birth:")]
         private DateTime? _dateOfBirth;
 
-        [PropertyMapping(displayName: "Is active contact")]
-        private bool? _isActiveContact;
-
-        [CommandMapping(displayName: "New document",  TargetHint = AutoLayoutTarget.MenuItem)]
+        [CommandMapping(displayName: "New document", TargetHint = AutoLayoutTarget.MenuItem)]
         public void ExecuteNewDocumentCommand(object? parameter)
         {
         }
@@ -44,5 +44,7 @@ namespace WinFormsPowerToolsDemo
         public void ExecuteOKCommand(object? parameter)
         {
         }
+
     }
 }
+
