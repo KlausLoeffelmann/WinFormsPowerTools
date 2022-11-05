@@ -131,10 +131,10 @@ namespace System.Windows.Forms.Direct2D
         {
             if (brush is SolidBrush solidBrush)
             {
-                var d2dFont = Direct2DFormat.FromFontAndStringFormat(font, stringFormat, _d2dLayer.DirectWriteFactory);
+                var d2dFormat = Direct2DFormat.FromFontAndStringFormat(font, stringFormat, _d2dLayer.DirectWriteFactory);
                 var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
 
-                _d2dLayer.DrawText(s, d2dBrush, d2dFont, x, y);
+                _d2dLayer.DrawText(s, d2dBrush, d2dFormat, x, y);
                 return;
             }
 
@@ -145,10 +145,10 @@ namespace System.Windows.Forms.Direct2D
         {
             if (brush is SolidBrush solidBrush)
             {
-                var d2dFont = Direct2DFormat.FromFont(font, _d2dLayer.DirectWriteFactory);
+                var d2dFormat = Direct2DFormat.FromFont(font, _d2dLayer.DirectWriteFactory);
                 var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
 
-                _d2dLayer.DrawText(s, d2dBrush, d2dFont, layoutRectangle);
+                _d2dLayer.DrawText(s, d2dBrush, d2dFormat, layoutRectangle);
                 return;
             }
         }
@@ -157,14 +157,14 @@ namespace System.Windows.Forms.Direct2D
         {
             if (brush is SolidBrush solidBrush)
             {
-                var d2dFont = Direct2DFormat.FromFontAndStringFormat(
+                var d2dFormat = Direct2DFormat.FromFontAndStringFormat(
                     font, 
                     stringFormat, 
                     _d2dLayer.DirectWriteFactory);
 
                 var d2dBrush = Direct2DBrush.FromSolidBrush(solidBrush, _d2dLayer!.RenderTarget);
 
-                _d2dLayer.DrawText(s, d2dBrush, d2dFont, layoutRectangle);
+                _d2dLayer.DrawText(s, d2dBrush, d2dFormat, layoutRectangle);
                 return;
             }
         }
@@ -174,10 +174,10 @@ namespace System.Windows.Forms.Direct2D
 
         public unsafe SizeF MeasureString(string? text, Font font, SizeF layoutArea)
         {
-            var d2dFont = Direct2DFormat.FromFont(font, _d2dLayer.DirectWriteFactory);
+            var d2dFormat = Direct2DFormat.FromFont(font, _d2dLayer.DirectWriteFactory);
 
             var textLayout = _d2dLayer.TextLayout(
-                text, BlackBrush, d2dFont,
+                text, BlackBrush, d2dFormat,
                 layoutArea.Width, layoutArea.Height);
 
             DWRITE_TEXT_METRICS textMetrics = new();
@@ -188,10 +188,10 @@ namespace System.Windows.Forms.Direct2D
 
         public unsafe SizeF MeasureString(string? text, Font font, SizeF layoutArea, StringFormat stringFormat)
         {
-            var d2dFont = Direct2DFormat.FromFontAndStringFormat(font, stringFormat, _d2dLayer.DirectWriteFactory);
+            var d2dFormat = Direct2DFormat.FromFontAndStringFormat(font, stringFormat, _d2dLayer.DirectWriteFactory);
 
             var textLayout = _d2dLayer.TextLayout(
-                text, BlackBrush, d2dFont,
+                text, BlackBrush, d2dFormat,
                 layoutArea.Width, layoutArea.Height);
 
             DWRITE_TEXT_METRICS textMetrics = new();

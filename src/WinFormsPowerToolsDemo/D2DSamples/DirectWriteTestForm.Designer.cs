@@ -33,19 +33,21 @@
             // 
             // direct2dPanel1
             // 
-            this.direct2dPanel1.Location = new System.Drawing.Point(28, 35);
+            this.direct2dPanel1.Location = new System.Drawing.Point(22, 27);
+            this.direct2dPanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.direct2dPanel1.Name = "direct2dPanel1";
-            this.direct2dPanel1.Size = new System.Drawing.Size(1080, 644);
+            this.direct2dPanel1.Size = new System.Drawing.Size(831, 507);
             this.direct2dPanel1.TabIndex = 0;
             this.direct2dPanel1.Text = "_direct2dPanel";
             this.direct2dPanel1.PaintIGraphics += new System.EventHandler<System.Windows.Forms.Direct2D.GraphicsPaintEventArgs>(this.direct2dPanel1_PaintIGraphics);
             // 
             // DirectWriteTestForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 32F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1142, 713);
+            this.ClientSize = new System.Drawing.Size(878, 620);
             this.Controls.Add(this.direct2dPanel1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "DirectWriteTestForm";
             this.Text = "DirectWriteTestForm";
             this.ResumeLayout(false);
