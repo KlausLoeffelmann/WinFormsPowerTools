@@ -1,5 +1,7 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using Windows.Win32;
 using Windows.Win32.Graphics.DirectWrite;
 
@@ -7,6 +9,9 @@ namespace System.Windows.Forms.Direct2D
 {
     internal class Direct2DFormat
     {
+        private static Dictionary<int, Direct2DFormat> s_cached2DFormats = new();
+        private static readonly int MaxFormatCache = 100;
+
         IDWriteFactory _writeFactory;
 
         string _fontFamilyName;
@@ -29,7 +34,7 @@ namespace System.Windows.Forms.Direct2D
         IDWriteTextFormat? _cachedInstance;
 
         public Direct2DFormat(
-            IDWriteFactory writeFactory, 
+            IDWriteFactory writeFactory,
             string fontFamilyName,
             float fontSize)
         {
@@ -201,7 +206,12 @@ namespace System.Windows.Forms.Direct2D
 
         public static Direct2DFormat FromFont(Font font, IDWriteFactory writeFactory)
         {
-            var d2dFormat = new Direct2DFormat(
+            if (TryGetFromFont(font, out var d2dFormat))
+            {
+                return d2dFormat;
+            }
+
+            d2dFormat = new Direct2DFormat(
                 writeFactory,
                 font.FontFamily.Name,
                 font.Size);
@@ -214,7 +224,20 @@ namespace System.Windows.Forms.Direct2D
                 ? IDirectWriteTextFormat.FontStyle.Italic
                 : IDirectWriteTextFormat.FontStyle.Normal;
 
+            if (s_cached2DFormats.Count == MaxFormatCache)
+            {
+                var firstKey = s_cached2DFormats.Keys.First();
+                s_cached2DFormats.Remove(firstKey);
+            }
+
+            s_cached2DFormats.Add(HashCode.Combine(font), d2dFormat);
+
             return d2dFormat;
+        }
+
+        private static bool TryGetFromFont(Font font, out Direct2DFormat d2dFormat)
+        {
+            return s_cached2DFormats.TryGetValue(HashCode.Combine(font), out d2dFormat!);
         }
 
         public static Direct2DFormat FromFontAndStringFormat(
@@ -222,7 +245,12 @@ namespace System.Windows.Forms.Direct2D
             StringFormat stringFormat,
             IDWriteFactory writeFactory)
         {
-            var d2dFormat = FromFont(font, writeFactory);
+            if (TryGetFromFontAndStringFormat(font, stringFormat, out var d2dFormat))
+            {
+                return d2dFormat;
+            }
+
+            d2dFormat = FromFont(font, writeFactory);
 
             d2dFormat.TextAlignment = stringFormat.Alignment switch
             {
@@ -251,7 +279,20 @@ namespace System.Windows.Forms.Direct2D
                 _ => throw new NotImplementedException($"Text alignment '{stringFormat.Trimming}' is not supported.")
             };
 
+            if (s_cached2DFormats.Count == MaxFormatCache)
+            {
+                var firstKey = s_cached2DFormats.Keys.First();
+                s_cached2DFormats.Remove(firstKey);
+            }
+
+            s_cached2DFormats.Add(HashCode.Combine(font, stringFormat), d2dFormat);
+
             return d2dFormat;
+        }
+
+        private static bool TryGetFromFontAndStringFormat(Font font, StringFormat stringFormat, out Direct2DFormat d2dFormat)
+        {
+            return s_cached2DFormats.TryGetValue(HashCode.Combine(font, stringFormat), out d2dFormat!);
         }
 
         private static IDWriteTextFormat CreateTextFormat(

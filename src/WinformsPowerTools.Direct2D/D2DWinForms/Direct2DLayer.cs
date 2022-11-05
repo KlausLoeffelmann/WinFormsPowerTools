@@ -246,8 +246,8 @@ namespace System.Windows.Forms.Direct2D
             D2D_RECT_F layoutRect = new();
             layoutRect.left = x;
             layoutRect.top = y;
-            layoutRect.bottom = x+1;
-            layoutRect.right = y+1;
+            layoutRect.right = x + 1;
+            layoutRect.bottom = y + 1;
 
             RenderTarget.DrawText(
                 s ?? string.Empty,
