@@ -9,7 +9,7 @@ namespace System.Windows.Forms.Direct2D
 {
     internal class Direct2DFormat
     {
-        private static Dictionary<int, Direct2DFormat> s_cached2DFormats = new();
+        private static QueuedLookup<Direct2DFormat> s_cached2DFormats = new(100);
         private static readonly int MaxFormatCache = 100;
 
         IDWriteFactory _writeFactory;
@@ -224,20 +224,14 @@ namespace System.Windows.Forms.Direct2D
                 ? IDirectWriteTextFormat.FontStyle.Italic
                 : IDirectWriteTextFormat.FontStyle.Normal;
 
-            if (s_cached2DFormats.Count == MaxFormatCache)
-            {
-                var firstKey = s_cached2DFormats.Keys.First();
-                s_cached2DFormats.Remove(firstKey);
-            }
-
-            s_cached2DFormats.Add(HashCode.Combine(font), d2dFormat);
+            s_cached2DFormats.Add(font, d2dFormat);
 
             return d2dFormat;
         }
 
         private static bool TryGetFromFont(Font font, out Direct2DFormat d2dFormat)
         {
-            return s_cached2DFormats.TryGetValue(HashCode.Combine(font), out d2dFormat!);
+            return s_cached2DFormats.TryGetValue(font, out d2dFormat!);
         }
 
         public static Direct2DFormat FromFontAndStringFormat(
@@ -279,13 +273,7 @@ namespace System.Windows.Forms.Direct2D
                 _ => throw new NotImplementedException($"Text alignment '{stringFormat.Trimming}' is not supported.")
             };
 
-            if (s_cached2DFormats.Count == MaxFormatCache)
-            {
-                var firstKey = s_cached2DFormats.Keys.First();
-                s_cached2DFormats.Remove(firstKey);
-            }
-
-            s_cached2DFormats.Add(HashCode.Combine(font, stringFormat), d2dFormat);
+            s_cached2DFormats.Add(font, stringFormat, d2dFormat);
 
             return d2dFormat;
         }
