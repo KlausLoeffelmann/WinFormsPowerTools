@@ -116,18 +116,18 @@ namespace System.Windows.Forms.Direct2D
 
         unsafe public void EndDraw()
         {
-            RenderTarget.EndDraw();
+            RenderTarget.EndDraw(out ulong tag1, out ulong tag2);
         }
 
         public void Clear(System.Drawing.Color color)
         {
-            D2D1_COLOR_F d2dcolor;
-            d2dcolor.r = color.R;
-            d2dcolor.g = color.G;
-            d2dcolor.b = color.B;
-            d2dcolor.a = color.A;
+            D2D1_COLOR_F d2dColor;
+            d2dColor.r = color.R;
+            d2dColor.g = color.G;
+            d2dColor.b = color.B;
+            d2dColor.a = color.A;
 
-            RenderTarget!.Clear(d2dcolor);
+            RenderTarget!.Clear(d2dColor);
         }
 
         public void Resize(System.Drawing.Size size)
@@ -142,7 +142,7 @@ namespace System.Windows.Forms.Direct2D
 
         unsafe public void Flush()
         {
-            RenderTarget.Flush();
+            RenderTarget.Flush(out ulong tag1, out ulong tag2);
         }
 
         internal void DrawLine(float x1, float y1, float x2, float y2, 

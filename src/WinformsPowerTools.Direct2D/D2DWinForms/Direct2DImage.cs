@@ -80,8 +80,7 @@ namespace System.Windows.Forms.Direct2D
                 };
 
                 byte[] bitmapBytes = new byte[BytesPerPixel * bitmapWidth * bitmapHeight];
-                Span<byte> bitmapSpan = new Span<byte>(bitmapBytes);
-                pplBitmap.CopyPixels(in bitmapRect, bitmapStride, bitmapSpan);
+                pplBitmap.CopyPixels(in bitmapRect, bitmapStride, bitmapBytes);
 
                 renderTarget.CreateBitmapFromWicBitmap(
                     pplBitmap,

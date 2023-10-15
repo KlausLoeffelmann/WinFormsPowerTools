@@ -60,7 +60,7 @@ namespace System.Windows.Forms.Documents
                     {
                         PInvoke.EnableScrollBar(
                             new HWND(_parent.Handle),
-                            Orientation,
+                            (uint) Orientation,
                             value
                                 ? ENABLE_SCROLL_BAR_ARROWS.ESB_ENABLE_BOTH
                                 : ENABLE_SCROLL_BAR_ARROWS.ESB_DISABLE_BOTH);

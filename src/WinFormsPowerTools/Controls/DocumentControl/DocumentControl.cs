@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
@@ -401,21 +402,21 @@ namespace System.Windows.Forms.Documents
             }
 
             Rectangle client = ClientRectangle;
-            var loWord = Interop.PARAM.LOWORD(m.WParam);
-            bool thumbTrack = loWord != PInvoke.SB_THUMBTRACK;
+            var loWord = (SCROLLBAR_COMMAND) Interop.PARAM.LOWORD(m.WParam);
+            bool thumbTrack = loWord != SCROLLBAR_COMMAND.SB_THUMBTRACK;
 
             int pos = 0-_displayRect.Y;
             int oldValue = pos;
             int maxPos = -(client.Height - _displayRect.Height);
 
-            switch ((uint)loWord)
+            switch ((SCROLLBAR_COMMAND)loWord)
             {
-                case PInvoke.SB_THUMBPOSITION:
-                case PInvoke.SB_THUMBTRACK:
+                case SCROLLBAR_COMMAND.SB_THUMBPOSITION:
+                case SCROLLBAR_COMMAND.SB_THUMBTRACK:
                     pos = ScrollThumbPosition(SCROLLBAR_CONSTANTS.SB_VERT);
                     break;
 
-                case PInvoke.SB_LINEUP:
+                case SCROLLBAR_COMMAND.SB_LINEUP:
                     if (pos > 0)
                     {
                         pos -= VerticalScroll.SmallChange;
@@ -427,7 +428,7 @@ namespace System.Windows.Forms.Documents
 
                     break;
 
-                case PInvoke.SB_LINEDOWN:
+                case SCROLLBAR_COMMAND.SB_LINEDOWN:
                     if (pos < maxPos - VerticalScroll.SmallChange)
                     {
                         pos += VerticalScroll.SmallChange;
@@ -439,7 +440,7 @@ namespace System.Windows.Forms.Documents
 
                     break;
 
-                case PInvoke.SB_PAGEUP:
+                case SCROLLBAR_COMMAND.SB_PAGEUP:
                     if (pos > VerticalScroll.LargeChange)
                     {
                         pos -= VerticalScroll.LargeChange;
@@ -451,7 +452,7 @@ namespace System.Windows.Forms.Documents
 
                     break;
 
-                case PInvoke.SB_PAGEDOWN:
+                case SCROLLBAR_COMMAND.SB_PAGEDOWN:
                     if (pos < maxPos - VerticalScroll.LargeChange)
                     {
                         pos += VerticalScroll.LargeChange;
@@ -463,11 +464,11 @@ namespace System.Windows.Forms.Documents
 
                     break;
 
-                case PInvoke.SB_TOP:
+                case SCROLLBAR_COMMAND.SB_TOP:
                     pos = 0;
                     break;
 
-                case PInvoke.SB_BOTTOM:
+                case SCROLLBAR_COMMAND.SB_BOTTOM:
                     pos = maxPos;
                     break;
             }
@@ -590,7 +591,7 @@ namespace System.Windows.Forms.Documents
 
                 HRGN zeroHRGN = new HRGN(IntPtr.Zero);
 
-                PInvoke.ScrollWindowEx(
+                var result = PInvoke.ScrollWindowEx(
                     new HWND(Handle),
                     xDelta,
                     yDelta,
@@ -598,9 +599,32 @@ namespace System.Windows.Forms.Documents
                     prcClip: &rcClip,
                     zeroHRGN,
                     prcUpdate: &rcUpdate,
-                    SHOW_WINDOW_CMD.SW_INVALIDATE |
-                        SHOW_WINDOW_CMD.SW_ERASE |
-                        SHOW_WINDOW_CMD.SW_SCROLLCHILDREN);
+                    SCROLL_WINDOW_FLAGS.SW_INVALIDATE |
+                        SCROLL_WINDOW_FLAGS.SW_ERASE |
+                        SCROLL_WINDOW_FLAGS.SW_SCROLLCHILDREN);
+
+                if (result == 0)
+                {
+                    WIN32_ERROR errorCode = (WIN32_ERROR) Marshal.GetLastWin32Error();
+
+                    switch (errorCode)
+                    {
+                        case WIN32_ERROR.ERROR_SUCCESS:
+                                // No error, although this is unlikely if result is 0
+                            break;
+
+                        case WIN32_ERROR.ERROR_INVALID_HANDLE:
+                            throw new InvalidOperationException("The handle is invalid.");
+
+                        case WIN32_ERROR.ERROR_INVALID_PARAMETER:
+                            throw new ArgumentException("One or more parameters are invalid.");
+
+                        // Add more error cases as necessary, based on the documentation or your specific needs
+
+                        default:
+                            throw new Win32Exception((int)errorCode);
+                    }
+                }
             }
         }
 
@@ -623,15 +647,15 @@ namespace System.Windows.Forms.Documents
             int oldValue = pos;
             int maxPos = -(client.Width - _displayRect.Width);
 
-            var loWord = Interop.PARAM.LOWORD(m.WParam);
-            switch ((uint)loWord)
+            var loWord = (SCROLLBAR_COMMAND) Interop.PARAM.LOWORD(m.WParam);
+            switch (loWord)
             {
-                case PInvoke.SB_THUMBPOSITION:
-                case PInvoke.SB_THUMBTRACK:
+                case SCROLLBAR_COMMAND.SB_THUMBPOSITION:
+                case SCROLLBAR_COMMAND.SB_THUMBTRACK:
                     pos = ScrollThumbPosition(SCROLLBAR_CONSTANTS.SB_HORZ);
 
                     break;
-                case PInvoke.SB_LINELEFT:
+                case SCROLLBAR_COMMAND.SB_LINELEFT:
                     if (pos > HorizontalScroll.SmallChange)
                     {
                         pos -= HorizontalScroll.SmallChange;
@@ -642,7 +666,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case PInvoke.SB_LINERIGHT:
+                case SCROLLBAR_COMMAND.SB_LINERIGHT:
                     if (pos < maxPos - HorizontalScroll.SmallChange)
                     {
                         pos += HorizontalScroll.SmallChange;
@@ -653,7 +677,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case PInvoke.SB_PAGELEFT:
+                case SCROLLBAR_COMMAND.SB_PAGELEFT:
                     if (pos > HorizontalScroll.LargeChange)
                     {
                         pos -= HorizontalScroll.LargeChange;
@@ -664,7 +688,7 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case PInvoke.SB_PAGERIGHT:
+                case SCROLLBAR_COMMAND.SB_PAGERIGHT:
                     if (pos < maxPos - HorizontalScroll.LargeChange)
                     {
                         pos += HorizontalScroll.LargeChange;
@@ -675,15 +699,15 @@ namespace System.Windows.Forms.Documents
                     }
 
                     break;
-                case PInvoke.SB_LEFT:
+                case SCROLLBAR_COMMAND.SB_LEFT:
                     pos = 0;
                     break;
-                case PInvoke.SB_RIGHT:
+                case SCROLLBAR_COMMAND.SB_RIGHT:
                     pos = maxPos;
                     break;
             }
 
-            if (GetScrollState(ScrollStateFullDrag) || loWord != PInvoke.SB_THUMBTRACK)
+            if (GetScrollState(ScrollStateFullDrag) || loWord != SCROLLBAR_COMMAND.SB_THUMBTRACK)
             {
                 SetScrollState(ScrollStateUserHasScrolled, true);
                 SetDisplayRectLocation(-pos, _displayRect.Y);
