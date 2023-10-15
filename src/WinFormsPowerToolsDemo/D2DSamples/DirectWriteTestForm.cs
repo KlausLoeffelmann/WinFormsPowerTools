@@ -14,8 +14,10 @@ namespace WinFormsPowerToolsDemo.D2DSamples
         private void direct2dPanel1_PaintIGraphics(object sender, GraphicsPaintEventArgs e)
         {
             e.Graphics.Clear(BackColor);
-            e.Graphics.DrawString("Teststring", Font, Brushes.Black, 50, 50);
-            e.Graphics.DrawString("Teststring 2", Font, Brushes.Black, 50, 70);
+            e.Graphics.DrawString("TestString", Font, Brushes.Black, 50, 50);
+            e.Graphics.DrawString("TestString 2", Font, Brushes.Black, 50, 70);
+
+            var size = e.Graphics.MeasureString("TestString", Font, ClientSize);
         }
     }
 }

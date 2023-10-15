@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinformsPowerTools.Direct2D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packages", "Packages", "{62D16FA3-ABCF-43E1-BC7C-E0BB0BBB5039}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsPowerTools.Direct2D.Packages", "WinFormsPowerTools.Direct2D.Packages\WinFormsPowerTools.Direct2D.Packages.csproj", "{C4B4B64F-FCF2-4501-9EEC-CB79C8139021}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.Direct2D.Packages", "WinFormsPowerTools.Direct2D.Packages\WinFormsPowerTools.Direct2D.Packages.csproj", "{C4B4B64F-FCF2-4501-9EEC-CB79C8139021}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
