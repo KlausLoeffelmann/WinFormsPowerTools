@@ -1,5 +1,6 @@
 ﻿    using System;
     using System.Drawing;
+using System.Drawing.Drawing2D;
 
     namespace WinFormsPowerTools.ThemedScrollBars
     {
@@ -11,15 +12,24 @@
 
     public class VerticalContentScrollbarRenderer
     {
+        public event EventHandler IsDarkModeChanged;
+
         private static readonly Color s_DarkTrackColor = Color.FromArgb(55, 55, 55);
         private static readonly Color s_LightTrackColor = Color.FromArgb(200, 200, 200);
         private static readonly Color s_DarkThumbColor = Color.FromArgb(80, 80, 80);
-        private static readonly Color s_LightThumbColor = Color.FromArgb(220, 220, 220);
+        private static readonly Color s_LightThumbColor = Color.FromArgb(230, 230, 230);
+
+        protected virtual void OnIsDarkModeChanged(EventArgs e)
+        {
+            IsDarkModeChanged?.Invoke(this, e);
+        }
 
         public bool IsDarkMode { get; private set; }
+
         public ScrollbarParameters Parameters { get; private set; }
         public HoverArea MouseOverArea { get; private set; }
         public float ThumbValue { get; private set; }
+        public int ThumbPadding { get; }
 
         public void Update(
             ScrollbarParameters? parameters = default,
@@ -33,11 +43,12 @@
             if (isDarkMode.HasValue) IsDarkMode = isDarkMode.Value;
         }
 
-        public VerticalContentScrollbarRenderer(bool isDarkMode, ScrollbarParameters parameters)
+        public VerticalContentScrollbarRenderer(bool isDarkMode, ScrollbarParameters parameters, int thumbPadding = 5)
         {
             IsDarkMode = isDarkMode;
             Parameters = parameters;
             MouseOverArea = HoverArea.None;
+            ThumbPadding = thumbPadding;
         }
 
         private Color BaseTrackColor() => IsDarkMode ? s_DarkTrackColor : s_LightTrackColor;
@@ -45,8 +56,8 @@
         private Color BaseThumbColor() => IsDarkMode ? s_DarkThumbColor : s_LightThumbColor;
 
         private Color HighlightColor() => IsDarkMode
-            ? Color.FromArgb(90, 90, 90)
-            : Color.FromArgb(230, 230, 230);
+            ? Color.FromArgb(120, 120, 120)
+            : Color.FromArgb(250, 250, 250);
 
         private Color ArrowColor(bool isLeftArrow)
         {
@@ -121,15 +132,56 @@
         {
             var thumbInfo = GetThumbInfo(value);
 
-            var thumbColor = MouseOverArea == HoverArea.Thumb ? HighlightColor() : BaseThumbColor();
+            var thumbColor = MouseOverArea == HoverArea.Thumb 
+                ? HighlightColor() 
+                : BaseThumbColor();
 
             using var brush = new SolidBrush(thumbColor);
 
-            g.FillRectangle(
-                brush,
+            // Calculate the new width of the Thumb by subtracting ThumbPadding*2 from Parameters.ThumbWidth
+            int thumbWidth = Parameters.ThumbWidth - (ThumbPadding * 2);
+
+            // Calculate the X-coordinate to center the Thumb
+            int thumbX = 0 + ThumbPadding;
+
+            // Create a GraphicsPath for the rounded rectangle
+            using var path = DrawRoundedRectangle(
                 new Rectangle(
-                    new Point(0, thumbInfo.ThumbY),
-                    new Size(Parameters.ThumbWidth, thumbInfo.ThumbHeight)));
+                    thumbX, 
+                    thumbInfo.ThumbY, 
+                    thumbWidth, 
+                    thumbInfo.ThumbHeight),
+                10);
+
+            g.FillPath(brush, path);
+        }
+
+        private GraphicsPath DrawRoundedRectangle(Rectangle rectangle, int cornerRadius)
+        {
+            GraphicsPath path = new GraphicsPath();
+
+            int diameter = 2 * cornerRadius;
+            Size size = new Size(diameter, diameter);
+            Rectangle arc = new Rectangle(rectangle.Location, size);
+
+            // Top-left corner
+            path.AddArc(arc, 180, 90);
+
+            // Top-right corner
+            arc.X = rectangle.Right - diameter;
+            path.AddArc(arc, 270, 90);
+
+            // Bottom-right corner
+            arc.Y = rectangle.Bottom - diameter;
+            path.AddArc(arc, 0, 90);
+
+            // Bottom-left corner
+            arc.X = rectangle.Left;
+            path.AddArc(arc, 90, 90);
+
+            path.CloseFigure();
+
+            return path;
         }
 
         public void DrawArrowButton(Graphics g, Rectangle rect, bool isUpArrow)
@@ -145,8 +197,10 @@
             var middleX = rect.Left + rect.Width / 2;
             var middleY = rect.Top + rect.Height / 2;
 
-            scaleFactor ??= Math.Min(rect.Width, rect.Height) / 10.0f;
-            var arrowSize = (int)(4 * scaleFactor.Value);
+            scaleFactor ??= 1.0f;
+
+            double intFactor = Math.Min(rect.Width, rect.Height) / 11.0f;
+            var arrowSize = (int)(4 * intFactor * scaleFactor);
 
             Point[] points = isUpArrow
                 ? new[]

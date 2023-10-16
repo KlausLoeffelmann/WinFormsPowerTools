@@ -9,12 +9,14 @@ namespace WinFormsPowerTools.ThemedScrollBars
     public class ThemedVerticalScrollbar : Control
     {
         public event EventHandler ValueChanged;
+        public event EventHandler IsDarkModeChanged;
 
         private VerticalContentScrollbarRenderer _renderer;
         private bool _isDragging;
         private int _dragOffset;
         private int _thumbValue;
         private float _value;
+        private bool _isDarkMode = false;
 
         public ThemedVerticalScrollbar() : base()
         {
@@ -30,14 +32,8 @@ namespace WinFormsPowerTools.ThemedScrollBars
                     maximum: 300));
 
             IsDarkMode = false;
-
             ResizeRedraw = true;
-
             DoubleBuffered = true;
-            MouseDown += ThemedVerticalScrollbar_MouseDown;
-            MouseUp += ThemedVerticalScrollbar_MouseUp;
-            MouseMove += ThemedVerticalScrollbar_MouseMove;
-            MouseWheel += ThemedVerticalScrollbar_MouseWheel;
         }
 
         protected override void OnHandleCreated(EventArgs e)
@@ -59,7 +55,22 @@ namespace WinFormsPowerTools.ThemedScrollBars
         public bool IsDarkMode
         {
             get => _renderer.IsDarkMode;
-            set => _renderer.Update(isDarkMode: value);
+
+            set
+            {
+                if (_renderer.IsDarkMode == value)
+                {
+                    return;
+                }
+
+                _renderer.Update(isDarkMode: value);
+                OnIsDarkModeChanged(EventArgs.Empty);
+            }
+        }
+
+        protected virtual void OnIsDarkModeChanged(EventArgs e)
+        {
+            IsDarkModeChanged?.Invoke(this, e);
         }
 
         public float Value
@@ -77,25 +88,23 @@ namespace WinFormsPowerTools.ThemedScrollBars
 
                 _value = value;
                 OnValueChanged(EventArgs.Empty);
+
+                _thumbValue = CalculateThumbValue();
                 Invalidate();
             }
-        }
-
-        private void SetValueInternal(float value)
-        {
-            if (value == _value)
-            {
-                return;
-            }
-
-            _value = value;
-            OnValueChanged(EventArgs.Empty);
-            Invalidate();
         }
 
         protected virtual void OnValueChanged(EventArgs e)
         {
             ValueChanged?.Invoke(this, e);
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            _renderer.Update(
+                _renderer.Parameters
+                    .WithScrollBarSize(new Size(SystemInformation.VerticalScrollBarWidth, Size.Height)));
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -114,47 +123,73 @@ namespace WinFormsPowerTools.ThemedScrollBars
             return thumbValue;
         }
 
-        private void ThemedVerticalScrollbar_MouseDown(object sender, MouseEventArgs e)
+        private HoverArea GetHoverArea(int mouseY)
         {
-            if (e.Button == MouseButtons.Left)
+            var thumbInfo = _renderer.GetThumbInfo(Value);
+
+            int thumbTop = thumbInfo.ThumbY;
+            int thumbBottom = thumbTop + thumbInfo.ThumbHeight;
+            int upArrowBottom = Parameters.ThumbWidth;
+            int downArrowTop = Height - Parameters.ThumbWidth;
+
+            if (mouseY >= thumbTop && mouseY <= thumbBottom)
             {
-                var thumbInfo = _renderer.GetThumbInfo(Value);
-                // Check if the mouse is over the thumb.
+                return HoverArea.Thumb;
+            }
+            if (mouseY < upArrowBottom)
+            {
+                return HoverArea.LeftUpArrow;
+            }
+            if (mouseY > downArrowTop)
+            {
+                return HoverArea.DownRightArrow;
+            }
+            return HoverArea.Track;
+        }
 
-                int thumbTop = thumbInfo.ThumbY;
-                int thumbBottom = thumbTop + thumbInfo.ThumbHeight;
+        private void HandleMouseDown(HoverArea hoverArea, int mouseY)
+        {
+            var thumbInfo = _renderer.GetThumbInfo(Value);
 
-                if (e.Y >= thumbTop && e.Y <= thumbBottom)
-                {
+            switch (hoverArea)
+            {
+                case HoverArea.Thumb:
                     _isDragging = true;
-                    _dragOffset = e.Y - thumbTop;
+                    _dragOffset = mouseY - thumbInfo.ThumbY;
                     Capture = true;
-                }
-                else if (e.Y < thumbTop)
-                {
-                    // Clicked above the thumb, handle as LargeChange (PageUp).
-                    // You can increase the value by a larger amount.
-
-                    // Update the scrollbar value accordingly based on LargeChange.
-                    // For example:
-                    // newValue = Math.Max(Parameters.Minimum, Parameters.Value - Parameters.LargeChange);
-                    // UpdateScrollbarValue(newValue);
-                }
-                else if (e.Y > thumbBottom)
-                {
-                    // Clicked below the thumb, handle as LargeChange (PageDown).
-                    // You can decrease the value by a larger amount.
-
-                    // Update the scrollbar value accordingly based on LargeChange.
-                    // For example:
-                    // newValue = Math.Min(Parameters.Maximum, Parameters.Value + Parameters.LargeChange);
-                    // UpdateScrollbarValue(newValue);
-                }
+                    break;
+                case HoverArea.LeftUpArrow:
+                    // Handle as SmallChange (ArrowUp)
+                    // UpdateScrollbarValue(Parameters.Value - Parameters.SmallChange);
+                    break;
+                case HoverArea.DownRightArrow:
+                    // Handle as SmallChange (ArrowDown)
+                    // UpdateScrollbarValue(Parameters.Value + Parameters.SmallChange);
+                    break;
+                case HoverArea.Track:
+                    // Handle as LargeChange (PageUp or PageDown)
+                    // Implement logic similar to what you had for LargeChange.
+                    break;
+                default:
+                    // Do nothing
+                    break;
             }
         }
 
-        private void ThemedVerticalScrollbar_MouseUp(object sender, MouseEventArgs e)
+        protected override void OnMouseDown(MouseEventArgs e)
         {
+            base.OnMouseDown(e);
+            if (e.Button == MouseButtons.Left)
+            {
+                var hoverArea = GetHoverArea(e.Y);
+                HandleMouseDown(hoverArea, e.Y);
+            }
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+
             if (e.Button == MouseButtons.Left && _isDragging)
             {
                 _isDragging = false;
@@ -162,8 +197,24 @@ namespace WinFormsPowerTools.ThemedScrollBars
             }
         }
 
-        private void ThemedVerticalScrollbar_MouseMove(object sender, MouseEventArgs e)
+        protected override void OnMouseLeave(EventArgs e)
         {
+            base.OnMouseLeave(e);
+            _renderer.Update(hoverArea: HoverArea.None);
+            Invalidate();
+        }
+
+        protected override void OnMouseEnter(EventArgs e)
+        {
+            base.OnMouseEnter(e);
+            _renderer.Update(hoverArea: GetHoverArea(PointToClient(MousePosition).Y));
+            Invalidate();
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
             if (_isDragging)
             {
                 var thumbInfo = _renderer.GetThumbInfo(Value);
@@ -187,8 +238,9 @@ namespace WinFormsPowerTools.ThemedScrollBars
                 // Calculate the new _thumbValue based on the newThumbTop position.
                 double thumbRatio = (double)(newThumbTop - minThumbTop) / (maxThumbTop - minThumbTop);
 
-                Value = (float) thumbRatio 
-                    * (_renderer.Parameters.Maximum - _renderer.Parameters.Minimum) 
+                _renderer.Update(hoverArea: HoverArea.Thumb);
+                Value = (float)thumbRatio
+                    * (_renderer.Parameters.Maximum - _renderer.Parameters.Minimum)
                     + _renderer.Parameters.Minimum;
 
                 Debug.WriteLine($"Value: {Value}");
@@ -204,8 +256,9 @@ namespace WinFormsPowerTools.ThemedScrollBars
             }
         }
 
-        private void ThemedVerticalScrollbar_MouseWheel(object sender, MouseEventArgs e)
+        protected override void OnMouseWheel(MouseEventArgs e)
         {
+            base.OnMouseWheel(e);
             // Handle mouse wheel events and update the thumb position.
             // You will need to implement this based on your specific requirements.
             // You can adjust the _thumbValue and trigger a scroll event accordingly.

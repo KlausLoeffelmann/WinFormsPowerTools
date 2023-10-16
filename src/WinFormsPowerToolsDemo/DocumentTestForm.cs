@@ -18,13 +18,6 @@ namespace WinFormsPowerToolsDemo
             //doc.ResumeUpdates();
 
             // Add a new Themed vertical scrollbar:
-            var vscrollBar = new ThemedVerticalScrollbar()
-            {
-                Location = new Point(50, 50),
-                Size = new Size(30, 400)
-            };
-
-            Controls.Add(vscrollBar);
         }
     }
 

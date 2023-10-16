@@ -32,18 +32,34 @@ namespace WinFormsPowerToolsDemo
         /// </summary>
         private void InitializeComponent()
         {
+            themedVerticalScrollbar1 = new WinFormsPowerTools.ThemedScrollBars.ThemedVerticalScrollbar();
             SuspendLayout();
+            // 
+            // themedVerticalScrollbar1
+            // 
+            themedVerticalScrollbar1.Dock = System.Windows.Forms.DockStyle.Right;
+            themedVerticalScrollbar1.IsDarkMode = true;
+            themedVerticalScrollbar1.Location = new System.Drawing.Point(930, 0);
+            themedVerticalScrollbar1.Name = "themedVerticalScrollbar1";
+            themedVerticalScrollbar1.Size = new System.Drawing.Size(20, 741);
+            themedVerticalScrollbar1.TabIndex = 0;
+            themedVerticalScrollbar1.Text = "themedVerticalScrollbar1";
+            themedVerticalScrollbar1.Value = 0F;
             // 
             // DocumentTestForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(983, 741);
+            BackColor = System.Drawing.Color.FromArgb(32, 32, 32);
+            ClientSize = new System.Drawing.Size(950, 741);
+            Controls.Add(themedVerticalScrollbar1);
             Name = "DocumentTestForm";
             Text = "DocumentFormTest";
             ResumeLayout(false);
         }
 
         #endregion
+
+        private WinFormsPowerTools.ThemedScrollBars.ThemedVerticalScrollbar themedVerticalScrollbar1;
     }
 }
