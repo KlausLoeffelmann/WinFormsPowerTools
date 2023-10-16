@@ -2,6 +2,7 @@
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Windows.Forms.Documents;
+using WinFormsPowerTools.ThemedScrollBars;
 
 namespace WinFormsPowerToolsDemo
 {
@@ -10,12 +11,20 @@ namespace WinFormsPowerToolsDemo
         public DocumentTestForm()
         {
             InitializeComponent();
-            Document doc = new();
-            documentControl1.MainDocument = doc;
+            //Document doc = new();
 
-            doc.SuspendUpdates();
-            doc.AddDocumentItem(new TestDocumentItem());
-            doc.ResumeUpdates();
+            //doc.SuspendUpdates();
+            ////doc.AddDocumentItem(new TestDocumentItem());
+            //doc.ResumeUpdates();
+
+            // Add a new Themed vertical scrollbar:
+            var vscrollBar = new ThemedVerticalScrollbar()
+            {
+                Location = new Point(50, 50),
+                Size = new Size(30, 400)
+            };
+
+            Controls.Add(vscrollBar);
         }
     }
 
