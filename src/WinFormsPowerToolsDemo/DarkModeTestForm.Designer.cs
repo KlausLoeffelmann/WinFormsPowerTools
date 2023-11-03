@@ -3,7 +3,7 @@ using System.Windows.Forms.DataEntryForms.Controls;
 
 namespace WinFormsPowerToolsDemo
 {
-    partial class Form1
+    partial class DarkModeTestForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -31,7 +31,7 @@ namespace WinFormsPowerToolsDemo
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DarkModeTestForm));
             System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter decimalDataEntryFormatter2 = new System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter();
             System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter decimalDataEntryFormatter1 = new System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter();
             System.Windows.Forms.DataEntryForms.Components.DateEntryFormatterComponent.DateDataEntryFormatter dateDataEntryFormatter1 = new System.Windows.Forms.DataEntryForms.Components.DateEntryFormatterComponent.DateDataEntryFormatter();
