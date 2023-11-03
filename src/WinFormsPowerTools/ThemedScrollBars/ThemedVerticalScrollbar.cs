@@ -34,14 +34,49 @@ namespace WinFormsPowerTools.ThemedScrollBars
             IsDarkMode = false;
             ResizeRedraw = true;
             DoubleBuffered = true;
+            AutoSize = true;
+        }
+
+        [DefaultValue(true)]
+        public override bool AutoSize
+        {
+            get => base.AutoSize;
+
+            set
+            {
+                if (value == AutoSize)
+                {
+                    return;
+                }
+
+                PerformLayout();
+            }
+        }
+
+        protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
+        {
+            if (AutoSize && specified.HasFlag(BoundsSpecified.Width))
+            {
+                width = DeviceDpiScaled(SystemInformation.VerticalScrollBarWidth);
+            }
+
+            base.SetBoundsCore(x, y, width, height, specified);
+            _renderer.Update(_renderer.Parameters
+                .WithScrollBarSize(
+                new Size(
+                    DeviceDpiScaled(width),
+                    DeviceDpiScaled(height))));
+        }
+
+        private int DeviceDpiScaled(int value)
+        {
+            var dpiScaling = DeviceDpi / 96;
+            return (int)(value * dpiScaling);
         }
 
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
-
-            _renderer.Update(_renderer.Parameters
-                .WithScrollBarSize(new Size(SystemInformation.VerticalScrollBarWidth, Size.Height)));
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -78,7 +113,7 @@ namespace WinFormsPowerTools.ThemedScrollBars
             get => _value;
             set
             {
-                if (value==_value)
+                if (value == _value)
                 {
                     return;
                 }
