@@ -9,16 +9,24 @@
 		<RepositoryType>git</RepositoryType>
 		<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_GetFilesToPackage</TargetsForTfmSpecificContentInPackage>
 		<RunPostBuildEvent>Always</RunPostBuildEvent>
-		<PackageVersion>0.1.5</PackageVersion>
-		<AssemblyVersion>0.1.5</AssemblyVersion>
+		<PackageVersion>0.1.0-Alpha</PackageVersion>
+		<AssemblyVersion>0.1.0</AssemblyVersion>
+		<Authors>Klaus Loeffelmann</Authors>
+		<Copyright>Klaus Loeffelmann</Copyright>
+		<Description>Alpha-Version of a Controls Collection Library for WinForms .NET (6+).</Description>
+		<PackageTags>C#, Visual Basic, Windows Forms, WinForms, .NET, .NET6</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageReleaseNotes>
+			* 2023-11-03: Initial release. Not tested, missing features, NOT AT ALL for production use.
+		</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<Target Name="_GetFilesToPackage">
 		<ItemGroup>
-			<_File Include="$(SolutionDir)\WinformsPowerTools.Direct2D\bin\$(Configuration)\net6.0-windows\WinformsPowerTools.Direct2D.dll" />
-
+			<_File Include="$(SolutionDir)\WinForms.PowerTools.Controls\bin\$(Configuration)\net6.0-windows\*.dll" />
 			<!--We need this during Control development, so we get proper Debug-Support at runtime. -->
-			<_File Include="$(SolutionDir)\WinformsPowerTools.Direct2D\bin\$(Configuration)\net6.0-windows\WinformsPowerTools.Direct2D.pdb" />
+			<_File Include="$(SolutionDir)\WinForms.PowerTools.Controls\bin\$(Configuration)\net6.0-windows\*.pdb" />
 		</ItemGroup>
 
 		<ItemGroup>

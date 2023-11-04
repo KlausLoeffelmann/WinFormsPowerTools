@@ -3,21 +3,31 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31815.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools", "WinFormsPowerTools\WinFormsPowerTools.csproj", "{D1A62576-200A-4ABE-89A8-034E9F7ADC86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinForms.PowerTools", "WinFormsPowerTools\WinForms.PowerTools.csproj", "{D1A62576-200A-4ABE-89A8-034E9F7ADC86}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.CodeGen", "WinFormsPowerTools.CodeGen\WinFormsPowerTools.CodeGen.csproj", "{E3D6E233-8CE5-4FB8-8066-6D465792AE32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinForms.PowerTools.CodeGen", "WinFormsPowerTools.CodeGen\WinForms.PowerTools.CodeGen.csproj", "{E3D6E233-8CE5-4FB8-8066-6D465792AE32}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.UnitTests", "WinFormsPowerTools.UnitTests\WinFormsPowerTools.UnitTests.csproj", "{DA79C2E0-0533-40A3-80F1-7C307B125288}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinForms.PowerTools.UnitTests", "WinFormsPowerTools.UnitTests\WinForms.PowerTools.UnitTests.csproj", "{DA79C2E0-0533-40A3-80F1-7C307B125288}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerToolsDemo", "WinFormsPowerToolsDemo\WinFormsPowerToolsDemo.csproj", "{4C7D9500-0747-4103-B040-6428EB973D1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinForms.PowerToolsDemo", "WinFormsPowerToolsDemo\WinForms.PowerToolsDemo.csproj", "{4C7D9500-0747-4103-B040-6428EB973D1B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.StandardLib", "WinFormsPowerTools.StandardLib\WinFormsPowerTools.StandardLib.csproj", "{6E2A19D4-8801-477A-B04C-061162EA0ECB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinForms.PowerTools.StandardLib", "WinFormsPowerTools.StandardLib\WinForms.PowerTools.StandardLib.csproj", "{6E2A19D4-8801-477A-B04C-061162EA0ECB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinformsPowerTools.Direct2D", "WinformsPowerTools.Direct2D\WinformsPowerTools.Direct2D.csproj", "{B82FF0C2-E280-4D16-98B0-0A7736322F9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Winforms.PowerTools.Direct2D", "WinformsPowerTools.Direct2D\Winforms.PowerTools.Direct2D.csproj", "{B82FF0C2-E280-4D16-98B0-0A7736322F9D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packages", "Packages", "{62D16FA3-ABCF-43E1-BC7C-E0BB0BBB5039}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.Direct2D.Packages", "WinFormsPowerTools.Direct2D.Packages\WinFormsPowerTools.Direct2D.Packages.csproj", "{C4B4B64F-FCF2-4501-9EEC-CB79C8139021}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.Direct2D.Package", "WinFormsPowerTools.Direct2D.Packages\WinFormsPowerTools.Direct2D.Package.csproj", "{C4B4B64F-FCF2-4501-9EEC-CB79C8139021}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B82FF0C2-E280-4D16-98B0-0A7736322F9D} = {B82FF0C2-E280-4D16-98B0-0A7736322F9D}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinForms.PowerTools.Controls", "WinForms.PowerTools.Controls\WinForms.PowerTools.Controls.csproj", "{4F146943-4A90-4D81-8C31-DBA667F58D5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsPowerTools.Controls.Package", "WinFormsPowerTools.Controls.Package\WinFormsPowerTools.Controls.Package.csproj", "{F3F82F81-F5ED-4244-99D5-1253392DBB9D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F146943-4A90-4D81-8C31-DBA667F58D5B} = {4F146943-4A90-4D81-8C31-DBA667F58D5B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,12 +62,21 @@ Global
 		{C4B4B64F-FCF2-4501-9EEC-CB79C8139021}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C4B4B64F-FCF2-4501-9EEC-CB79C8139021}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4B4B64F-FCF2-4501-9EEC-CB79C8139021}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F146943-4A90-4D81-8C31-DBA667F58D5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F146943-4A90-4D81-8C31-DBA667F58D5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F146943-4A90-4D81-8C31-DBA667F58D5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F146943-4A90-4D81-8C31-DBA667F58D5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3F82F81-F5ED-4244-99D5-1253392DBB9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3F82F81-F5ED-4244-99D5-1253392DBB9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3F82F81-F5ED-4244-99D5-1253392DBB9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3F82F81-F5ED-4244-99D5-1253392DBB9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C4B4B64F-FCF2-4501-9EEC-CB79C8139021} = {62D16FA3-ABCF-43E1-BC7C-E0BB0BBB5039}
+		{F3F82F81-F5ED-4244-99D5-1253392DBB9D} = {62D16FA3-ABCF-43E1-BC7C-E0BB0BBB5039}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {942E4F15-B7AF-4D69-B288-5726FBA46079}

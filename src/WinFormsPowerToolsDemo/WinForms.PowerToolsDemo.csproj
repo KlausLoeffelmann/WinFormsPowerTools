@@ -10,10 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<ProjectReference Include="..\WinFormsPowerTools.CodeGen\WinFormsPowerTools.CodeGen.csproj" OutputItemType="Analyzer" />
-	<ProjectReference Include="..\WinformsPowerTools.Direct2D\WinformsPowerTools.Direct2D.csproj" />
-    <ProjectReference Include="..\WinFormsPowerTools.StandardLib\WinFormsPowerTools.StandardLib.csproj" />
-    <ProjectReference Include="..\WinFormsPowerTools\WinFormsPowerTools.csproj" />
+	<ProjectReference Include="..\WinFormsPowerTools.CodeGen\WinForms.PowerTools.CodeGen.csproj" OutputItemType="Analyzer" />
+	<ProjectReference Include="..\WinformsPowerTools.Direct2D\Winforms.PowerTools.Direct2D.csproj" />
+    <ProjectReference Include="..\WinFormsPowerTools.StandardLib\WinForms.PowerTools.StandardLib.csproj" />
+    <ProjectReference Include="..\WinFormsPowerTools\WinForms.PowerTools.csproj" />
   </ItemGroup>
 
   <ItemGroup>
