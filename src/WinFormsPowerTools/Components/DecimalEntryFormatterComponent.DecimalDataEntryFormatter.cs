@@ -6,7 +6,7 @@ namespace System.Windows.Forms.DataEntryForms.Components
 {
     public partial class DecimalEntryFormatterComponent
     {
-        private const string DefaultCurrentcySymbol = "";
+        private const string DefaultCurrencySymbol = "";
 
         public class DecimalDataEntryFormatter : DataEntryFormatter<decimal>
         {
@@ -26,7 +26,7 @@ namespace System.Windows.Forms.DataEntryForms.Components
             Description("Sets or gets the currency sign that should be placed before or after the amount."),
             Category("Behavior"),
             EditorBrowsable(EditorBrowsableState.Advanced),
-            Browsable(true), DefaultValue(DefaultCurrentcySymbol)
+            Browsable(true), DefaultValue(DefaultCurrencySymbol)
             ]
             public string CurrencySymbol
             {

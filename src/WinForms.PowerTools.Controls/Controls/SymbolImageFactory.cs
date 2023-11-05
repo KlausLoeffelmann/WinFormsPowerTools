@@ -8,7 +8,15 @@ namespace WinForms.PowerTools.Controls
     /// </summary>public 
     public class SymbolImageFactory
     {
+        public enum BaseFontSetting
+        {
+            SegoeMDL2Assets,
+            SegoeFluentIcons
+        }
+
         private const string SegoeMDL2AssetsFont = "Segoe MDL2 Assets";
+        private const string SegoeFluentFont = "Segoe Fluent Icons";
+
         private static readonly ConcurrentDictionary<string, bool> s_fontCache = new();
 
         /// <summary>
@@ -17,6 +25,7 @@ namespace WinForms.PowerTools.Controls
         /// <param name="symbolValue">Unicode value representation of the character of the Font.</param>
         /// <param name="width">The width of the image.</param>
         /// <param name="height">The height of the image.</param>
+        /// <param name="fontBase">The Font to be used for generating the symbols/icons.</param>
         /// <param name="transparentColor">The transparent color for the image.</param>
         /// <param name="leftOffset">The left offset for the symbol.</param>
         /// <param name="topOffset">The top offset for the symbol.</param>
@@ -25,19 +34,21 @@ namespace WinForms.PowerTools.Controls
             int symbolValue,
             int width = 32,
             int height = 32,
+            BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
             Color color = default,
             Color transparentColor = default,
             int leftOffset = 0,
             int topOffset = 0,
         bool getImageLazy = true) : this(
-            (char)symbolValue,
-            width,
-            height,
-            color,
-            transparentColor,
-            leftOffset,
-            topOffset,
-            getImageLazy)
+            symbolChar: (char)symbolValue,
+            width: width,
+            height: height,
+            baseFont: baseFont,
+            color: color,
+            transparentColor: transparentColor,
+            leftOffset: leftOffset,
+            topOffset: topOffset,
+            getImageLazy: getImageLazy)
         { }
 
         /// <summary>
@@ -46,6 +57,7 @@ namespace WinForms.PowerTools.Controls
         /// <param name="symbol">One of the <see cref="MDL2Assets"/> values.</param>
         /// <param name="width">The width of the image.</param>
         /// <param name="height">The height of the image.</param>
+        /// <param name="fontBase">The Font to be used for generating the symbols/icons.</param>
         /// <param name="transparentColor">The transparent color for the image.</param>
         /// <param name="leftOffset">The left offset for the symbol.</param>
         /// <param name="topOffset">The top offset for the symbol.</param>
@@ -54,34 +66,38 @@ namespace WinForms.PowerTools.Controls
             MDL2Assets symbol,
             int width = 32,
             int height = 32,
+            BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
             Color color = default,
             Color transparentColor = default,
             int leftOffset = 0,
             int topOffset = 0,
         bool getImageLazy = true) : this(
-            (char)symbol,
-            width,
-            height,
-            color,
-            transparentColor,
-            leftOffset,
-            topOffset,
-            getImageLazy) { }
+            symbolChar: (char)symbol,
+            width: width,
+            height: height,
+            baseFont: baseFont,
+            color: color,
+            transparentColor: transparentColor,
+            leftOffset: leftOffset,
+            topOffset: topOffset,
+            getImageLazy: getImageLazy) { }
 
-            /// <summary>
-            ///  Initializes a new instance of the <see cref="SymbolImageFactory"/> class.
-            /// </summary>
-            /// <param name="symbolChar">The character representing the symbol.</param>
-            /// <param name="width">The width of the image.</param>
-            /// <param name="height">The height of the image.</param>
-            /// <param name="transparentColor">The transparent color for the image.</param>
-            /// <param name="leftOffset">The left offset for the symbol.</param>
-            /// <param name="topOffset">The top offset for the symbol.</param>
-            /// <param name="getImageLazy">Indicates whether to create the image lazily.</param>
-            public SymbolImageFactory(
+        /// <summary>
+        ///  Initializes a new instance of the <see cref="SymbolImageFactory"/> class.
+        /// </summary>
+        /// <param name="symbolChar">The character representing the symbol.</param>
+        /// <param name="width">The width of the image.</param>
+        /// <param name="height">The height of the image.</param>
+        /// <param name="fontBase">The Font to be used for generating the symbols/icons.</param>
+        /// <param name="transparentColor">The transparent color for the image.</param>
+        /// <param name="leftOffset">The left offset for the symbol.</param>
+        /// <param name="topOffset">The top offset for the symbol.</param>
+        /// <param name="getImageLazy">Indicates whether to create the image lazily.</param>
+        public SymbolImageFactory(
             char symbolChar,
             int width = 32,
             int height = 32,
+            BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
             Color color = default,
             Color transparentColor = default,
             int leftOffset = 0,
@@ -104,8 +120,12 @@ namespace WinForms.PowerTools.Controls
                 color = Color.Black;
             }
 
+            BaseFont = baseFont;
+
             TransparentColor = transparentColor;
-            SymbolFont = new Font(SegoeMDL2AssetsFont, height, FontStyle.Regular, GraphicsUnit.Pixel);
+            SymbolFont = new Font(baseFont == BaseFontSetting.SegoeMDL2Assets 
+                ? SegoeMDL2AssetsFont 
+                : SegoeFluentFont, height);
 
             if (getImageLazy)
             {
@@ -143,6 +163,8 @@ namespace WinForms.PowerTools.Controls
         ///  Gets the height of the image.
         /// </summary>
         public int Height { get; }
+
+        public BaseFontSetting BaseFont { get; }
 
         /// <summary>
         ///  Gets the left offset for the symbol.

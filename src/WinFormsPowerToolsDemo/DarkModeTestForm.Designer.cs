@@ -32,319 +32,309 @@ namespace WinFormsPowerToolsDemo
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DarkModeTestForm));
-            System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter decimalDataEntryFormatter2 = new System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter();
-            System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter decimalDataEntryFormatter1 = new System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent.DecimalDataEntryFormatter();
-            System.Windows.Forms.DataEntryForms.Components.DateEntryFormatterComponent.DateDataEntryFormatter dateDataEntryFormatter1 = new System.Windows.Forms.DataEntryForms.Components.DateEntryFormatterComponent.DateDataEntryFormatter();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.cancelToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.clearToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.settingsToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.dataEntry1 = new System.Windows.Forms.DataEntryForms.Controls.DataEntry();
-            this.decimalEntryFormatterComponent1 = new System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatterComponent();
-            this.dataEntry2 = new System.Windows.Forms.DataEntryForms.Controls.DataEntry();
-            this.dataEntry3 = new System.Windows.Forms.DataEntryForms.Controls.DataEntry();
-            this.dateEntryFormatterComponent1 = new System.Windows.Forms.DataEntryForms.Components.DateEntryFormatterComponent();
-            this.label3 = new System.Windows.Forms.Label();
-            this.btnSetTypesValueDelayed = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.lblTypedValues = new System.Windows.Forms.Label();
-            this.lblObjectValues = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.btnSetObjectValuesDelayed = new System.Windows.Forms.Button();
-            this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataEntry1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.decimalEntryFormatterComponent1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataEntry2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataEntry3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dateEntryFormatterComponent1)).BeginInit();
-            this.tableLayoutPanel1.SuspendLayout();
-            this.SuspendLayout();
+            DecimalEntryFormatterComponent.DecimalDataEntryFormatter decimalDataEntryFormatter2 = new DecimalEntryFormatterComponent.DecimalDataEntryFormatter();
+            DecimalEntryFormatterComponent.DecimalDataEntryFormatter decimalDataEntryFormatter1 = new DecimalEntryFormatterComponent.DecimalDataEntryFormatter();
+            DateEntryFormatterComponent.DateDataEntryFormatter dateDataEntryFormatter1 = new DateEntryFormatterComponent.DateDataEntryFormatter();
+            toolStrip1 = new System.Windows.Forms.ToolStrip();
+            saveToolStripButton = new System.Windows.Forms.ToolStripButton();
+            cancelToolStripButton = new System.Windows.Forms.ToolStripButton();
+            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            clearToolStripButton = new System.Windows.Forms.ToolStripButton();
+            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            settingsToolStripButton = new System.Windows.Forms.ToolStripButton();
+            label1 = new System.Windows.Forms.Label();
+            label2 = new System.Windows.Forms.Label();
+            dataEntry1 = new DataEntry();
+            decimalEntryFormatterComponent1 = new DecimalEntryFormatterComponent();
+            dataEntry2 = new DataEntry();
+            dataEntry3 = new DataEntry();
+            dateEntryFormatterComponent1 = new DateEntryFormatterComponent();
+            label3 = new System.Windows.Forms.Label();
+            btnSetTypesValueDelayed = new System.Windows.Forms.Button();
+            tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            lblTypedValues = new System.Windows.Forms.Label();
+            lblObjectValues = new System.Windows.Forms.Label();
+            textBox1 = new System.Windows.Forms.TextBox();
+            btnSetObjectValuesDelayed = new System.Windows.Forms.Button();
+            toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataEntry1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)decimalEntryFormatterComponent1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dataEntry2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dataEntry3).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dateEntryFormatterComponent1).BeginInit();
+            tableLayoutPanel1.SuspendLayout();
+            SuspendLayout();
             // 
             // toolStrip1
             // 
-            this.toolStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripButton,
-            this.cancelToolStripButton,
-            this.toolStripSeparator1,
-            this.clearToolStripButton,
-            this.toolStripSeparator2,
-            this.settingsToolStripButton});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(800, 35);
-            this.toolStrip1.TabIndex = 5;
-            this.toolStrip1.Text = "toolStrip1";
+            toolStrip1.BackColor = System.Drawing.Color.FromArgb(32, 32, 32);
+            toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
+            toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { saveToolStripButton, cancelToolStripButton, toolStripSeparator1, clearToolStripButton, toolStripSeparator2, settingsToolStripButton });
+            toolStrip1.Location = new System.Drawing.Point(0, 0);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new System.Drawing.Size(914, 35);
+            toolStrip1.TabIndex = 5;
+            toolStrip1.Text = "toolStrip1";
             // 
             // saveToolStripButton
             // 
-            this.saveToolStripButton.AutoSize = false;
-            this.saveToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.saveToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.saveToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.saveToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripButton.Image")));
-            this.saveToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.saveToolStripButton.Margin = new System.Windows.Forms.Padding(5, 1, 0, 2);
-            this.saveToolStripButton.Name = "saveToolStripButton";
-            this.saveToolStripButton.Size = new System.Drawing.Size(32, 32);
-            this.saveToolStripButton.Text = "";
-            this.saveToolStripButton.ToolTipText = "Save";
+            saveToolStripButton.AutoSize = false;
+            saveToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            saveToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            saveToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            saveToolStripButton.Image = (System.Drawing.Image)resources.GetObject("saveToolStripButton.Image");
+            saveToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            saveToolStripButton.Margin = new System.Windows.Forms.Padding(5, 1, 0, 2);
+            saveToolStripButton.Name = "saveToolStripButton";
+            saveToolStripButton.Size = new System.Drawing.Size(32, 32);
+            saveToolStripButton.Text = "";
+            saveToolStripButton.ToolTipText = "Save";
             // 
             // cancelToolStripButton
             // 
-            this.cancelToolStripButton.AutoSize = false;
-            this.cancelToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.cancelToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.cancelToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.cancelToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("cancelToolStripButton.Image")));
-            this.cancelToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cancelToolStripButton.Name = "cancelToolStripButton";
-            this.cancelToolStripButton.Size = new System.Drawing.Size(32, 32);
-            this.cancelToolStripButton.Text = "";
-            this.cancelToolStripButton.ToolTipText = "Cancel/Undo";
+            cancelToolStripButton.AutoSize = false;
+            cancelToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            cancelToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            cancelToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            cancelToolStripButton.Image = (System.Drawing.Image)resources.GetObject("cancelToolStripButton.Image");
+            cancelToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            cancelToolStripButton.Name = "cancelToolStripButton";
+            cancelToolStripButton.Size = new System.Drawing.Size(32, 32);
+            cancelToolStripButton.Text = "";
+            cancelToolStripButton.ToolTipText = "Cancel/Undo";
             // 
             // toolStripSeparator1
             // 
-            this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(3, 0, 6, 0);
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 35);
+            toolStripSeparator1.Margin = new System.Windows.Forms.Padding(3, 0, 6, 0);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(6, 35);
             // 
             // clearToolStripButton
             // 
-            this.clearToolStripButton.AutoSize = false;
-            this.clearToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.clearToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.clearToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.clearToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("clearToolStripButton.Image")));
-            this.clearToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.clearToolStripButton.Name = "clearToolStripButton";
-            this.clearToolStripButton.Size = new System.Drawing.Size(38, 32);
-            this.clearToolStripButton.Text = "";
-            this.clearToolStripButton.ToolTipText = "Clear entries";
+            clearToolStripButton.AutoSize = false;
+            clearToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            clearToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            clearToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            clearToolStripButton.Image = (System.Drawing.Image)resources.GetObject("clearToolStripButton.Image");
+            clearToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            clearToolStripButton.Name = "clearToolStripButton";
+            clearToolStripButton.Size = new System.Drawing.Size(38, 32);
+            clearToolStripButton.Text = "\u0083";
+            clearToolStripButton.ToolTipText = "Clear entries";
             // 
             // toolStripSeparator2
             // 
-            this.toolStripSeparator2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 35);
+            toolStripSeparator2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new System.Drawing.Size(6, 35);
             // 
             // settingsToolStripButton
             // 
-            this.settingsToolStripButton.AutoSize = false;
-            this.settingsToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.settingsToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.settingsToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.settingsToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("settingsToolStripButton.Image")));
-            this.settingsToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.settingsToolStripButton.Name = "settingsToolStripButton";
-            this.settingsToolStripButton.Size = new System.Drawing.Size(32, 32);
-            this.settingsToolStripButton.Text = "";
-            this.settingsToolStripButton.ToolTipText = "Settings";
+            settingsToolStripButton.AutoSize = false;
+            settingsToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            settingsToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            settingsToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            settingsToolStripButton.Image = (System.Drawing.Image)resources.GetObject("settingsToolStripButton.Image");
+            settingsToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            settingsToolStripButton.Name = "settingsToolStripButton";
+            settingsToolStripButton.Size = new System.Drawing.Size(32, 32);
+            settingsToolStripButton.Text = "";
+            settingsToolStripButton.ToolTipText = "Settings";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label1.Location = new System.Drawing.Point(12, 60);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(93, 15);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Numeric Field 1:";
+            label1.AutoSize = true;
+            label1.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            label1.Location = new System.Drawing.Point(14, 80);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(116, 20);
+            label1.TabIndex = 0;
+            label1.Text = "Numeric Field 1:";
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label2.Location = new System.Drawing.Point(12, 89);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(93, 15);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Numeric Field 2:";
+            label2.AutoSize = true;
+            label2.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            label2.Location = new System.Drawing.Point(14, 119);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(116, 20);
+            label2.TabIndex = 2;
+            label2.Text = "Numeric Field 2:";
             // 
             // dataEntry1
             // 
-            this.dataEntry1.ErrorColor = System.Drawing.Color.Red;
-            this.dataEntry1.FocusColor = System.Drawing.Color.Yellow;
-            this.dataEntry1.FocusEmphasize = true;
-            this.dataEntry1.FocusSelectionBehaviour = System.Windows.Forms.DataEntryForms.Controls.FocusSelectionBehaviours.PreSelectInput;
-            this.dataEntry1.Formatter = this.decimalEntryFormatterComponent1;
+            dataEntry1.ErrorColor = System.Drawing.Color.Red;
+            dataEntry1.FocusColor = System.Drawing.Color.Yellow;
+            dataEntry1.FocusEmphasize = true;
+            dataEntry1.FocusSelectionBehaviour = FocusSelectionBehaviours.PreSelectInput;
+            dataEntry1.Formatter = decimalEntryFormatterComponent1;
             decimalDataEntryFormatter2.CurrencySymbol = null;
             decimalDataEntryFormatter2.DecimalPlaces = 0;
-            this.decimalEntryFormatterComponent1.SetFormattingProperties(this.dataEntry1, decimalDataEntryFormatter2);
-            this.dataEntry1.Location = new System.Drawing.Point(118, 55);
-            this.dataEntry1.Name = "dataEntry1";
-            this.dataEntry1.Size = new System.Drawing.Size(183, 23);
-            this.dataEntry1.TabIndex = 1;
-            this.decimalEntryFormatterComponent1.SetValue(this.dataEntry1, new decimal(new int[] {
-                0,
-                0,
-                0,
-                0}));
+            decimalEntryFormatterComponent1.SetFormattingProperties(dataEntry1, decimalDataEntryFormatter2);
+            dataEntry1.Location = new System.Drawing.Point(135, 73);
+            dataEntry1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            dataEntry1.Name = "dataEntry1";
+            dataEntry1.Size = new System.Drawing.Size(209, 27);
+            dataEntry1.TabIndex = 1;
+            decimalEntryFormatterComponent1.SetValue(dataEntry1, new decimal(new int[] { 0, 0, 0, 0 }));
             // 
             // decimalEntryFormatterComponent1
             // 
-            this.decimalEntryFormatterComponent1.BlinkRate = 300;
-            this.decimalEntryFormatterComponent1.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
-            this.decimalEntryFormatterComponent1.ContainerControl = this;
+            decimalEntryFormatterComponent1.BlinkRate = 300;
+            decimalEntryFormatterComponent1.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
+            decimalEntryFormatterComponent1.ContainerControl = this;
             // 
             // dataEntry2
             // 
-            this.dataEntry2.ErrorColor = System.Drawing.Color.Red;
-            this.dataEntry2.FocusColor = System.Drawing.Color.Yellow;
-            this.dataEntry2.FocusEmphasize = true;
-            this.dataEntry2.FocusSelectionBehaviour = System.Windows.Forms.DataEntryForms.Controls.FocusSelectionBehaviours.PreSelectInput;
-            this.dataEntry2.Formatter = this.decimalEntryFormatterComponent1;
+            dataEntry2.ErrorColor = System.Drawing.Color.Red;
+            dataEntry2.FocusColor = System.Drawing.Color.Yellow;
+            dataEntry2.FocusEmphasize = true;
+            dataEntry2.FocusSelectionBehaviour = FocusSelectionBehaviours.PreSelectInput;
+            dataEntry2.Formatter = decimalEntryFormatterComponent1;
             decimalDataEntryFormatter1.CurrencySymbol = null;
             decimalDataEntryFormatter1.DecimalPlaces = 0;
-            this.decimalEntryFormatterComponent1.SetFormattingProperties(this.dataEntry2, decimalDataEntryFormatter1);
-            this.dataEntry2.Location = new System.Drawing.Point(118, 84);
-            this.dataEntry2.Name = "dataEntry2";
-            this.dataEntry2.Size = new System.Drawing.Size(183, 23);
-            this.dataEntry2.TabIndex = 3;
-            this.decimalEntryFormatterComponent1.SetValue(this.dataEntry2, new decimal(new int[] {
-                0,
-                0,
-                0,
-                0}));
+            decimalEntryFormatterComponent1.SetFormattingProperties(dataEntry2, decimalDataEntryFormatter1);
+            dataEntry2.Location = new System.Drawing.Point(135, 112);
+            dataEntry2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            dataEntry2.Name = "dataEntry2";
+            dataEntry2.Size = new System.Drawing.Size(209, 27);
+            dataEntry2.TabIndex = 3;
+            decimalEntryFormatterComponent1.SetValue(dataEntry2, new decimal(new int[] { 0, 0, 0, 0 }));
             // 
             // dataEntry3
             // 
-            this.dataEntry3.ErrorColor = System.Drawing.Color.Red;
-            this.dataEntry3.FocusColor = System.Drawing.Color.Yellow;
-            this.dataEntry3.FocusEmphasize = true;
-            this.dataEntry3.FocusSelectionBehaviour = System.Windows.Forms.DataEntryForms.Controls.FocusSelectionBehaviours.PreSelectInput;
-            this.dataEntry3.Formatter = this.dateEntryFormatterComponent1;
-            this.dateEntryFormatterComponent1.SetFormattingProperties(this.dataEntry3, dateDataEntryFormatter1);
-            this.dataEntry3.Location = new System.Drawing.Point(118, 113);
-            this.dataEntry3.Name = "dataEntry3";
-            this.dataEntry3.Size = new System.Drawing.Size(183, 23);
-            this.dataEntry3.TabIndex = 5;
-            this.dateEntryFormatterComponent1.SetValue(this.dataEntry3, new System.DateTime(2020, 8, 4, 0, 0, 0, 0));
+            dataEntry3.ErrorColor = System.Drawing.Color.Red;
+            dataEntry3.FocusColor = System.Drawing.Color.Yellow;
+            dataEntry3.FocusEmphasize = true;
+            dataEntry3.FocusSelectionBehaviour = FocusSelectionBehaviours.PreSelectInput;
+            dataEntry3.Formatter = dateEntryFormatterComponent1;
+            dateEntryFormatterComponent1.SetFormattingProperties(dataEntry3, dateDataEntryFormatter1);
+            dataEntry3.Location = new System.Drawing.Point(135, 151);
+            dataEntry3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            dataEntry3.Name = "dataEntry3";
+            dataEntry3.Size = new System.Drawing.Size(209, 27);
+            dataEntry3.TabIndex = 5;
+            dateEntryFormatterComponent1.SetValue(dataEntry3, new System.DateTime(2020, 8, 4, 0, 0, 0, 0));
             // 
             // dateEntryFormatterComponent1
             // 
-            this.dateEntryFormatterComponent1.ContainerControl = this;
+            dateEntryFormatterComponent1.ContainerControl = this;
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.label3.Location = new System.Drawing.Point(12, 118);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(71, 15);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Date Field 1:";
+            label3.AutoSize = true;
+            label3.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            label3.Location = new System.Drawing.Point(14, 157);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(92, 20);
+            label3.TabIndex = 4;
+            label3.Text = "Date Field 1:";
             // 
             // btnSetTypesValueDelayed
             // 
-            this.btnSetTypesValueDelayed.Location = new System.Drawing.Point(601, 51);
-            this.btnSetTypesValueDelayed.Name = "btnSetTypesValueDelayed";
-            this.btnSetTypesValueDelayed.Size = new System.Drawing.Size(185, 33);
-            this.btnSetTypesValueDelayed.TabIndex = 6;
-            this.btnSetTypesValueDelayed.Text = "Set types values delayed";
-            this.btnSetTypesValueDelayed.UseVisualStyleBackColor = true;
-            this.btnSetTypesValueDelayed.Click += new System.EventHandler(this.btnSetValueDelayed_Click);
+            btnSetTypesValueDelayed.Location = new System.Drawing.Point(687, 68);
+            btnSetTypesValueDelayed.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnSetTypesValueDelayed.Name = "btnSetTypesValueDelayed";
+            btnSetTypesValueDelayed.Size = new System.Drawing.Size(211, 44);
+            btnSetTypesValueDelayed.TabIndex = 6;
+            btnSetTypesValueDelayed.Text = "Set types values delayed";
+            btnSetTypesValueDelayed.UseVisualStyleBackColor = true;
+            btnSetTypesValueDelayed.Click += btnSetValueDelayed_Click;
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel1.Controls.Add(this.lblTypedValues, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblObjectValues, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.textBox1, 0, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(13, 293);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(776, 141);
-            this.tableLayoutPanel1.TabIndex = 10;
+            tableLayoutPanel1.ColumnCount = 3;
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            tableLayoutPanel1.Controls.Add(lblTypedValues, 2, 0);
+            tableLayoutPanel1.Controls.Add(lblObjectValues, 1, 0);
+            tableLayoutPanel1.Controls.Add(textBox1, 0, 0);
+            tableLayoutPanel1.Location = new System.Drawing.Point(15, 391);
+            tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 1;
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            tableLayoutPanel1.Size = new System.Drawing.Size(887, 188);
+            tableLayoutPanel1.TabIndex = 10;
             // 
             // lblTypedValues
             // 
-            this.lblTypedValues.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblTypedValues.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblTypedValues.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.lblTypedValues.Location = new System.Drawing.Point(519, 0);
-            this.lblTypedValues.Name = "lblTypedValues";
-            this.lblTypedValues.Size = new System.Drawing.Size(254, 141);
-            this.lblTypedValues.TabIndex = 9;
-            this.lblTypedValues.Text = "#TypedValues";
-            this.lblTypedValues.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            lblTypedValues.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            lblTypedValues.Dock = System.Windows.Forms.DockStyle.Fill;
+            lblTypedValues.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            lblTypedValues.Location = new System.Drawing.Point(593, 0);
+            lblTypedValues.Name = "lblTypedValues";
+            lblTypedValues.Size = new System.Drawing.Size(291, 188);
+            lblTypedValues.TabIndex = 9;
+            lblTypedValues.Text = "#TypedValues";
+            lblTypedValues.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lblObjectValues
             // 
-            this.lblObjectValues.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblObjectValues.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblObjectValues.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.lblObjectValues.Location = new System.Drawing.Point(261, 0);
-            this.lblObjectValues.Name = "lblObjectValues";
-            this.lblObjectValues.Size = new System.Drawing.Size(252, 141);
-            this.lblObjectValues.TabIndex = 8;
-            this.lblObjectValues.Text = "#ObjectValues";
-            this.lblObjectValues.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            lblObjectValues.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            lblObjectValues.Dock = System.Windows.Forms.DockStyle.Fill;
+            lblObjectValues.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            lblObjectValues.Location = new System.Drawing.Point(298, 0);
+            lblObjectValues.Name = "lblObjectValues";
+            lblObjectValues.Size = new System.Drawing.Size(289, 188);
+            lblObjectValues.TabIndex = 8;
+            lblObjectValues.Text = "#ObjectValues";
+            lblObjectValues.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textBox1
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(3, 3);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(252, 135);
-            this.textBox1.TabIndex = 7;
+            textBox1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            textBox1.Location = new System.Drawing.Point(3, 4);
+            textBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            textBox1.Multiline = true;
+            textBox1.Name = "textBox1";
+            textBox1.Size = new System.Drawing.Size(289, 180);
+            textBox1.TabIndex = 7;
             // 
             // btnSetObjectValuesDelayed
             // 
-            this.btnSetObjectValuesDelayed.Location = new System.Drawing.Point(601, 90);
-            this.btnSetObjectValuesDelayed.Name = "btnSetObjectValuesDelayed";
-            this.btnSetObjectValuesDelayed.Size = new System.Drawing.Size(185, 33);
-            this.btnSetObjectValuesDelayed.TabIndex = 11;
-            this.btnSetObjectValuesDelayed.Text = "Set object values delayed";
-            this.btnSetObjectValuesDelayed.UseVisualStyleBackColor = true;
-            this.btnSetObjectValuesDelayed.Click += new System.EventHandler(this.btnSetObjectValuesDelayed_Click);
+            btnSetObjectValuesDelayed.Location = new System.Drawing.Point(687, 120);
+            btnSetObjectValuesDelayed.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            btnSetObjectValuesDelayed.Name = "btnSetObjectValuesDelayed";
+            btnSetObjectValuesDelayed.Size = new System.Drawing.Size(211, 44);
+            btnSetObjectValuesDelayed.TabIndex = 11;
+            btnSetObjectValuesDelayed.Text = "Set object values delayed";
+            btnSetObjectValuesDelayed.UseVisualStyleBackColor = true;
+            btnSetObjectValuesDelayed.Click += btnSetObjectValuesDelayed_Click;
             // 
-            // Form1
+            // DarkModeTestForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.btnSetObjectValuesDelayed);
-            this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.btnSetTypesValueDelayed);
-            this.Controls.Add(this.dataEntry3);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.dataEntry2);
-            this.Controls.Add(this.dataEntry1);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.toolStrip1);
-            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.Name = "Form1";
-            this.Text = "Numeric Field 1:";
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataEntry1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.decimalEntryFormatterComponent1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataEntry2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataEntry3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dateEntryFormatterComponent1)).EndInit();
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.FromArgb(32, 32, 32);
+            ClientSize = new System.Drawing.Size(914, 600);
+            Controls.Add(btnSetObjectValuesDelayed);
+            Controls.Add(tableLayoutPanel1);
+            Controls.Add(btnSetTypesValueDelayed);
+            Controls.Add(dataEntry3);
+            Controls.Add(label3);
+            Controls.Add(dataEntry2);
+            Controls.Add(dataEntry1);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(toolStrip1);
+            Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            Name = "DarkModeTestForm";
+            Text = "Numeric Field 1:";
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dataEntry1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)decimalEntryFormatterComponent1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dataEntry2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dataEntry3).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dateEntryFormatterComponent1).EndInit();
+            tableLayoutPanel1.ResumeLayout(false);
+            tableLayoutPanel1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
-                
+
         #endregion
 
         private DataEntry dataEntry1;
