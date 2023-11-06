@@ -1,5 +1,8 @@
-﻿namespace WinForms.PowerTools.Controls;
+﻿using System.ComponentModel;
 
+namespace WinForms.PowerTools.Controls;
+
+[TypeConverter(typeof(SortedEnumConverter))]
 public enum SegoeFluentIcons
 {
     /// <summary>

@@ -17,14 +17,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Winforms.PowerTools.Direct2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packages", "Packages", "{62D16FA3-ABCF-43E1-BC7C-E0BB0BBB5039}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.Direct2D.Package", "WinFormsPowerTools.Direct2D.Packages\WinFormsPowerTools.Direct2D.Package.csproj", "{C4B4B64F-FCF2-4501-9EEC-CB79C8139021}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.Direct2D", "WinFormsPowerTools.Direct2D.Packages\WinFormsPowerTools.Direct2D.csproj", "{C4B4B64F-FCF2-4501-9EEC-CB79C8139021}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B82FF0C2-E280-4D16-98B0-0A7736322F9D} = {B82FF0C2-E280-4D16-98B0-0A7736322F9D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinForms.PowerTools.Controls", "WinForms.PowerTools.Controls\WinForms.PowerTools.Controls.csproj", "{4F146943-4A90-4D81-8C31-DBA667F58D5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinForms.PowerTools.Controls", "WinForms.PowerTools.Controls\WinForms.PowerTools.Controls.csproj", "{4F146943-4A90-4D81-8C31-DBA667F58D5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsPowerTools.Controls.Package", "WinFormsPowerTools.Controls.Package\WinFormsPowerTools.Controls.Package.csproj", "{F3F82F81-F5ED-4244-99D5-1253392DBB9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsPowerTools.Controls", "WinFormsPowerTools.Controls.Package\WinFormsPowerTools.Controls.csproj", "{F3F82F81-F5ED-4244-99D5-1253392DBB9D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4F146943-4A90-4D81-8C31-DBA667F58D5B} = {4F146943-4A90-4D81-8C31-DBA667F58D5B}
 	EndProjectSection

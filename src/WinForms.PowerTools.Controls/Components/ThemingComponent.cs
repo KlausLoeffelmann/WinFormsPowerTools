@@ -15,6 +15,9 @@ public class ThemingComponent : Component
     public event EventHandler<EventArgs>? ThemingChanged;
     public event EventHandler<ThemingEventArgs>? ApplyingTheme;
 
+    private ToolStripProfessionalRenderer _darkProfessionalRenderer =
+        new ToolStripProfessionalRenderer(new ThemingColors.DarkProfessionalColors());
+
     public ThemingComponent() { }
 
     /// <summary>
@@ -132,6 +135,10 @@ public class ThemingComponent : Component
             case TreeView treeView:
                 OnApplyTreeViewTheming(eventArgs, treeView);
                 break;
+            case ToolStrip toolStrip:
+                OnApplyToolStripTheming(eventArgs, toolStrip);
+                break;
+
             default:
                 OnApplyDefaultControlTheming(eventArgs);
                 break;
@@ -283,5 +290,22 @@ public class ThemingComponent : Component
     {
         eventArgs.Control.ForeColor = eventArgs.ColorContainer.WindowText;
         eventArgs.Control.BackColor = eventArgs.ColorContainer.Window;
+    }
+
+    /// <summary>
+    /// Applies theming to a TreeView control.
+    /// </summary>
+    /// <param name="eventArgs">Event arguments containing theming information.</param>
+    protected virtual void OnApplyToolStripTheming(ThemingEventArgs eventArgs, ToolStrip toolStrip)
+    {
+        if (toolStrip is MenuStrip menuStrip)
+        {
+            menuStrip.Renderer = _darkProfessionalRenderer;
+        }
+
+        if (toolStrip is StatusStrip statusStrip)
+        {
+            statusStrip.Renderer = _darkProfessionalRenderer;
+        }
     }
 }

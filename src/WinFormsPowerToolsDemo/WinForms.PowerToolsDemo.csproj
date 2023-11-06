@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
 	<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	<Nullable>enable</Nullable>
@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\WinForms.PowerTools.Controls\WinForms.PowerTools.Controls.csproj" />
 	<ProjectReference Include="..\WinFormsPowerTools.CodeGen\WinForms.PowerTools.CodeGen.csproj" OutputItemType="Analyzer" />
 	<ProjectReference Include="..\WinformsPowerTools.Direct2D\Winforms.PowerTools.Direct2D.csproj" />
     <ProjectReference Include="..\WinFormsPowerTools.StandardLib\WinForms.PowerTools.StandardLib.csproj" />

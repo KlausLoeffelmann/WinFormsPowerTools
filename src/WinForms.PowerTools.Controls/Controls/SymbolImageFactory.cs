@@ -35,7 +35,7 @@ namespace WinForms.PowerTools.Controls
             int width = 32,
             int height = 32,
             BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
-            Color color = default,
+            Color foreColor = default,
             Color transparentColor = default,
             int leftOffset = 0,
             int topOffset = 0,
@@ -44,7 +44,7 @@ namespace WinForms.PowerTools.Controls
             width: width,
             height: height,
             baseFont: baseFont,
-            color: color,
+            foreColor: foreColor,
             transparentColor: transparentColor,
             leftOffset: leftOffset,
             topOffset: topOffset,
@@ -67,7 +67,7 @@ namespace WinForms.PowerTools.Controls
             int width = 32,
             int height = 32,
             BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
-            Color color = default,
+            Color foreColor = default,
             Color transparentColor = default,
             int leftOffset = 0,
             int topOffset = 0,
@@ -76,7 +76,7 @@ namespace WinForms.PowerTools.Controls
             width: width,
             height: height,
             baseFont: baseFont,
-            color: color,
+            foreColor: foreColor,
             transparentColor: transparentColor,
             leftOffset: leftOffset,
             topOffset: topOffset,
@@ -98,7 +98,7 @@ namespace WinForms.PowerTools.Controls
             int width = 32,
             int height = 32,
             BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
-            Color color = default,
+            Color foreColor = default,
             Color transparentColor = default,
             int leftOffset = 0,
             int topOffset = 0,
@@ -115,11 +115,6 @@ namespace WinForms.PowerTools.Controls
                 transparentColor = Color.Transparent;
             }
 
-            if (color == default)
-            {
-                color = Color.Black;
-            }
-
             BaseFont = baseFont;
 
             TransparentColor = transparentColor;
@@ -132,7 +127,8 @@ namespace WinForms.PowerTools.Controls
                 SymbolImage = new Lazy<Bitmap>(GetImage(
                     SymbolChar, 
                     Width, 
-                    Height, 
+                    Height,
+                    foreColor,
                     TransparentColor, 
                     LeftOffset, 
                     TopOffset)).Value;
@@ -143,6 +139,7 @@ namespace WinForms.PowerTools.Controls
                     SymbolChar,
                     Width,
                     Height,
+                    foreColor,
                     TransparentColor,
                     LeftOffset,
                     TopOffset);
@@ -200,6 +197,7 @@ namespace WinForms.PowerTools.Controls
             char symbolChar,
             int width,
             int height,
+            Color foreColor = default,
             Color transparentColor = default,
             int leftOffset = 0,
             int rightOffset = 0)
@@ -233,7 +231,7 @@ namespace WinForms.PowerTools.Controls
                 Point point = new(width / 2 + leftOffset - rightOffset, height / 2);
 
                 // Draw the text (symbol) onto the bitmap
-                graphics.DrawString(symbolChar.ToString(), font, Brushes.Black, point, stringFormat);
+                graphics.DrawString(symbolChar.ToString(), font, new SolidBrush(foreColor), point, stringFormat);
             }
 
             // Return the bitmap with the drawn symbol

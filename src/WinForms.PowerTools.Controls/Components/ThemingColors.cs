@@ -129,4 +129,56 @@ public class ThemingColors
             WindowText = ColorTranslator.FromHtml("#F0F0F0")
         };
     }
+
+    /// <summary>
+    ///  Provide colors for a dark themed ToolStrip experience.
+    /// </summary>
+    public class DarkProfessionalColors : ProfessionalColorTable
+    {
+        private ThemingColors _darkThemeColors = ThemingColors.GetColors(ThemingMode.DarkMode);
+
+        public DarkProfessionalColors(){ }
+
+        public override Color MenuItemPressedGradientBegin
+            => Color.FromArgb(0xFF, 0x60, 0x60, 0x60);
+
+        public override Color MenuItemPressedGradientMiddle
+            => Color.FromArgb(0xFF, 0x60, 0x60, 0x60);
+
+        public override Color MenuItemPressedGradientEnd
+            => Color.FromArgb(0xFF, 0x60, 0x60, 0x60);
+
+        public override Color MenuItemSelected
+            => _darkThemeColors.ControlText;
+
+        public override Color MenuItemSelectedGradientBegin
+            => Color.FromArgb(0xFF, 0x40, 0x40, 0x40);
+
+        public override Color MenuItemSelectedGradientEnd
+            => Color.FromArgb(0xFF, 0x40, 0x40, 0x40);
+
+        public override Color MenuStripGradientBegin
+            => _darkThemeColors.Control;
+
+        public override Color MenuStripGradientEnd
+            => _darkThemeColors.Control;
+
+        public override Color StatusStripGradientBegin
+            => _darkThemeColors.Control;
+
+        public override Color StatusStripGradientEnd
+            => _darkThemeColors.Control;
+
+        public override Color ToolStripDropDownBackground
+            => _darkThemeColors.Control;
+
+        public override Color ImageMarginGradientBegin
+            => _darkThemeColors.Control;
+
+        public override Color ImageMarginGradientMiddle
+            => _darkThemeColors.Control;
+
+        public override Color ImageMarginGradientEnd
+            => _darkThemeColors.Control;
+    }
 }
