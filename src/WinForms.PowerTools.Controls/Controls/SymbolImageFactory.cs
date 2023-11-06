@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Drawing.Text;
 
 namespace WinForms.PowerTools.Controls
@@ -34,15 +35,17 @@ namespace WinForms.PowerTools.Controls
             int symbolValue,
             int width = 32,
             int height = 32,
+            int scalePercentage = 100,
             BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
             Color foreColor = default,
             Color transparentColor = default,
             int leftOffset = 0,
             int topOffset = 0,
-        bool getImageLazy = true) : this(
+            bool getImageLazy = true) : this(
             symbolChar: (char)symbolValue,
             width: width,
             height: height,
+            scalePercentage: scalePercentage,
             baseFont: baseFont,
             foreColor: foreColor,
             transparentColor: transparentColor,
@@ -66,6 +69,7 @@ namespace WinForms.PowerTools.Controls
             MDL2Assets symbol,
             int width = 32,
             int height = 32,
+            int scalePercentage = 100,
             BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
             Color foreColor = default,
             Color transparentColor = default,
@@ -75,12 +79,14 @@ namespace WinForms.PowerTools.Controls
             symbolChar: (char)symbol,
             width: width,
             height: height,
+            scalePercentage: scalePercentage,
             baseFont: baseFont,
             foreColor: foreColor,
             transparentColor: transparentColor,
             leftOffset: leftOffset,
             topOffset: topOffset,
-            getImageLazy: getImageLazy) { }
+            getImageLazy: getImageLazy)
+        { }
 
         /// <summary>
         ///  Initializes a new instance of the <see cref="SymbolImageFactory"/> class.
@@ -97,6 +103,7 @@ namespace WinForms.PowerTools.Controls
             char symbolChar,
             int width = 32,
             int height = 32,
+            int scalePercentage = 100,
             BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
             Color foreColor = default,
             Color transparentColor = default,
@@ -109,6 +116,7 @@ namespace WinForms.PowerTools.Controls
             Height = height;
             LeftOffset = leftOffset;
             TopOffset = topOffset;
+            ScalePercentage = scalePercentage;
 
             if (transparentColor == default)
             {
@@ -118,20 +126,22 @@ namespace WinForms.PowerTools.Controls
             BaseFont = baseFont;
 
             TransparentColor = transparentColor;
-            SymbolFont = new Font(baseFont == BaseFontSetting.SegoeMDL2Assets 
-                ? SegoeMDL2AssetsFont 
-                : SegoeFluentFont, height);
+            SymbolFontName = baseFont == BaseFontSetting.SegoeMDL2Assets
+                ? SegoeMDL2AssetsFont
+                : SegoeFluentFont;
 
             if (getImageLazy)
             {
                 SymbolImage = new Lazy<Bitmap>(GetImage(
-                    SymbolChar, 
-                    Width, 
+                    SymbolChar,
+                    Width,
                     Height,
+                    SymbolFontName,
                     foreColor,
-                    TransparentColor, 
-                    LeftOffset, 
-                    TopOffset)).Value;
+                    TransparentColor,
+                    LeftOffset,
+                    TopOffset,
+                    ScalePercentage)).Value;
             }
             else
             {
@@ -139,12 +149,20 @@ namespace WinForms.PowerTools.Controls
                     SymbolChar,
                     Width,
                     Height,
+                    SymbolFontName,
                     foreColor,
                     TransparentColor,
                     LeftOffset,
-                    TopOffset);
+                    TopOffset,
+                    ScalePercentage);
             }
         }
+
+        /// <summary>
+        ///  Scaling factor in Percent by which the image is scaled up or down.
+        /// </summary>
+        [DefaultValue(100)]
+        public int ScalePercentage { get; }
 
         /// <summary>
         ///  Gets the character representing the symbol.
@@ -181,7 +199,7 @@ namespace WinForms.PowerTools.Controls
         /// <summary>
         ///  Gets the font used for rendering the symbol.
         /// </summary>
-        public Font SymbolFont { get; }
+        public string SymbolFontName { get; }
 
         /// <summary>
         ///  The image for the symbol.
@@ -197,10 +215,12 @@ namespace WinForms.PowerTools.Controls
             char symbolChar,
             int width,
             int height,
+            string fontName,
             Color foreColor = default,
             Color transparentColor = default,
             int leftOffset = 0,
-            int rightOffset = 0)
+            int topOffset = 0,
+            int scalePercentage = 100)
         {
             // If a transparent color isn't specified, use the default Transparent color
             if (transparentColor == default)
@@ -221,14 +241,17 @@ namespace WinForms.PowerTools.Controls
                 graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 
                 // Create the font with the Segoe MDL2 Assets font
-                using Font font = new("Segoe MDL2 Assets", height);
+                using Font font = new(
+                    fontName,
+                    (int)(height * 0.50 * (scalePercentage / 100.0f)));
+
                 using StringFormat stringFormat = new()
                 {
                     Alignment = StringAlignment.Center,
                     LineAlignment = StringAlignment.Center
                 };
                 // Adjust the point to account for any offsets
-                Point point = new(width / 2 + leftOffset - rightOffset, height / 2);
+                Point point = new(width / 2 + leftOffset, height / 2 + topOffset);
 
                 // Draw the text (symbol) onto the bitmap
                 graphics.DrawString(symbolChar.ToString(), font, new SolidBrush(foreColor), point, stringFormat);

@@ -9,10 +9,11 @@ namespace WinForms.PowerTools.Controls;
 public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
 {
     private SegoeFluentIcons? _symbol;
-    private Color _symbolColor;
+    private Color _symbolColor=Color.Black;
     private Color _transparentColor = Color.Transparent;
     private Size? _symbolSize = new Size(32, 32);
     private Size _symbolOffset;
+    private int _scalePercentage = 100;
 
     public ToolStripFluentSymbolMenuItem() : base()
     {
@@ -41,8 +42,35 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
     /// </summary>
     public event EventHandler? SymbolOffsetChanged;
 
+    public event EventHandler? ScalePercentageChanged;
 
     private SymbolImageFactory? _symbolImageFactory;
+
+    private bool ShouldSerializeImageScaling() => !(ImageScaling == ToolStripItemImageScaling.None);
+    private void ResetImageScaling() => ImageScaling = ToolStripItemImageScaling.None;
+
+    private bool ShouldSerializeTextImageRelation() => !(TextImageRelation == TextImageRelation.ImageAboveText);
+    private void ResetTextImageRelation() => TextImageRelation = TextImageRelation.ImageAboveText;
+
+    public int ScalePercentage
+    {
+        get => _scalePercentage;
+        set
+        {
+            if (_scalePercentage == value)
+            {
+                return;
+            }
+
+            if (value < 25 || value > 300)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Value must be between 25 and 300.");
+            }
+
+            _scalePercentage = value;
+            OnScalePercentageChanged(EventArgs.Empty);
+        }
+    }
 
     /// <summary>
     ///  Gets or sets the symbol character.
@@ -58,6 +86,8 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
                 return;
             }
 
+            _symbol = value;
+
             if (!value.HasValue)
             {
                 _symbolImageFactory = null;
@@ -68,6 +98,10 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
             OnSymbolChanged(EventArgs.Empty);
         }
     }
+
+    private bool ShouldSerializeSymbol() => _symbol.HasValue;
+
+    private void ResetSymbol() => Symbol = null;
 
     /// <summary>
     ///  Gets or sets the color of the symbol.
@@ -91,6 +125,10 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
         }
     }
 
+    private bool ShouldSerializeSymbolColor() => _symbolColor != Color.Black;
+
+    private void ResetSymbolColor() => SymbolColor = Color.Black;
+
     /// <summary>
     ///  Gets or sets the size of the symbol.
     /// </summary>
@@ -108,14 +146,19 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
                 return;
             }
 
+            _symbolSize = value;
             OnSymbolSizeChanged(EventArgs.Empty);
         }
     }
 
+    private bool ShouldSerializeSymbolSize() => _symbolSize.HasValue;
+
+    private void ResetSymbolSize() => SymbolSize = null;
+
     /// <summary>
     ///  Gets or sets the offset of the symbol.
     /// </summary>
-    public Size? SymbolOffset
+    public Size SymbolOffset
     {
         get => _symbolOffset;
 
@@ -126,9 +169,14 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
                 return;
             }
 
+            _symbolOffset = value;
             OnSymbolOffsetChanged(EventArgs.Empty);
         }
     }
+
+    private bool ShouldSerializeSymbolOffset() => _symbolOffset != default;
+
+    private void ResetSymbolOffset() => SymbolOffset = default;
 
     /// <inheritedDoc/>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -176,6 +224,12 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
         SymbolOffsetChanged?.Invoke(this, e);
     }
 
+    protected virtual void OnScalePercentageChanged(EventArgs e)
+    {
+        UpdateSymbolImageFactory();
+        ScalePercentageChanged?.Invoke(this, e);
+    }
+
     private void UpdateSymbolImageFactory()
     {
         if (!(_symbol.HasValue) || !(_symbolSize.HasValue))
@@ -189,6 +243,7 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
             (char) _symbol,
             _symbolSize.Value.Width,
             _symbolSize.Value.Height,
+            _scalePercentage,
             SymbolImageFactory.BaseFontSetting.SegoeFluentIcons,
             _symbolColor,
             _transparentColor,

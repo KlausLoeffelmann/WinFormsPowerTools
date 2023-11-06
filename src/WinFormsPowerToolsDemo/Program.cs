@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
+using WinForms.PowerToolsDemo;
 using WinFormsPowerTools.AutoLayout;
-using WinFormsPowerToolsDemo.D2DSamples;
 
 namespace WinFormsPowerToolsDemo
 {
@@ -16,7 +16,7 @@ namespace WinFormsPowerToolsDemo
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DirectWriteTestForm());
+            Application.Run(new ControlsTestForm());
         }
 
         private static void GenerateForm()
