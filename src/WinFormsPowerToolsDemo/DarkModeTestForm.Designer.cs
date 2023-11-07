@@ -80,7 +80,7 @@ namespace WinFormsPowerToolsDemo
             // 
             saveToolStripButton.AutoSize = false;
             saveToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            saveToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            saveToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F);
             saveToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
             saveToolStripButton.Image = (System.Drawing.Image)resources.GetObject("saveToolStripButton.Image");
             saveToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -94,7 +94,7 @@ namespace WinFormsPowerToolsDemo
             // 
             cancelToolStripButton.AutoSize = false;
             cancelToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            cancelToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            cancelToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F);
             cancelToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
             cancelToolStripButton.Image = (System.Drawing.Image)resources.GetObject("cancelToolStripButton.Image");
             cancelToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -113,7 +113,7 @@ namespace WinFormsPowerToolsDemo
             // 
             clearToolStripButton.AutoSize = false;
             clearToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            clearToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            clearToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F);
             clearToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
             clearToolStripButton.Image = (System.Drawing.Image)resources.GetObject("clearToolStripButton.Image");
             clearToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -132,7 +132,7 @@ namespace WinFormsPowerToolsDemo
             // 
             settingsToolStripButton.AutoSize = false;
             settingsToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            settingsToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            settingsToolStripButton.Font = new System.Drawing.Font("Segoe UI Symbol", 15.75F);
             settingsToolStripButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
             settingsToolStripButton.Image = (System.Drawing.Image)resources.GetObject("settingsToolStripButton.Image");
             settingsToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -166,7 +166,7 @@ namespace WinFormsPowerToolsDemo
             dataEntry1.ErrorColor = System.Drawing.Color.Red;
             dataEntry1.FocusColor = System.Drawing.Color.Yellow;
             dataEntry1.FocusEmphasize = true;
-            dataEntry1.FocusSelectionBehaviour = FocusSelectionBehaviours.PreSelectInput;
+            dataEntry1.FocusSelectionBehavior = FocusSelectionBehaviours.PreSelectInput;
             dataEntry1.Formatter = decimalEntryFormatterComponent1;
             decimalDataEntryFormatter2.CurrencySymbol = null;
             decimalDataEntryFormatter2.DecimalPlaces = 0;
@@ -189,7 +189,7 @@ namespace WinFormsPowerToolsDemo
             dataEntry2.ErrorColor = System.Drawing.Color.Red;
             dataEntry2.FocusColor = System.Drawing.Color.Yellow;
             dataEntry2.FocusEmphasize = true;
-            dataEntry2.FocusSelectionBehaviour = FocusSelectionBehaviours.PreSelectInput;
+            dataEntry2.FocusSelectionBehavior = FocusSelectionBehaviours.PreSelectInput;
             dataEntry2.Formatter = decimalEntryFormatterComponent1;
             decimalDataEntryFormatter1.CurrencySymbol = null;
             decimalDataEntryFormatter1.DecimalPlaces = 0;
@@ -206,7 +206,7 @@ namespace WinFormsPowerToolsDemo
             dataEntry3.ErrorColor = System.Drawing.Color.Red;
             dataEntry3.FocusColor = System.Drawing.Color.Yellow;
             dataEntry3.FocusEmphasize = true;
-            dataEntry3.FocusSelectionBehaviour = FocusSelectionBehaviours.PreSelectInput;
+            dataEntry3.FocusSelectionBehavior = FocusSelectionBehaviours.PreSelectInput;
             dataEntry3.Formatter = dateEntryFormatterComponent1;
             dateEntryFormatterComponent1.SetFormattingProperties(dataEntry3, dateDataEntryFormatter1);
             dataEntry3.Location = new System.Drawing.Point(135, 151);

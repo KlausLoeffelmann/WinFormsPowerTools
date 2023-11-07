@@ -39,7 +39,7 @@ namespace System.Windows.Forms.DataEntryForms
                 return false;
             }
 
-            if (!(actionOnValidate is null ? false : actionOnValidate()))
+            if (!(actionOnValidate is not null && actionOnValidate()))
             {
                 storage = value;
                 OnPropertyChanged(propertyName);
@@ -57,10 +57,7 @@ namespace System.Windows.Forms.DataEntryForms
         /// <see cref="CallerMemberNameAttribute"/>.</param>
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public abstract T ConvertToValue(string stringValue);

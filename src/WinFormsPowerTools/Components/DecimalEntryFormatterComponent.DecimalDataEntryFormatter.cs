@@ -191,7 +191,7 @@ namespace System.Windows.Forms.DataEntryForms.Components
                 }
                 else if (DecimalPlaces > 0)
                 {
-                    formatString.Append(".");
+                    formatString.Append('.');
                     formatString.Append('0', DecimalPlaces);
                 }
 

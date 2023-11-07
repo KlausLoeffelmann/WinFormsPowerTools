@@ -495,7 +495,7 @@ namespace System.Windows.Forms.Documents
 
             if (type != ScrollEventType.EndScroll)
             {
-                ScrollEventArgs se = new ScrollEventArgs(type, oldValue, value, scrollOrientation);
+                ScrollEventArgs se = new(type, oldValue, value, scrollOrientation);
                 OnScroll(se);
             }
         }
@@ -579,7 +579,7 @@ namespace System.Windows.Forms.Documents
 
             if (IsHandleCreated && (xDelta != 0 || yDelta != 0))
             {
-                RECT rcClip = new RECT()
+                RECT rcClip = new()
                 {
                     left = ClientRectangle.X,
                     top = ClientRectangle.Y,
@@ -589,7 +589,7 @@ namespace System.Windows.Forms.Documents
 
                 RECT rcUpdate = rcClip;
 
-                HRGN zeroHRGN = new HRGN(IntPtr.Zero);
+                HRGN zeroHRGN = new(IntPtr.Zero);
 
                 var result = PInvoke.ScrollWindowEx(
                     new HWND(Handle),

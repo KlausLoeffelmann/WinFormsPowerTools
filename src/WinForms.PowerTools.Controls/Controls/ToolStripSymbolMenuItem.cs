@@ -6,20 +6,21 @@ namespace WinForms.PowerTools.Controls;
 ///  Represents a menu item with a symbol.
 /// </summary>
 [ToolboxBitmap(typeof(ToolStripMenuItem))]
-public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
+public class ToolStripSymbolMenuItem : ToolStripMenuItem
 {
-    private SegoeFluentIcons? _symbol;
     private Color _symbolColor=Color.Black;
-    private Color _transparentColor = Color.Transparent;
+    private readonly Color _transparentColor = Color.Transparent;
     private Size? _symbolSize = new Size(32, 32);
     private Size _symbolOffset;
     private int _scalePercentage = 100;
+    private readonly SymbolSource<SegoeFluentIcons> _symbolSource;
 
-    public ToolStripFluentSymbolMenuItem() : base()
+    public ToolStripSymbolMenuItem() : base()
     {
         base.ImageScaling = ToolStripItemImageScaling.None;
         base.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
         base.TextImageRelation = TextImageRelation.ImageAboveText;
+        _symbolSource = new SymbolSource<SegoeFluentIcons>("Segoe Fluent Icons");
     }
 
     /// <summary>
@@ -46,10 +47,19 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
 
     private SymbolImageFactory? _symbolImageFactory;
 
+    /// <inheritdoc/>
+    public new ToolStripItemImageScaling ImageScaling
+    {
+        get => base.ImageScaling;
+        set => base.ImageScaling = value;
+    }
+
     private bool ShouldSerializeImageScaling() => !(ImageScaling == ToolStripItemImageScaling.None);
+
     private void ResetImageScaling() => ImageScaling = ToolStripItemImageScaling.None;
 
     private bool ShouldSerializeTextImageRelation() => !(TextImageRelation == TextImageRelation.ImageAboveText);
+
     private void ResetTextImageRelation() => TextImageRelation = TextImageRelation.ImageAboveText;
 
     public int ScalePercentage
@@ -75,31 +85,33 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
     /// <summary>
     ///  Gets or sets the symbol character.
     /// </summary>
+    [Bindable(BindableSupport.Default, BindingDirection.OneWay)]
     public SegoeFluentIcons? Symbol
     {
-        get => _symbol;
+        get => _symbolSource.Symbol;
 
         set
         {
-            if (_symbol == value)
+            if (_symbolSource.Symbol == value)
             {
                 return;
             }
 
-            _symbol = value;
-
             if (!value.HasValue)
             {
+                _symbolSource.SetSymbolNull();
                 _symbolImageFactory = null;
                 OnSymbolChanged(EventArgs.Empty);
                 return;
             }
 
+            _symbolSource.Symbol = value.Value;
             OnSymbolChanged(EventArgs.Empty);
         }
     }
 
-    private bool ShouldSerializeSymbol() => _symbol.HasValue;
+    private bool ShouldSerializeSymbol() 
+        => _symbolSource.HasSymbolValue;
 
     private void ResetSymbol() => Symbol = null;
 
@@ -182,7 +194,7 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public override Image Image
+    public override Image? Image
     {
         get => base.Image;
         set=> base.Image = value;
@@ -232,7 +244,7 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
 
     private void UpdateSymbolImageFactory()
     {
-        if (!(_symbol.HasValue) || !(_symbolSize.HasValue))
+        if (!(_symbolSource.HasSymbolValue) || !(_symbolSize.HasValue))
         {
             _symbolImageFactory = null;
             Image = null!;
@@ -240,11 +252,11 @@ public class ToolStripFluentSymbolMenuItem : ToolStripMenuItem
         }
 
         _symbolImageFactory = new SymbolImageFactory(
-            (char) _symbol,
+            (char) _symbolSource.Symbol,
+            _symbolSource.FontName,
             _symbolSize.Value.Width,
             _symbolSize.Value.Height,
             _scalePercentage,
-            SymbolImageFactory.BaseFontSetting.SegoeFluentIcons,
             _symbolColor,
             _transparentColor,
             _symbolOffset.Width,

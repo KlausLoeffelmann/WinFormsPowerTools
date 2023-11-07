@@ -10,8 +10,8 @@ namespace System.Windows.Forms.DataEntryForms.Components
     public abstract partial class DataEntryFormatterComponent<T> :
         ErrorProvider, IExtenderProvider, IDataEntryFormatterComponent
     {
-        private Dictionary<Control, IDataEntryFormatter<T>> _propertyStorage = new Dictionary<Control, IDataEntryFormatter<T>>();
-        private Dictionary<Control, T> _valueStorage = new Dictionary<Control, T>();
+        private readonly Dictionary<Control, IDataEntryFormatter<T>> _propertyStorage = new();
+        private readonly Dictionary<Control, T> _valueStorage = new();
 
         public DataEntryFormatterComponent()
             => InitializeComponent();
@@ -54,6 +54,8 @@ namespace System.Windows.Forms.DataEntryForms.Components
             }
         }
 
+        [DisplayName("Entry Formatting")]
+        [ParenthesizePropertyName(true)]
         public IDataEntryFormatter<T> GetFormattingProperties(Control dataEntry)
         {
             if (_propertyStorage.TryGetValue(dataEntry, out IDataEntryFormatter<T> value))
@@ -67,7 +69,10 @@ namespace System.Windows.Forms.DataEntryForms.Components
         public void SetFormattingProperties(Control dataEntry, IDataEntryFormatter<T> value)
             => _propertyStorage.TryAdd(dataEntry, value);
 
+        [DisplayName("Entry Value")]
+        [ParenthesizePropertyName(true)]
         abstract public T GetValue(Control dataEntry);
+
         abstract public void SetValue(Control dataEntry, T value);
 
         object IDataEntryFormatterComponent.GetValue(DataEntry dataEntry) 

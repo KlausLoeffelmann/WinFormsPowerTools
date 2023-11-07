@@ -33,20 +33,20 @@ namespace WinForms.PowerTools.Controls
         /// <param name="getImageLazy">Indicates whether to create the image lazily.</param>
         public SymbolImageFactory(
             int symbolValue,
+            string fontName,
             int width = 32,
             int height = 32,
             int scalePercentage = 100,
-            BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
             Color foreColor = default,
             Color transparentColor = default,
             int leftOffset = 0,
             int topOffset = 0,
             bool getImageLazy = true) : this(
             symbolChar: (char)symbolValue,
+            fontName: fontName,
             width: width,
             height: height,
             scalePercentage: scalePercentage,
-            baseFont: baseFont,
             foreColor: foreColor,
             transparentColor: transparentColor,
             leftOffset: leftOffset,
@@ -67,20 +67,20 @@ namespace WinForms.PowerTools.Controls
         /// <param name="getImageLazy">Indicates whether to create the image lazily.</param>
         public SymbolImageFactory(
             MDL2Assets symbol,
+            string fontName,
             int width = 32,
             int height = 32,
             int scalePercentage = 100,
-            BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
             Color foreColor = default,
             Color transparentColor = default,
             int leftOffset = 0,
             int topOffset = 0,
         bool getImageLazy = true) : this(
             symbolChar: (char)symbol,
+            fontName: fontName,
             width: width,
             height: height,
             scalePercentage: scalePercentage,
-            baseFont: baseFont,
             foreColor: foreColor,
             transparentColor: transparentColor,
             leftOffset: leftOffset,
@@ -101,10 +101,10 @@ namespace WinForms.PowerTools.Controls
         /// <param name="getImageLazy">Indicates whether to create the image lazily.</param>
         public SymbolImageFactory(
             char symbolChar,
+            string fontName,
             int width = 32,
             int height = 32,
             int scalePercentage = 100,
-            BaseFontSetting baseFont = BaseFontSetting.SegoeFluentIcons,
             Color foreColor = default,
             Color transparentColor = default,
             int leftOffset = 0,
@@ -123,12 +123,10 @@ namespace WinForms.PowerTools.Controls
                 transparentColor = Color.Transparent;
             }
 
-            BaseFont = baseFont;
+            FontName = fontName;
 
             TransparentColor = transparentColor;
-            SymbolFontName = baseFont == BaseFontSetting.SegoeMDL2Assets
-                ? SegoeMDL2AssetsFont
-                : SegoeFluentFont;
+            SymbolFontName = fontName;
 
             if (getImageLazy)
             {
@@ -179,7 +177,7 @@ namespace WinForms.PowerTools.Controls
         /// </summary>
         public int Height { get; }
 
-        public BaseFontSetting BaseFont { get; }
+        public string FontName { get; }
 
         /// <summary>
         ///  Gets the left offset for the symbol.

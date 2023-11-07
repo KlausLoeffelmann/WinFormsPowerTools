@@ -16,7 +16,7 @@ namespace WinFormsPowerToolsDemo
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ControlsTestForm());
+            Application.Run(new ControlsTestForm2());
         }
 
         private static void GenerateForm()

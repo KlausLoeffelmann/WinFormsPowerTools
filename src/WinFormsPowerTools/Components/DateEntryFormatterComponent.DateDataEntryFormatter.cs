@@ -5,8 +5,8 @@ namespace System.Windows.Forms.DataEntryForms.Components
 {
     public partial class DateEntryFormatterComponent
     {
-        private static DateTimeFormatInfo s_dateFormats;
-        private static string[] s_dateTimeFormatStrings;
+        private static readonly DateTimeFormatInfo s_dateFormats;
+        private static readonly string[] s_dateTimeFormatStrings;
 
         static DateEntryFormatterComponent()
         {

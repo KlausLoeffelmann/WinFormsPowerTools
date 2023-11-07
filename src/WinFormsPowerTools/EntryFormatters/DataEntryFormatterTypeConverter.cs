@@ -21,7 +21,7 @@ namespace System.Windows.Forms.DataEntryForms.EntryFormatters
                 return TypeDescriptor.GetProperties(value, null);
             }
 
-            return new PropertyDescriptorCollection(new PropertyDescriptor[0]);
+            return new PropertyDescriptorCollection(Array.Empty<PropertyDescriptor>());
         }
 
         public override bool GetPropertiesSupported(ITypeDescriptorContext context)

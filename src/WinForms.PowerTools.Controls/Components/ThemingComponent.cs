@@ -6,17 +6,16 @@ namespace WinForms.PowerTools.Components;
 /// <summary>
 ///  Provides theming capabilities to a form.
 /// </summary>
-[Description("A component to manage theming for WinForms.")]
-public class ThemingComponent : Component
+public partial class ThemingComponent : BindableComponent
 {
     private ContainerControl? _parentContainer;
     private ThemingMode _themingMode;
 
-    public event EventHandler<EventArgs>? ThemingChanged;
+    public event EventHandler<EventArgs>? ThemingModeChanged;
     public event EventHandler<ThemingEventArgs>? ApplyingTheme;
 
-    private ToolStripProfessionalRenderer _darkProfessionalRenderer =
-        new ToolStripProfessionalRenderer(new ThemingColors.DarkProfessionalColors());
+    private readonly ToolStripProfessionalRenderer _darkProfessionalRenderer =
+        new(new ThemingColors.DarkProfessionalColors());
 
     public ThemingComponent() { }
 
@@ -29,26 +28,6 @@ public class ThemingComponent : Component
         set
         {
             _parentContainer ??= value;
-        }
-    }
-
-    /// <summary>
-    ///  Gets or sets the theming mode.
-    /// </summary>
-    [Category("Appearance")]
-    [Description("Sets the theme to DarkMode or LightMode.")]
-    [DefaultValue(ThemingMode.LightMode)]
-    public ThemingMode ThemingMode
-    {
-        get => _themingMode;
-
-        set
-        {
-            if (_themingMode != value)
-            {
-                _themingMode = value;
-                OnThemingChanged();
-            }
         }
     }
 
@@ -66,15 +45,6 @@ public class ThemingComponent : Component
                 ParentContainer = rootComponent as ContainerControl;
             }
         }
-    }
-
-    /// <summary>
-    ///  Raises the ThemingChanged event and applies the theme.
-    /// </summary>
-    protected virtual void OnThemingChanged()
-    {
-        ThemingChanged?.Invoke(this, EventArgs.Empty);
-        ApplyTheming();
     }
 
     /// <summary>
@@ -98,6 +68,11 @@ public class ThemingComponent : Component
         ThemingMode theme,
         ThemingColors colorContainer)
     {
+        foreach (Control childControl in control.Controls)
+        {
+            ApplyThemingRecursive(childControl, theme, colorContainer);
+        }
+
         var eventArgs = new ThemingEventArgs(control, theme, colorContainer);
 
         switch (control)
@@ -153,11 +128,6 @@ public class ThemingComponent : Component
         if (eventArgs.Handled)
         {
             return;
-        }
-
-        foreach (Control childControl in control.Controls)
-        {
-            ApplyThemingRecursive(childControl, theme, colorContainer);
         }
     }
 

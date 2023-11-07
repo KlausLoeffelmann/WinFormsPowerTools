@@ -17,11 +17,11 @@ namespace System.Windows.Forms.DataEntryForms.Controls
 
         private readonly Color ErrorColorDefaultSetting = Color.Red;
         private readonly Color FocusColorDefaultSetting = Color.Yellow;
-        private readonly FocusSelectionBehaviours FocusSelectionBehaviourDefaultSetting = FocusSelectionBehaviours.PreSelectInput;
+        private readonly FocusSelectionBehaviours FocusSelectionBehaviorDefaultSetting = FocusSelectionBehaviours.PreSelectInput;
 
         private bool _initializing;
         private bool _hasFocus;
-        private bool _commitOnFocusedRead = true;
+        private readonly bool _commitOnFocusedRead = true;
         private bool _changingValueInternally;
 
         private Color _myOriginalBackColor;
@@ -36,7 +36,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
             FocusEmphasize = DoFocusEmphasizeDefaultSetting;
             ErrorColor = ErrorColorDefaultSetting;
             FocusColor = FocusColorDefaultSetting;
-            FocusSelectionBehaviour = FocusSelectionBehaviourDefaultSetting;
+            FocusSelectionBehavior = FocusSelectionBehaviorDefaultSetting;
         }
 
         protected override void OnEnter(EventArgs e)
@@ -57,7 +57,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
 
             HandleFocusEmphasizing(!_hasError);
 
-            switch (FocusSelectionBehaviour)
+            switch (FocusSelectionBehavior)
             {
                 case FocusSelectionBehaviours.PreSelectInput:
                     SelectAll();
@@ -272,7 +272,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
         Description("Sets or retrieves how the preselection of text in the control is handled when it gets the focus."),
         Category("Behavior"),
         EditorBrowsable(EditorBrowsableState.Always), Browsable(true)]
-        public FocusSelectionBehaviours FocusSelectionBehaviour { get; set; }
+        public FocusSelectionBehaviours FocusSelectionBehavior { get; set; }
 
         [RefreshProperties(RefreshProperties.All)]
         public IDataEntryFormatterComponent Formatter
