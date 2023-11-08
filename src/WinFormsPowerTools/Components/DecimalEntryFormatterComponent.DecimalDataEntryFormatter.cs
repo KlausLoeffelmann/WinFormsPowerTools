@@ -13,7 +13,7 @@ namespace System.Windows.Forms.DataEntryForms.Components
             // Backing fields. We implement INotifyPropertyChanged, so we can't use AutoProperties.
             private string _currencySymbol;
             private int _decimalPlaces;
-            private bool _hasThousandsSeperator;
+            private bool _hasThousandsSeparator;
             private bool _placeCurrencySymbolUpFront;
             private bool _allowFormular;
             private int _leadingZeros;
@@ -72,15 +72,15 @@ namespace System.Windows.Forms.DataEntryForms.Components
             EditorBrowsable(EditorBrowsableState.Advanced),
             Browsable(true), DefaultValue(false)
             ]
-            public bool HasThousandsSeperator
+            public bool HasThousandsSeparator
             {
                 get
                 {
-                    return _hasThousandsSeperator;
+                    return _hasThousandsSeparator;
                 }
                 set
                 {
-                    SetProperty(ref _hasThousandsSeperator, value);
+                    SetProperty(ref _hasThousandsSeparator, value);
                 }
             }
 
@@ -175,7 +175,7 @@ namespace System.Windows.Forms.DataEntryForms.Components
                 }
                 else
                 {
-                    if (HasThousandsSeperator)
+                    if (HasThousandsSeparator)
                     {
                         formatString.Append("#,##0");
                     }

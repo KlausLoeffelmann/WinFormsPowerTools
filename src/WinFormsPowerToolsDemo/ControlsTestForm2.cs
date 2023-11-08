@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using WinForms.PowerTools.Controls;
+using WinForms.PowerToolsDemo.DataBindingConverters;
 using static WinForms.PowerTools.Components.BindingTypeConverterExtender;
 
 namespace WinForms.PowerToolsDemo
@@ -10,15 +11,16 @@ namespace WinForms.PowerToolsDemo
         public ControlsTestForm2()
         {
             InitializeComponent();
-            bindingConverterExtender1.SetBindingTypeConverters(_toLightMode, new BindingTypeConverterCollection()
-            {
-                new TypeConverterPropertyDescriptor(nameof(_toLightMode.Command)),
-            });
         }
 
         private void ControlsTestForm2_Load(object sender, EventArgs e)
         {
             _mainBindingSource.DataSource = new DemoViewModel();
+
+            _bindingTypeConverterExtender.SetBindingTypeConverters(_optLightMode,
+            [
+                new BindingConverterSetting(nameof(_optLightMode.Command), typeof(IntToSegoeFluentIconsConverter)),
+            ]);
         }
 
         private void bindingConverterManager1_Format(object sender, ConvertEventArgs e)

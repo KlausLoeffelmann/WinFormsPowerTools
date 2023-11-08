@@ -10,12 +10,12 @@ public partial class BindingTypeConverterExtender
 
         public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext? context, object value, Attribute[]? attributes)
         {
-            if (value is BindingTypeConverterCollection bindingTypeConverterCollection)
+            if (value is BindingConverterSettingCollection bindingTypeConverterCollection)
             {
                 PropertyDescriptor[] propertyDescriptors = new PropertyDescriptor[bindingTypeConverterCollection.Count];
                 for (int i = 0; i < bindingTypeConverterCollection.Count; i++)
                 {
-                    propertyDescriptors[i] = bindingTypeConverterCollection[i];
+                    propertyDescriptors[i] = new BindingConverterSettingPropertyDescriptor(bindingTypeConverterCollection[i]);
                 }
 
                 return new PropertyDescriptorCollection(propertyDescriptors);

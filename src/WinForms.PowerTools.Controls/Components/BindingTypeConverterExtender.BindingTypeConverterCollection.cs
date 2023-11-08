@@ -6,7 +6,7 @@ namespace WinForms.PowerTools.Components;
 public partial class BindingTypeConverterExtender
 {
     [TypeConverter(typeof(BindingTypeConverterCollectionConverter))]
-    public class BindingTypeConverterCollection : Collection<TypeConverterPropertyDescriptor>
+    public class BindingConverterSettingCollection : Collection<BindingConverterSetting>
     {
         public override string ToString()
         {

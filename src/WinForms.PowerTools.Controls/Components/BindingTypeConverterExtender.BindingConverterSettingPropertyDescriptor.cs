@@ -5,12 +5,14 @@ namespace WinForms.PowerTools.Components;
 
 public partial class BindingTypeConverterExtender
 {
-    public class TypeConverterPropertyDescriptor : PropertyDescriptor
+    public class BindingConverterSettingPropertyDescriptor : PropertyDescriptor
     {
         private readonly Hashtable _values = new();
 
-        public TypeConverterPropertyDescriptor(string name) : base(name, new Attribute[0])
+        public BindingConverterSettingPropertyDescriptor(BindingConverterSetting converterSetting) 
+            : base(converterSetting.PropertyName, new Attribute[0])
         {
+            SetValue(this, converterSetting.TypeConverterType);
         }
 
         public override bool CanResetValue(object component) => true;
