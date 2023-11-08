@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 
 namespace WinForms.PowerTools.Components;
 
@@ -7,12 +7,14 @@ public partial class BindingTypeConverterExtender
 {
     public class BindingConverterSettingPropertyDescriptor : PropertyDescriptor
     {
-        private readonly Hashtable _values = new();
+        private string _propertyName;
+        private IBindableComponent? _targetComponent;
 
-        public BindingConverterSettingPropertyDescriptor(BindingConverterSetting converterSetting) 
-            : base(converterSetting.PropertyName, new Attribute[0])
+        public BindingConverterSettingPropertyDescriptor( string propertyName, IBindableComponent? targetComponent)
+            : base(propertyName, new Attribute[0])
         {
-            SetValue(this, converterSetting.TypeConverterType);
+            _propertyName = propertyName;
+            _targetComponent = targetComponent;
         }
 
         public override bool CanResetValue(object component) => true;
@@ -26,23 +28,63 @@ public partial class BindingTypeConverterExtender
         public override TypeConverter Converter => new TypeConverterTypeConverter();
 
         public override object? GetValue(object? component)
-            => component is null
-            ? null
-            : _values[component];
+        {
+            if (component is BindingConverterSettingCollection converterSettingCollection)
+            {
+                var setting = converterSettingCollection
+                    .First(s => s.TargetComponent == _targetComponent &&
+                                         s.PropertyName == _propertyName);
+
+                // Return the TypeConverterType, or null if not found
+                return setting?.TypeConverterType;
+            }
+
+            return null;
+        }
 
         public override void SetValue(object? component, object? value)
         {
-            if (component is null)
+            if (component is BindingConverterSettingCollection converterSettingCollection)
             {
-                return;
-            }
+                // Find the setting within the collection to update
+                var settingToUpdate = converterSettingCollection
+                    .First(s => s.TargetComponent == _targetComponent &&
+                                         s.PropertyName == _propertyName);
 
-            _values[component] = value;
-            OnValueChanged(component, EventArgs.Empty);
+                if (settingToUpdate is not null)
+                {
+                    if (value is null)
+                    {
+                        settingToUpdate.TypeConverterType = null;
+                    }
+
+                    if (value is Type converterType)
+                    {
+                        settingToUpdate.TypeConverterType = converterType;
+                    }
+
+                    // Notify that the value has been updated
+                    OnValueChanged(component, EventArgs.Empty);
+                }
+            }
         }
 
-        public override bool ShouldSerializeValue(object component) => _values.ContainsKey(component);
+        public override bool ShouldSerializeValue(object component)
+        {
+            if (component is BindingConverterSetting converterSetting)
+            {
+                return converterSetting.TypeConverterType != null;
+            }
 
-        public override void ResetValue(object component) => _values.Remove(component);
+            return false;
+        }
+
+        public override void ResetValue(object component)
+        {
+            if (component is BindingConverterSetting converterSetting)
+            {
+                converterSetting.TypeConverterType = null;
+            }
+        }
     }
 }

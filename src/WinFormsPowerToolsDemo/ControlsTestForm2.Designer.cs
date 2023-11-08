@@ -33,21 +33,21 @@
             _openMenuItem = new PowerTools.Controls.ToolStripSymbolMenuItem();
             _searchMenuItem = new PowerTools.Controls.ToolStripSymbolMenuItem();
             _taskMenuItem = new PowerTools.Controls.ToolStripSymbolMenuItem();
-            _mainBindingSource = new System.Windows.Forms.BindingSource(components);
             _bottomMenuStrip = new System.Windows.Forms.MenuStrip();
             _addMenuItem = new PowerTools.Controls.ToolStripSymbolMenuItem();
             _deleteMenuItem = new PowerTools.Controls.ToolStripSymbolMenuItem();
             _editItem = new PowerTools.Controls.ToolStripSymbolMenuItem();
             _grpTheme = new System.Windows.Forms.GroupBox();
             _optSystemMode = new System.Windows.Forms.RadioButton();
+            _demoViewModelBindingSource = new System.Windows.Forms.BindingSource(components);
             _optDarkMode = new System.Windows.Forms.RadioButton();
             _optLightMode = new System.Windows.Forms.RadioButton();
             _themingComponent = new PowerTools.Components.ThemingComponent();
             _bindingTypeConverterExtender = new PowerTools.Components.BindingTypeConverterExtender();
             _mainMenuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)_mainBindingSource).BeginInit();
             _bottomMenuStrip.SuspendLayout();
             _grpTheme.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)_demoViewModelBindingSource).BeginInit();
             SuspendLayout();
             // 
             // _mainMenuStrip
@@ -162,7 +162,7 @@
             // _optSystemMode
             // 
             _optSystemMode.AutoSize = true;
-            _optSystemMode.DataBindings.Add(new System.Windows.Forms.Binding("Command", _mainBindingSource, "SwitchToSystemModeCommand", true));
+            _optSystemMode.DataBindings.Add(new System.Windows.Forms.Binding("Command", _demoViewModelBindingSource, "SwitchToSystemModeCommand", true));
             _optSystemMode.ForeColor = System.Drawing.Color.FromArgb(0, 0, 0);
             _optSystemMode.Location = new System.Drawing.Point(115, 122);
             _optSystemMode.Margin = new System.Windows.Forms.Padding(4);
@@ -173,10 +173,14 @@
             _optSystemMode.Text = "System";
             _optSystemMode.UseVisualStyleBackColor = false;
             // 
+            // _demoViewModelBindingSource
+            // 
+            _demoViewModelBindingSource.DataSource = typeof(DemoViewModel);
+            // 
             // _optDarkMode
             // 
             _optDarkMode.AutoSize = true;
-            _optDarkMode.DataBindings.Add(new System.Windows.Forms.Binding("Command", _mainBindingSource, "SwitchToDarkModeCommand", true));
+            _optDarkMode.DataBindings.Add(new System.Windows.Forms.Binding("Command", _demoViewModelBindingSource, "SwitchToDarkModeCommand", true));
             _optDarkMode.ForeColor = System.Drawing.Color.FromArgb(0, 0, 0);
             _optDarkMode.Location = new System.Drawing.Point(115, 85);
             _optDarkMode.Margin = new System.Windows.Forms.Padding(4);
@@ -190,7 +194,7 @@
             // _optLightMode
             // 
             _optLightMode.AutoSize = true;
-            _optLightMode.DataBindings.Add(new System.Windows.Forms.Binding("Command", _mainBindingSource, "SwitchToLightModeCommand", true));
+            _optLightMode.DataBindings.Add(new System.Windows.Forms.Binding("Command", _demoViewModelBindingSource, "SwitchToLightModeCommand", true));
             _optLightMode.ForeColor = System.Drawing.Color.FromArgb(0, 0, 0);
             _optLightMode.Location = new System.Drawing.Point(115, 48);
             _optLightMode.Margin = new System.Windows.Forms.Padding(4);
@@ -203,7 +207,7 @@
             // 
             // _themingComponent
             // 
-            _themingComponent.DataBindings.Add(new System.Windows.Forms.Binding("ThemingMode", _mainBindingSource, "ThemingMode", true));
+            _themingComponent.DataBindings.Add(new System.Windows.Forms.Binding("ThemingMode", _demoViewModelBindingSource, "ThemingMode", true));
             _themingComponent.ParentContainer = this;
             // 
             // ControlsTestForm2
@@ -224,11 +228,11 @@
             Load += ControlsTestForm2_Load;
             _mainMenuStrip.ResumeLayout(false);
             _mainMenuStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)_mainBindingSource).EndInit();
             _bottomMenuStrip.ResumeLayout(false);
             _bottomMenuStrip.PerformLayout();
             _grpTheme.ResumeLayout(false);
             _grpTheme.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)_demoViewModelBindingSource).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -247,7 +251,6 @@
         private System.Windows.Forms.RadioButton _optSystemMode;
         private System.Windows.Forms.RadioButton _optDarkMode;
         private System.Windows.Forms.RadioButton _optLightMode;
-        private System.Windows.Forms.BindingSource _mainBindingSource;
         private PowerTools.Controls.ToolStripSymbolMenuItem toolStripSymbolMenuItem2;
         private PowerTools.Controls.ToolStripSymbolMenuItem _openMenuItem;
         private PowerTools.Controls.ToolStripSymbolMenuItem _deleteMenuItem;
@@ -255,5 +258,6 @@
         private PowerTools.Controls.ToolStripSymbolMenuItem _searchMenuItem;
         private PowerTools.Controls.ToolStripSymbolMenuItem _taskMenuItem;
         private PowerTools.Components.BindingTypeConverterExtender _bindingTypeConverterExtender;
+        private System.Windows.Forms.BindingSource _demoViewModelBindingSource;
     }
 }

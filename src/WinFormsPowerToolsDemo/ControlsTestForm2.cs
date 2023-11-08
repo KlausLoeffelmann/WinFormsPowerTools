@@ -15,11 +15,14 @@ namespace WinForms.PowerToolsDemo
 
         private void ControlsTestForm2_Load(object sender, EventArgs e)
         {
-            _mainBindingSource.DataSource = new DemoViewModel();
+            _demoViewModelBindingSource.DataSource = new DemoViewModel();
 
-            _bindingTypeConverterExtender.SetBindingTypeConverters(_optLightMode,
+            _bindingTypeConverterExtender.SetBindingConverterSettings(_optLightMode,
             [
-                new BindingConverterSetting(nameof(_optLightMode.Command), typeof(IntToSegoeFluentIconsConverter)),
+                new BindingConverterSetting(
+                    _optLightMode,
+                    nameof(_optLightMode.Command), 
+                    typeof(IntToSegoeFluentIconsConverter)),
             ]);
         }
 

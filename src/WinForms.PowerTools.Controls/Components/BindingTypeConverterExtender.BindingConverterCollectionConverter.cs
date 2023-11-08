@@ -15,7 +15,9 @@ public partial class BindingTypeConverterExtender
                 PropertyDescriptor[] propertyDescriptors = new PropertyDescriptor[bindingTypeConverterCollection.Count];
                 for (int i = 0; i < bindingTypeConverterCollection.Count; i++)
                 {
-                    propertyDescriptors[i] = new BindingConverterSettingPropertyDescriptor(bindingTypeConverterCollection[i]);
+                    propertyDescriptors[i] = new BindingConverterSettingPropertyDescriptor(
+                        bindingTypeConverterCollection[i].PropertyName,
+                        bindingTypeConverterCollection[i].TargetComponent);
                 }
 
                 return new PropertyDescriptorCollection(propertyDescriptors);
