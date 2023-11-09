@@ -57,7 +57,7 @@ public partial class ThemingComponent : BindableComponent
             var colorContainer = ThemingColors.GetColors(ThemingMode);
 
             ApplyThemingRecursive(
-                ParentContainer, 
+                ParentContainer,
                 _themingMode,
                 colorContainer);
         }
@@ -136,7 +136,7 @@ public partial class ThemingComponent : BindableComponent
     /// </summary>
     /// <param name="control">The control to which the theme is being applied.</param>
     /// <param name="theme">The theme being applied.</param>
-    protected virtual void OnApplyTheming(ThemingEventArgs eventArgs) 
+    protected virtual void OnApplyTheming(ThemingEventArgs eventArgs)
         => ApplyingTheme?.Invoke(this, eventArgs);
 
     protected virtual void OnApplyDefaultControlTheming(ThemingEventArgs eventArgs)
@@ -268,14 +268,19 @@ public partial class ThemingComponent : BindableComponent
     /// <param name="eventArgs">Event arguments containing theming information.</param>
     protected virtual void OnApplyToolStripTheming(ThemingEventArgs eventArgs, ToolStrip toolStrip)
     {
-        if (toolStrip is MenuStrip menuStrip)
+        if (eventArgs.ThemingMode == ThemingMode.DarkMode)
         {
-            menuStrip.Renderer = _darkProfessionalRenderer;
+            toolStrip.Renderer = _darkProfessionalRenderer;
+            toolStrip.RenderMode = ToolStripRenderMode.Professional;
+            toolStrip.BackColor = eventArgs.ColorContainer.Window;
+            toolStrip.ForeColor = eventArgs.ColorContainer.WindowText;
         }
-
-        if (toolStrip is StatusStrip statusStrip)
+        else
         {
-            statusStrip.Renderer = _darkProfessionalRenderer;
+            toolStrip.Renderer = new ToolStripProfessionalRenderer();
+            toolStrip.RenderMode = ToolStripRenderMode.Professional;
+            toolStrip.BackColor = eventArgs.ColorContainer.Window;
+            toolStrip.ForeColor = eventArgs.ColorContainer.WindowText;
         }
     }
 }

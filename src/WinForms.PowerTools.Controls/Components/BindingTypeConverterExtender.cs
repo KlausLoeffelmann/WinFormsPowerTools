@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.DotNet.DesignTools.Serialization;
+using System.ComponentModel;
+using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
-using System.Globalization;
+using WinForms.PowerTools.Controls.Designer;
 
 namespace WinForms.PowerTools.Components;
 
@@ -9,31 +11,6 @@ namespace WinForms.PowerTools.Components;
 public partial class BindingTypeConverterExtender : Component, IExtenderProvider
 {
     private readonly Dictionary<IBindableComponent, BindingConverterSettingCollection> _propertyStorage = [];
-
-    public class BindingConverterSettingConverter : TypeConverter
-    {
-        public override bool GetPropertiesSupported(ITypeDescriptorContext? context) => true;
-
-        public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
-            => destinationType == typeof(string) && value is BindingConverterSetting converterSetting
-                ? $"{converterSetting.PropertyName} ({converterSetting.TypeConverterType?.GetType().Name})"
-                : base.ConvertTo(context, culture, value, destinationType);
-
-        public override PropertyDescriptorCollection GetProperties(
-            ITypeDescriptorContext? context,
-            object? value,
-            Attribute[]? attributes)
-        {
-            if (value is not BindingConverterSetting converterSetting)
-            {
-                return new PropertyDescriptorCollection([]);
-            }
-
-            return new([new BindingConverterSettingPropertyDescriptor(
-                converterSetting.PropertyName,
-                converterSetting.TargetComponent)]);
-        }
-    }
 
     public BindingTypeConverterExtender()
     {
@@ -61,28 +38,30 @@ public partial class BindingTypeConverterExtender : Component, IExtenderProvider
 
     private void SyncBindingConverterCollection(
         IBindableComponent bindableComponent,
-        BindingConverterSettingCollection bindingTypeConverterCollection)
+        BindingConverterSettingCollection bindingConverterSettings)
     {
         // Create a set of current binding property names
         var currentBindings = new HashSet<string>(
             bindableComponent.DataBindings.Cast<Binding>().Select(b => b.PropertyName));
 
         // Remove converter settings for bindings that no longer exist
-        var entriesToRemove = bindingTypeConverterCollection
+        var entriesToRemove = bindingConverterSettings.Cast<BindingConverterSetting>()
             .Where(setting => !currentBindings.Contains(setting.PropertyName))
             .ToList();
 
         foreach (var entry in entriesToRemove)
         {
-            bindingTypeConverterCollection.Remove(entry);
+            bindingConverterSettings.Remove(entry);
         }
 
         // Add new settings for bindings that are not in the converter collection
         foreach (Binding bindingItem in bindableComponent.DataBindings)
         {
-            if (bindingTypeConverterCollection.All(setting => setting.PropertyName != bindingItem.PropertyName))
+            if (bindingConverterSettings
+                .Cast<BindingConverterSetting>()
+                .All(setting => setting.PropertyName != bindingItem.PropertyName))
             {
-                bindingTypeConverterCollection.Add(
+                bindingConverterSettings.Add(
                     new BindingConverterSetting(
                         targetComponent: bindableComponent,
                         propertyName: bindingItem.PropertyName,
@@ -118,13 +97,5 @@ public partial class BindingTypeConverterExtender : Component, IExtenderProvider
         }
     }
 
-    private bool ShouldSerializeBindingConverterSettings(IBindableComponent bindableComponent)
-    {
-        if (_propertyStorage.TryGetValue(bindableComponent, out BindingConverterSettingCollection? bindingConverterCollection))
-        {
-            return bindingConverterCollection.Count > 0;
-        }
-
-        return false;
-    }
+    private bool ShouldSerializeBindingConverterSettings(IBindableComponent bindableComponent) => true;
 }

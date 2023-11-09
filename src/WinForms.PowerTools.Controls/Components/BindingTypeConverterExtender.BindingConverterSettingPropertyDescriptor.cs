@@ -31,7 +31,7 @@ public partial class BindingTypeConverterExtender
         {
             if (component is BindingConverterSettingCollection converterSettingCollection)
             {
-                var setting = converterSettingCollection
+                var setting = converterSettingCollection.Cast<BindingConverterSetting>()
                     .First(s => s.TargetComponent == _targetComponent &&
                                          s.PropertyName == _propertyName);
 
@@ -44,10 +44,15 @@ public partial class BindingTypeConverterExtender
 
         public override void SetValue(object? component, object? value)
         {
+        //    if (!Debugger.IsAttached)
+        //    {
+        //        Debugger.Launch();
+        //    }
+
             if (component is BindingConverterSettingCollection converterSettingCollection)
             {
                 // Find the setting within the collection to update
-                var settingToUpdate = converterSettingCollection
+                var settingToUpdate = converterSettingCollection.Cast<BindingConverterSetting>()
                     .First(s => s.TargetComponent == _targetComponent &&
                                          s.PropertyName == _propertyName);
 
@@ -69,22 +74,10 @@ public partial class BindingTypeConverterExtender
             }
         }
 
-        public override bool ShouldSerializeValue(object component)
-        {
-            if (component is BindingConverterSetting converterSetting)
-            {
-                return converterSetting.TypeConverterType != null;
-            }
+        public override bool ShouldSerializeValue(object component) 
+            => GetValue(component) is not null;
 
-            return false;
-        }
-
-        public override void ResetValue(object component)
-        {
-            if (component is BindingConverterSetting converterSetting)
-            {
-                converterSetting.TypeConverterType = null;
-            }
-        }
+        public override void ResetValue(object component) 
+            => SetValue(component, null);
     }
 }

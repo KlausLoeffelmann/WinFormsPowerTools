@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace WinForms.PowerTools.Components;
 
@@ -12,16 +14,30 @@ public partial class BindingTypeConverterExtender
         // Implementation to list available TypeConverters
         // This is just conceptual; actual implementation would require reflection and filtering
 
-        private static readonly Type[]? s_typeConverters;
+        private static readonly Dictionary<string,Type> s_typeConverters;
+        private static StandardValuesCollection? s_standardValues;
 
         public override bool GetStandardValuesSupported(ITypeDescriptorContext? context) 
             => true;
 
+        public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
+            => sourceType == typeof(string);
+
+        public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object? value) 
+            => value is not string typeConverterName
+                || s_typeConverters is null
+                || !s_typeConverters.TryGetValue(typeConverterName, out var typeConverterType)
+                    ? null
+                    : (object)typeConverterType;
+
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext? context)
-            => new(s_typeConverters);
+        {
+            return s_standardValues ??= new StandardValuesCollection(
+                            s_typeConverters?.Values.ToArray() ?? []);
+        }
 
         private static List<Type> GetExportedTypes<TBase>(
-    params Type[] requiredAttributes)
+            params Type[] requiredAttributes)
         {
             var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(assembly =>
@@ -56,11 +72,13 @@ public partial class BindingTypeConverterExtender
                 .Length != 0));
 
         static TypeConverterTypeConverter()
-            => s_typeConverters =
-                [
-                    .. GetExportedTypes<TypeConverter>(
-                                    typeof(BindingConverterAttribute)),
-                ];
+        {
+            s_typeConverters = GetExportedTypes<TypeConverter>(
+                typeof(BindingConverterAttribute))
+                        .ToDictionary(
+                            type => type.FullName ?? type.Name,
+                            type => type);
+        }
 
         public static readonly HashSet<string> SystemAssemblyNames =
         [

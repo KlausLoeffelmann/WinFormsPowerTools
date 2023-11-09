@@ -322,7 +322,7 @@ public partial class ThemingColors
             ScrollBar = 0xFF323232.ToColor(),
             Window = 0xFF141414.ToColor(),
             WindowFrame = 0xFF282828.ToColor(),
-            WindowText = 0xFF282828.ToColor(),
+            WindowText = 0xFFF0F0F0.ToColor(),
         };
     }
 }

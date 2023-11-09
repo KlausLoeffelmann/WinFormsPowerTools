@@ -31,6 +31,7 @@ namespace WinForms.PowerToolsDemo
             if (e.DesiredType == typeof(int) && e.Value is SegoeFluentIcons enumValue)
             {
                 e.Value = (int)enumValue;
+                
             }
         }
 

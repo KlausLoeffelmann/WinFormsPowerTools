@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Globalization;
 
 namespace WinForms.PowerTools.Components;
 
