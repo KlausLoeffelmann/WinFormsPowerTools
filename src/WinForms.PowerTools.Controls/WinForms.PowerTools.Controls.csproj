@@ -11,10 +11,4 @@
     <PackageReference Include="Microsoft.WinForms.Designer.SDK" Version="1.6.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Components\BindingConverterManager.cs">
-      <SubType>Component</SubType>
-    </Compile>
-  </ItemGroup>
-
 </Project>
