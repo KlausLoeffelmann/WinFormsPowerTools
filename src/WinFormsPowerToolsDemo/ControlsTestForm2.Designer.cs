@@ -44,10 +44,12 @@
             _optDarkMode = new System.Windows.Forms.RadioButton();
             _optSystemMode = new System.Windows.Forms.RadioButton();
             _grpTheme = new System.Windows.Forms.GroupBox();
+            demoViewModelBindingSource = new System.Windows.Forms.BindingSource(components);
             _mainMenuStrip.SuspendLayout();
             _bottomMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)_demoViewModelBindingSource).BeginInit();
             _grpTheme.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)demoViewModelBindingSource).BeginInit();
             SuspendLayout();
             // 
             // _mainMenuStrip
@@ -67,9 +69,9 @@
             // 
             _openMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             _openMenuItem.Name = "_openMenuItem";
-            _openMenuItem.ScalePercentage = 100;
             _openMenuItem.Size = new System.Drawing.Size(84, 88);
             _openMenuItem.Symbol = PowerTools.Controls.SegoeFluentIcons.OpenFile;
+            _openMenuItem.SymbolScaling = 100;
             _openMenuItem.SymbolSize = new System.Drawing.Size(64, 64);
             _openMenuItem.Text = "Open...";
             _openMenuItem.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
@@ -78,9 +80,9 @@
             // 
             _searchMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             _searchMenuItem.Name = "_searchMenuItem";
-            _searchMenuItem.ScalePercentage = 100;
             _searchMenuItem.Size = new System.Drawing.Size(84, 88);
             _searchMenuItem.Symbol = PowerTools.Controls.SegoeFluentIcons.Search;
+            _searchMenuItem.SymbolScaling = 100;
             _searchMenuItem.SymbolSize = new System.Drawing.Size(64, 64);
             _searchMenuItem.Text = "Search...";
             _searchMenuItem.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
@@ -89,9 +91,9 @@
             // 
             _taskMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             _taskMenuItem.Name = "_taskMenuItem";
-            _taskMenuItem.ScalePercentage = 100;
             _taskMenuItem.Size = new System.Drawing.Size(84, 77);
             _taskMenuItem.Symbol = PowerTools.Controls.SegoeFluentIcons.TaskView;
+            _taskMenuItem.SymbolScaling = 100;
             _taskMenuItem.SymbolSize = new System.Drawing.Size(53, 53);
             _taskMenuItem.Text = "Task view...";
             _taskMenuItem.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
@@ -113,11 +115,12 @@
             // 
             // _addMenuItem
             // 
+            _addMenuItem.DataBindings.Add(new System.Windows.Forms.Binding("Command", demoViewModelBindingSource, "SwitchToDarkModeCommand", true));
             _addMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             _addMenuItem.Name = "_addMenuItem";
-            _addMenuItem.ScalePercentage = 100;
             _addMenuItem.Size = new System.Drawing.Size(51, 56);
             _addMenuItem.Symbol = PowerTools.Controls.SegoeFluentIcons.Add;
+            _addMenuItem.SymbolScaling = 100;
             _addMenuItem.SymbolSize = new System.Drawing.Size(32, 32);
             _addMenuItem.Text = "Add";
             _addMenuItem.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
@@ -126,9 +129,9 @@
             // 
             _deleteMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             _deleteMenuItem.Name = "_deleteMenuItem";
-            _deleteMenuItem.ScalePercentage = 100;
             _deleteMenuItem.Size = new System.Drawing.Size(67, 56);
             _deleteMenuItem.Symbol = PowerTools.Controls.SegoeFluentIcons.Delete;
+            _deleteMenuItem.SymbolScaling = 100;
             _deleteMenuItem.SymbolSize = new System.Drawing.Size(32, 32);
             _deleteMenuItem.Text = "Delete";
             _deleteMenuItem.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
@@ -137,9 +140,9 @@
             // 
             _editItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             _editItem.Name = "_editItem";
-            _editItem.ScalePercentage = 100;
             _editItem.Size = new System.Drawing.Size(49, 56);
             _editItem.Symbol = PowerTools.Controls.SegoeFluentIcons.Edit;
+            _editItem.SymbolScaling = 100;
             _editItem.SymbolSize = new System.Drawing.Size(32, 32);
             _editItem.Text = "Edit";
             _editItem.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
@@ -210,6 +213,10 @@
             _grpTheme.TabStop = false;
             _grpTheme.Text = "Theming";
             // 
+            // demoViewModelBindingSource
+            // 
+            demoViewModelBindingSource.DataSource = typeof(DemoViewModel);
+            // 
             // ControlsTestForm2
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
@@ -233,6 +240,7 @@
             ((System.ComponentModel.ISupportInitialize)_demoViewModelBindingSource).EndInit();
             _grpTheme.ResumeLayout(false);
             _grpTheme.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)demoViewModelBindingSource).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -259,5 +267,6 @@
         private System.Windows.Forms.RadioButton _optSystemMode;
         private System.Windows.Forms.RadioButton _optDarkMode;
         private System.Windows.Forms.RadioButton _optLightMode;
+        private System.Windows.Forms.BindingSource demoViewModelBindingSource;
     }
 }

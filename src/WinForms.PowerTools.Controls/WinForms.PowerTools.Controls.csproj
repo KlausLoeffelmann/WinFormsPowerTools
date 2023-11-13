@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.WinForms.Designer.SDK" Version="1.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Controls\ToolStripSymbolDropDownButton.cs" />
+  </ItemGroup>
+
 </Project>

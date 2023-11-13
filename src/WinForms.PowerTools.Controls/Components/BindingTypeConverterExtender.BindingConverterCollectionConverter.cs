@@ -5,20 +5,20 @@ namespace WinForms.PowerTools.Components;
 
 public partial class BindingTypeConverterExtender
 {
-    public class BindingTypeConverterCollectionConverter : ExpandableObjectConverter
+    public class BindingConvertersConverter : ExpandableObjectConverter
     {
         public override bool GetPropertiesSupported(ITypeDescriptorContext? context) => true;
 
         public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext? context, object value, Attribute[]? attributes)
         {
-            if (value is BindingConverterSettingCollection bindingTypeConverterCollection)
+            if (value is BindingConverters bindingConverters)
             {
-                PropertyDescriptor[] propertyDescriptors = new PropertyDescriptor[bindingTypeConverterCollection.Count];
-                for (int i = 0; i < bindingTypeConverterCollection.Count; i++)
+                PropertyDescriptor[] propertyDescriptors = new PropertyDescriptor[bindingConverters.Count];
+                for (int i = 0; i < bindingConverters.Count; i++)
                 {
                     propertyDescriptors[i] = new BindingConverterSettingPropertyDescriptor(
-                        bindingTypeConverterCollection[i].PropertyName,
-                        bindingTypeConverterCollection[i].TargetComponent);
+                        bindingConverters[i].PropertyName,
+                        bindingConverters[i].TargetComponent);
                 }
 
                 return new PropertyDescriptorCollection(propertyDescriptors);

@@ -7,7 +7,7 @@ namespace WinForms.PowerTools.Controls;
 ///  Represents a menu item with a symbol.
 /// </summary>
 [ToolboxBitmap(typeof(ToolStripMenuItem))]
-public class ToolStripSymbolMenuItem : ToolStripMenuItem, IToolStripItemSymbolProvider
+public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStripItemSymbolProvider
 {
     private Color _symbolColor=Color.Black;
     private static readonly Color s_transparentColor = Color.Transparent;
@@ -16,7 +16,7 @@ public class ToolStripSymbolMenuItem : ToolStripMenuItem, IToolStripItemSymbolPr
     private Size _symbolOffset;
     private int _symbolScaling = 100;
 
-    public ToolStripSymbolMenuItem() : base()
+    public ToolStripSymbolDropDownButton() : base()
     {
         base.ImageScaling = ToolStripItemImageScaling.None;
         base.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
@@ -52,6 +52,13 @@ public class ToolStripSymbolMenuItem : ToolStripMenuItem, IToolStripItemSymbolPr
     private bool ShouldSerializeImageScaling() => !(ImageScaling == ToolStripItemImageScaling.None);
 
     private void ResetImageScaling() => ImageScaling = ToolStripItemImageScaling.None;
+
+    /// <inheritdoc/>
+    public new TextImageRelation TextImageRelation
+    {
+        get => base.TextImageRelation;
+        set => base.TextImageRelation = value;
+    }
 
     private bool ShouldSerializeTextImageRelation() => !(TextImageRelation == TextImageRelation.ImageAboveText);
 

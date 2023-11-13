@@ -7,8 +7,6 @@ namespace WinForms.PowerTools.Controls.Designer;
 
 public class BindingTypeConverterExtenderDesigner : CodeDomSerializer
 {
-    private int _variableOccurrenceCounter = 1;
-
     internal const string TemplateAssignmentNamespace = "WinForms.Tiles";
 
     public override object Serialize(

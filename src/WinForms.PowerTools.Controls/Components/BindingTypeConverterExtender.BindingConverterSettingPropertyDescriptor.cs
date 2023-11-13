@@ -7,11 +7,11 @@ public partial class BindingTypeConverterExtender
 {
     public class BindingConverterSettingPropertyDescriptor : PropertyDescriptor
     {
-        private string _propertyName;
-        private IBindableComponent? _targetComponent;
+        private readonly string _propertyName;
+        private readonly IBindableComponent? _targetComponent;
 
         public BindingConverterSettingPropertyDescriptor( string propertyName, IBindableComponent? targetComponent)
-            : base(propertyName, new Attribute[0])
+            : base(propertyName, [])
         {
             _propertyName = propertyName;
             _targetComponent = targetComponent;
@@ -29,9 +29,9 @@ public partial class BindingTypeConverterExtender
 
         public override object? GetValue(object? component)
         {
-            if (component is BindingConverterSettingCollection converterSettingCollection)
+            if (component is BindingConverters bindingConverters)
             {
-                var setting = converterSettingCollection.Cast<BindingConverterSetting>()
+                var setting = bindingConverters.Cast<BindingConverterSetting>()
                     .First(s => s.TargetComponent == _targetComponent &&
                                          s.PropertyName == _propertyName);
 
@@ -44,15 +44,10 @@ public partial class BindingTypeConverterExtender
 
         public override void SetValue(object? component, object? value)
         {
-        //    if (!Debugger.IsAttached)
-        //    {
-        //        Debugger.Launch();
-        //    }
-
-            if (component is BindingConverterSettingCollection converterSettingCollection)
+            if (component is BindingConverters BindingConverters)
             {
                 // Find the setting within the collection to update
-                var settingToUpdate = converterSettingCollection.Cast<BindingConverterSetting>()
+                var settingToUpdate = BindingConverters.Cast<BindingConverterSetting>()
                     .First(s => s.TargetComponent == _targetComponent &&
                                          s.PropertyName == _propertyName);
 

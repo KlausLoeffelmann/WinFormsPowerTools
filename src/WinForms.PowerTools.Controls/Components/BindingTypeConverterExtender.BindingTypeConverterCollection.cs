@@ -1,37 +1,51 @@
-﻿using Microsoft.DotNet.DesignTools.Serialization;
-using System.Collections;
-using System.ComponentModel;
-using System.ComponentModel.Design.Serialization;
-using WinForms.PowerTools.Controls.Designer;
-
-namespace WinForms.PowerTools.Components;
+﻿namespace WinForms.PowerTools.Components;
 
 public partial class BindingTypeConverterExtender
 {
-    [TypeConverter(typeof(BindingTypeConverterCollectionConverter))]
-    [DesignerSerializer(typeof(BindingTypeConverterExtenderDesigner), typeof(CollectionCodeDomSerializer))]
-
-    public class BindingConverterSettingCollection : CollectionBase // Collection<BindingConverterSetting>
+    [Serializable]
+    public class BindingConverters : List<BindingConverterSetting>
     {
-        public void Add(BindingConverterSetting bindingConverterSetting)
+    }
+
+    [Serializable]
+    public class BindingConverterSettingsCollection : Dictionary<string, BindingConverters>
+    {
+        public void Add(IBindableComponent targetComponent, string propertyName, Type converterType)
         {
-            List.Add(bindingConverterSetting);
+            if (!this.TryGetValue(targetComponent.GetName(), out var bindingConverters))
+            {
+                bindingConverters = new BindingConverters();
+                this.Add(targetComponent.GetName(), bindingConverters);
+
+                return;
+            }
+
+            var bindingConverterSetting = new BindingConverterSetting(
+                targetComponent: targetComponent,
+                propertyName: propertyName,
+                typeConverterType: converterType);
+
+            bindingConverters=new BindingConverters();
+            bindingConverters.Add(bindingConverterSetting);
+
+            Add(targetComponent.GetName(), bindingConverters);
         }
 
-        public void Remove(BindingConverterSetting bindingConverterSetting)
+        public BindingConverterSettingsCollection GetUsedItems()
         {
-            List.Remove(bindingConverterSetting);
-        }
+            var usedItems = new BindingConverterSettingsCollection();
 
-        public BindingConverterSetting this[int index]
-        {
-            get => (BindingConverterSetting)List[index]!;
-            set => List[index] = value;
-        }
+            foreach (var item in this)
+            {
+                if (item.Value.Count == 0)
+                {
+                    continue;
+                }
 
-        public override string ToString()
-        {
-            return "(TypeConverters)";
+                usedItems.Add(item.Key, item.Value);
+            }
+
+            return usedItems;
         }
     }
 }
