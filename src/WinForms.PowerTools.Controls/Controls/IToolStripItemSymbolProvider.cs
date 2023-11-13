@@ -63,13 +63,13 @@ internal interface IToolStripItemSymbolProvider
     protected SymbolSource<SegoeFluentIcons> SymbolSource { get; set; }
     protected SymbolImageFactory? SymbolImageFactory { get; set; }
 
-    protected static SymbolSource<SegoeFluentIcons> SymbolSourceGetter(IToolStripItemSymbolProvider provider) 
+    protected static SymbolSource<SegoeFluentIcons> SymbolSourceGetter(IToolStripItemSymbolProvider provider)
         => provider.SymbolSource;
 
     protected static SymbolSource<SegoeFluentIcons> SymbolSourceSetter(
-        IToolStripItemSymbolProvider provider, 
-        SymbolSource<SegoeFluentIcons> symbolSource) 
-            => provider.SymbolSource=symbolSource;
+        IToolStripItemSymbolProvider provider,
+        SymbolSource<SegoeFluentIcons> symbolSource)
+            => provider.SymbolSource = symbolSource;
 
     protected static void SymbolSetter(
         IToolStripItemSymbolProvider provider,
@@ -125,17 +125,47 @@ internal interface IToolStripItemSymbolProvider
         onSymbolScalingChanged(EventArgs.Empty);
     }
 
+    protected static ToolStrip? ParentToolStrip(ToolStripItem item)
+    {
+        if (item.Owner is ToolStrip menu)
+            return menu;
+
+        if (item.OwnerItem is ToolStripMenuItem ownerItem)
+            return ParentToolStrip(ownerItem);
+
+        return null;
+    }
+
+    protected static Color GetSymbolColor(Color? currentColor, ToolStrip? root = default)
+    {
+        if (root is not null && !currentColor.HasValue)
+        {
+            return root.ForeColor;
+        }
+
+        return currentColor ?? Color.Black;
+    }
+
     protected static void SymbolColorSetter(
         IToolStripItemSymbolProvider provider,
         Action<EventArgs> onSymbolColorChanged,
         Color value,
-        ref Color symbolColor)
+        ref Color? symbolColor,
+        ToolStrip? root = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
         ArgumentNullException.ThrowIfNull(onSymbolColorChanged);
 
         if (symbolColor == value)
         {
+            return;
+        }
+
+        if (root is not null && value == root.ForeColor)
+        {
+            symbolColor = null;
+            UpdateSymbolImageFactory(provider);
+            onSymbolColorChanged(EventArgs.Empty);
             return;
         }
 

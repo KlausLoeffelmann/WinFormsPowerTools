@@ -9,7 +9,7 @@ namespace WinForms.PowerTools.Controls;
 [ToolboxBitmap(typeof(ToolStripMenuItem))]
 public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStripItemSymbolProvider
 {
-    private Color _symbolColor=Color.Black;
+    private Color? _symbolColor = default;
     private static readonly Color s_transparentColor = Color.Transparent;
 
     private Size? _symbolSize = new Size(32, 32);
@@ -24,7 +24,7 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
 
         IToolStripItemSymbolProvider.SymbolSourceSetter(
             this,
-            new SymbolSource<SegoeFluentIcons>("Segoe Fluent Icons"));          ;
+            new SymbolSource<SegoeFluentIcons>("Segoe Fluent Icons")); ;
     }
 
     /// <inheritdoc/>
@@ -70,15 +70,15 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
 
     SymbolImageFactory? IToolStripItemSymbolProvider.SymbolImageFactory { get; set; }
 
-    private SymbolSource<SegoeFluentIcons> SymbolSource 
+    private SymbolSource<SegoeFluentIcons> SymbolSource
         => IToolStripItemSymbolProvider.SymbolSourceGetter(this);
 
     /// <inheritdoc/>
     [Bindable(BindableSupport.Default, BindingDirection.OneWay)]
     public SegoeFluentIcons? Symbol
     {
-        get => SymbolSource.HasSymbolValue 
-            ? SymbolSource.Symbol 
+        get => SymbolSource.HasSymbolValue
+            ? SymbolSource.Symbol
             : null;
 
         set
@@ -90,7 +90,7 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
         }
     }
 
-    private bool ShouldSerializeSymbol() 
+    private bool ShouldSerializeSymbol()
         => SymbolSource.HasSymbolValue;
 
     private void ResetSymbol() => Symbol = null;
@@ -109,13 +109,14 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
     /// <inheritdoc/>
     public Color SymbolColor
     {
-        get => _symbolColor;
+        get => IToolStripItemSymbolProvider.GetSymbolColor(_symbolColor, this.Owner);
 
         set => IToolStripItemSymbolProvider.SymbolColorSetter(
             provider: this,
             onSymbolColorChanged: OnSymbolColorChanged,
             value: value,
-            ref _symbolColor);
+            ref _symbolColor,
+            IToolStripItemSymbolProvider.ParentToolStrip(this));
     }
 
     private bool ShouldSerializeSymbolColor() => _symbolColor != Color.Black;
@@ -150,10 +151,10 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
             ref _symbolOffset);
     }
 
-    private bool ShouldSerializeSymbolOffset() 
+    private bool ShouldSerializeSymbolOffset()
         => _symbolOffset != default;
 
-    private void ResetSymbolOffset() 
+    private void ResetSymbolOffset()
         => SymbolOffset = default;
 
     /// <inheritedDoc/>
@@ -163,41 +164,41 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
     public override Image? Image
     {
         get => base.Image;
-        set=> base.Image = value;
+        set => base.Image = value;
     }
 
     /// <summary>
     ///  Raises the <see cref="SymbolSizeChanged"/> event.
     /// </summary>
     /// <param name="e">An <see cref="EventArgs"/> containing the event data.</param>
-    protected virtual void OnSymbolSizeChanged(EventArgs e) 
+    protected virtual void OnSymbolSizeChanged(EventArgs e)
         => SymbolSizeChanged?.Invoke(this, e);
 
     /// <summary>
     ///  Raises the <see cref="SymbolChanged"/> event.
     /// </summary>
     /// <param name="e">An <see cref="EventArgs"/> containing the event data.</param>
-    protected virtual void OnSymbolChanged(EventArgs e) 
+    protected virtual void OnSymbolChanged(EventArgs e)
         => SymbolChanged?.Invoke(this, e);
 
     /// <summary>
     ///  Raises the <see cref="SymbolColorChanged"/> event.
     /// </summary>
     /// <param name="e">An <see cref="EventArgs"/> containing the event data.</param>
-    protected virtual void OnSymbolColorChanged(EventArgs e) 
+    protected virtual void OnSymbolColorChanged(EventArgs e)
         => SymbolColorChanged?.Invoke(this, e);
 
     /// <summary>
     ///  Raises the <see cref="SymbolOffsetChanged"/> event.
     /// </summary>
     /// <param name="e">An <see cref="EventArgs"/> containing the event data.</param>
-    protected virtual void OnSymbolOffsetChanged(EventArgs e) 
+    protected virtual void OnSymbolOffsetChanged(EventArgs e)
         => SymbolOffsetChanged?.Invoke(this, e);
 
     /// <summary>
     ///  Raises the <see cref="SymbolScalingChanged"/> event.
     /// </summary>
     /// <param name="e">An <see cref="EventArgs"/> containing the event data.</param>
-    protected virtual void OnSymbolScalingChanged(EventArgs e) 
+    protected virtual void OnSymbolScalingChanged(EventArgs e)
         => SymbolScalingChanged?.Invoke(this, e);
 }

@@ -16,5 +16,15 @@ public static class ColorExtensions
             (byte)(colorValue & 0xFF)          // Blue
         );
     }
-}
 
+    public static void ApplyDarkRenderer(this ToolStrip toolstrip)
+    {
+        var darkProfessionalColors = new ThemingColors.DarkProfessionalColors();
+
+        toolstrip.BackColor = ThemingColors.DarkModeTheme.Control;
+        toolstrip.ForeColor = ThemingColors.DarkModeTheme.ControlText;
+        toolstrip.RenderMode= ToolStripRenderMode.Professional;
+        var darkRenderer = new ToolStripProfessionalRenderer(darkProfessionalColors);
+        toolstrip.Renderer = darkRenderer;
+    }
+}
