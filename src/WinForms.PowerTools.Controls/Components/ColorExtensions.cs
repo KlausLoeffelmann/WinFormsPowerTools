@@ -21,10 +21,31 @@ public static class ColorExtensions
     {
         var darkProfessionalColors = new ThemingColors.DarkProfessionalColors();
 
-        toolstrip.BackColor = ThemingColors.DarkModeTheme.Control;
+        toolstrip.BackColor = ThemingColors.DarkModeTheme.MenuBar;
         toolstrip.ForeColor = ThemingColors.DarkModeTheme.ControlText;
-        toolstrip.RenderMode= ToolStripRenderMode.Professional;
+
+        toolstrip.RenderMode = ToolStripRenderMode.Professional;
         var darkRenderer = new ToolStripProfessionalRenderer(darkProfessionalColors);
+        
         toolstrip.Renderer = darkRenderer;
+
+        ApplyDarkSystemColors(toolstrip.Items);
+
+        void ApplyDarkSystemColors(ToolStripItemCollection toolStripItems)
+        {
+            foreach (ToolStripItem item in toolStripItems)
+            {
+                item.BackColor = ThemingColors.DarkModeTheme.MenuBar;
+                item.ForeColor = ThemingColors.DarkModeTheme.ControlText;
+
+                if (item is ToolStripDropDownItem dropDownItem)
+                {
+                    if (dropDownItem.HasDropDownItems)
+                    {
+                        ApplyDarkSystemColors(dropDownItem.DropDownItems);
+                    }
+                }
+            }
+        }
     }
 }

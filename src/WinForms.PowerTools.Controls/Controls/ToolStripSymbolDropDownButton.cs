@@ -139,6 +139,12 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
 
     private void ResetSymbolSize() => SymbolSize = null;
 
+    protected override void OnOwnerChanged(EventArgs e)
+    {
+        base.OnOwnerChanged(e);
+        SymbolColor = SymbolColor;
+    }
+
     /// <inheritdoc/>
     public Size SymbolOffset
     {

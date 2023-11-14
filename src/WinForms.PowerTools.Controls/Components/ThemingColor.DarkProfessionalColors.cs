@@ -28,5 +28,13 @@ public partial class ThemingColors
         public override Color ButtonSelectedGradientBegin => _darkThemeColors.ControlLight;
         public override Color ButtonSelectedGradientMiddle => _darkThemeColors.ControlLight;
         public override Color ButtonSelectedGradientEnd => _darkThemeColors.ControlLight;
+        public override Color ButtonPressedGradientBegin => _darkThemeColors.ControlLightLight;
+        public override Color ButtonPressedGradientMiddle => _darkThemeColors.ControlLightLight;
+        public override Color ButtonPressedGradientEnd => _darkThemeColors.ControlLightLight;
+        public override Color ButtonSelectedHighlight => _darkThemeColors.Highlight;
+        public override Color ToolStripPanelGradientBegin => base.ToolStripPanelGradientBegin;
+        public override Color ToolStripPanelGradientEnd => base.ToolStripPanelGradientEnd;
+        public override Color ToolStripContentPanelGradientBegin => base.ToolStripContentPanelGradientBegin;
+        public override Color ToolStripContentPanelGradientEnd => base.ToolStripContentPanelGradientEnd;
     }
 }

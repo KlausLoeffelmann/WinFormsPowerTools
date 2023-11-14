@@ -316,11 +316,11 @@ public partial class ThemingColors
             Info = 0xFF404040.ToColor(),
             InfoText = 0xFFFFFFFF.ToColor(),
             Menu = 0xFF303030.ToColor(),
-            MenuBar = 0xFF202020.ToColor(),
+            MenuBar = 0xFF101010.ToColor(),
             MenuHighlight = 0xFF404040.ToColor(),
             MenuText = 0xFFF0F0F0.ToColor(),
             ScrollBar = 0xFF404040.ToColor(),
-            Window = 0xFF202020.ToColor(),
+            Window = 0xFF121D2F.ToColor(),
             WindowFrame = 0xFF808080.ToColor(),
             WindowText = 0xFFF0F0F0.ToColor(),
         };

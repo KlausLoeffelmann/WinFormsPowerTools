@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections;
+using System.ComponentModel;
 
 namespace WinForms.PowerTools.Controls;
 
@@ -6,15 +7,22 @@ internal class SortedEnumConverter : EnumConverter
 {
     public SortedEnumConverter(Type typeOfEnum) : base(typeOfEnum) { }
 
-    public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext? context)
+    private class EnumComparer : IComparer
     {
-        var values = Enum.GetValues(EnumType).Cast<Enum>();
-        var sortedValues = values.OrderBy(e => e.ToString()).ToArray();
+        public int Compare(object? x, object? y)
+        {
+            // Cast the objects into Enums:
+            if (x is Enum x_enum && y is Enum y_enum)
+            {
+                // return the compare results of the respective Enum names:
+                return x_enum.ToString().CompareTo(y_enum.ToString());
+            }
 
-        return new StandardValuesCollection(sortedValues);
+            return 0;
+        }
+
+        public static EnumComparer Default => new EnumComparer();
     }
 
-    public override bool GetStandardValuesSupported(ITypeDescriptorContext? context) => true;
-
-    public override bool GetStandardValuesExclusive(ITypeDescriptorContext? context) => true;
+    protected override IComparer Comparer => EnumComparer.Default;
 }
