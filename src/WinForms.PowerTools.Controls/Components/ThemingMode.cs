@@ -7,5 +7,6 @@ public enum ThemingMode
 {
     LightMode,
     DarkMode,
+    BlackMode,
     System
 }

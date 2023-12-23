@@ -17,9 +17,9 @@ public static class ColorExtensions
         );
     }
 
-    public static void ApplyDarkRenderer(this ToolStrip toolstrip)
+    public static void ApplyDarkRenderer(this ToolStrip toolstrip, ThemingMode darkThemingMode)
     {
-        var darkProfessionalColors = new ThemingColors.DarkProfessionalColors();
+        var darkProfessionalColors = new ThemingColors.DarkProfessionalColors(darkThemingMode);
 
         toolstrip.BackColor = ThemingColors.DarkModeTheme.MenuBar;
         toolstrip.ForeColor = ThemingColors.DarkModeTheme.ControlText;

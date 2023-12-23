@@ -18,6 +18,7 @@ public partial class ThemingColors
     {
         return theming switch
         {
+            ThemingMode.BlackMode => _darkModeColors ??= GetBlackModeColors(),
             ThemingMode.DarkMode => _darkModeColors ??= GetDefaultDarkModeColors(),
             ThemingMode.LightMode => _lightModeColors ??= GetDefaultLightModeColors(),
             ThemingMode.System => _systemColors ??= GetDefaultSystemColors(),
@@ -34,6 +35,11 @@ public partial class ThemingColors
     /// Gets the default dark mode theme colors.
     /// </summary>
     public static ThemingColors DarkModeTheme { get; } = GetDefaultDarkModeColors();
+
+    /// <summary>
+    /// Gets the black mode theme colors - best for OLED Displays with switched-off background.
+    /// </summary>
+    public static ThemingColors BlackModeTheme { get; } = GetBlackModeColors();
 
     /// <summary>
     /// Gets the default system theme colors.
@@ -325,4 +331,46 @@ public partial class ThemingColors
             WindowText = 0xFFF0F0F0.ToColor(),
         };
     }
+
+    // Initialize with custom colors for Black Mode (Example)
+    private static ThemingColors GetBlackModeColors()
+    {
+        return new ThemingColors
+        {
+            ActiveBorder = 0xFF505050.ToColor(),
+            ActiveCaption = 0xFF3C3C3C.ToColor(),
+            ActiveCaptionText = 0xFFFFFFFF.ToColor(),
+            AppWorkspace = 0xFF1E1E1E.ToColor(),
+            ButtonFace = 0xFF303030.ToColor(),
+            ButtonHighlight = 0xFF404040.ToColor(),
+            ButtonShadow = 0xFF404040.ToColor(),
+            Control = 0xFF000000.ToColor(),
+            ControlDark = 0xFF000000.ToColor(),
+            ControlDarkDark = 0xFF000000.ToColor(),
+            ControlLight = 0xFF202020.ToColor(),
+            ControlLightLight = 0xFF404040.ToColor(),
+            ControlText = 0xFFF0F0F0.ToColor(),
+            Desktop = 0xFF000000.ToColor(),
+            GradientActiveCaption = 0xFF202020.ToColor(),
+            GradientInactiveCaption = 0xFF101010.ToColor(),
+            GrayText = 0xFF404040.ToColor(),
+            Highlight = 0xFF202020.ToColor(),
+            HighlightText = 0xFFFFFFFF.ToColor(),
+            HotTrack = 0xFF303030.ToColor(),
+            InactiveBorder = 0xFF464646.ToColor(),
+            InactiveCaption = 0xFF282828.ToColor(),
+            InactiveCaptionText = 0xFF808080.ToColor(),
+            Info = 0xFF404040.ToColor(),
+            InfoText = 0xFFFFFFFF.ToColor(),
+            Menu = 0xFF202020.ToColor(),
+            MenuBar = 0xFF101010.ToColor(),
+            MenuHighlight = 0xFF303030.ToColor(),
+            MenuText = 0xFFF0F0F0.ToColor(),
+            ScrollBar = 0xFF303030.ToColor(),
+            Window = 0xFF000000.ToColor(),
+            WindowFrame = 0xFF404040.ToColor(),
+            WindowText = 0xFFA0A0A0.ToColor(),
+        };
+    }
+
 }

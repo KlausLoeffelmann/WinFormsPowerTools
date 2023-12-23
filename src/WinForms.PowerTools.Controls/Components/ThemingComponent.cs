@@ -14,9 +14,6 @@ public partial class ThemingComponent : BindableComponent
     public event EventHandler<EventArgs>? ThemingModeChanged;
     public event EventHandler<ThemingEventArgs>? ApplyingTheme;
 
-    private readonly ToolStripProfessionalRenderer _darkProfessionalRenderer =
-        new(new ThemingColors.DarkProfessionalColors());
-
     public ThemingComponent() { }
 
     /// <summary>
@@ -268,9 +265,11 @@ public partial class ThemingComponent : BindableComponent
     /// <param name="eventArgs">Event arguments containing theming information.</param>
     protected virtual void OnApplyToolStripTheming(ThemingEventArgs eventArgs, ToolStrip toolStrip)
     {
-        if (eventArgs.ThemingMode == ThemingMode.DarkMode)
+        if (eventArgs.ThemingMode == ThemingMode.DarkMode 
+            || eventArgs.ThemingMode == ThemingMode.BlackMode)
         {
-            toolStrip.Renderer = _darkProfessionalRenderer;
+            toolStrip.Renderer = new ToolStripProfessionalRenderer(
+                new ThemingColors.DarkProfessionalColors(eventArgs.ThemingMode));
             toolStrip.RenderMode = ToolStripRenderMode.Professional;
             toolStrip.BackColor = eventArgs.ColorContainer.Window;
             toolStrip.ForeColor = eventArgs.ColorContainer.WindowText;

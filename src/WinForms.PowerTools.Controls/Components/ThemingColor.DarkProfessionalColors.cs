@@ -7,9 +7,12 @@ public partial class ThemingColors
     /// </summary>
     public class DarkProfessionalColors : ProfessionalColorTable
     {
-        private readonly ThemingColors _darkThemeColors = ThemingColors.GetColors(ThemingMode.DarkMode);
+        private readonly ThemingColors _darkThemeColors;
 
-        public DarkProfessionalColors(){ }
+        public DarkProfessionalColors(ThemingMode themingMode)
+        {
+            _darkThemeColors = ThemingColors.GetColors(themingMode);
+        }
 
         public override Color MenuItemPressedGradientBegin => _darkThemeColors.ControlLightLight;
         public override Color MenuItemPressedGradientMiddle => _darkThemeColors.ControlLightLight;
