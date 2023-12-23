@@ -12,19 +12,21 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
     private Color? _symbolColor = default;
     private static readonly Color s_transparentColor = Color.Transparent;
 
-    private Size? _symbolSize = new Size(32, 32);
+    private Size? _symbolSize = new Size(48, 48);
     private Size _symbolOffset;
     private int _symbolScaling = 100;
 
     public ToolStripSymbolDropDownButton() : base()
     {
-        base.ImageScaling = ToolStripItemImageScaling.None;
-        base.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-        base.TextImageRelation = TextImageRelation.ImageAboveText;
+        AutoSize = false;
+        ImageScaling = ToolStripItemImageScaling.None;
+        TextImageRelation = TextImageRelation.ImageAboveText;
 
         IToolStripItemSymbolProvider.SymbolSourceSetter(
             this,
-            new SymbolSource<SegoeFluentIcons>("Segoe Fluent Icons")); ;
+            new SymbolSource<SegoeFluentIcons>("Segoe Fluent Icons"));
+
+        DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
     }
 
     /// <inheritdoc/>
@@ -41,6 +43,11 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
 
     /// <inheritdoc/>
     public event EventHandler? SymbolScalingChanged;
+
+    [DefaultValue(false)]
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public new bool AutoSize { get; set; } = false;
 
     /// <inheritdoc/>
     public new ToolStripItemImageScaling ImageScaling

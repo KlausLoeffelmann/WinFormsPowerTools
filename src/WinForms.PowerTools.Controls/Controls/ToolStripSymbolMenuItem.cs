@@ -18,14 +18,21 @@ public class ToolStripSymbolMenuItem : ToolStripMenuItem, IToolStripItemSymbolPr
 
     public ToolStripSymbolMenuItem() : base()
     {
-        base.ImageScaling = ToolStripItemImageScaling.None;
-        base.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-        base.TextImageRelation = TextImageRelation.ImageAboveText;
+        AutoSize = false;
+        ImageScaling = ToolStripItemImageScaling.None;
+        TextImageRelation = TextImageRelation.ImageAboveText;
 
         IToolStripItemSymbolProvider.SymbolSourceSetter(
             this,
-            new SymbolSource<SegoeFluentIcons>("Segoe Fluent Icons")); ;
+            new SymbolSource<SegoeFluentIcons>("Segoe Fluent Icons"));
+
+        DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
     }
+
+    [DefaultValue(false)]
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public new bool AutoSize { get; set; } = false;
 
     /// <inheritdoc/>
     public event EventHandler? SymbolChanged;
