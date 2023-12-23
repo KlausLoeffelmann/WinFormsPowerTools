@@ -6,7 +6,7 @@ namespace WinForms.PowerTools.Components;
 /// <summary>
 ///  Provides theming capabilities to a form.
 /// </summary>
-public partial class ThemingComponent : BindableComponent
+public partial class ThemingComponent : BindableComponent, ISupportInitialize
 {
     private ContainerControl? _parentContainer;
     private ThemingMode _themingMode;
@@ -49,15 +49,17 @@ public partial class ThemingComponent : BindableComponent
     /// </summary>
     private void ApplyTheming()
     {
-        if (ParentContainer != null)
+        if (ParentContainer is null || !_initialized)
         {
-            var colorContainer = ThemingColors.GetColors(ThemingMode);
-
-            ApplyThemingRecursive(
-                ParentContainer,
-                _themingMode,
-                colorContainer);
+            return;
         }
+
+        var colorContainer = ThemingColors.GetColors(ThemingMode);
+
+        ApplyThemingRecursive(
+            ParentContainer,
+            _themingMode,
+            colorContainer);
     }
 
     private void ApplyThemingRecursive(
@@ -281,5 +283,13 @@ public partial class ThemingComponent : BindableComponent
             toolStrip.BackColor = eventArgs.ColorContainer.Window;
             toolStrip.ForeColor = eventArgs.ColorContainer.WindowText;
         }
+    }
+
+    public void BeginInit() { }
+
+    public void EndInit()
+    {
+        _initialized = true;
+        ApplyTheming();
     }
 }

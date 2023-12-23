@@ -8,6 +8,8 @@ namespace WinForms.PowerTools.Components;
 [Description("A component to manage theming for WinForms.")]
 public partial class ThemingComponent : BindableComponent
 {
+    private bool _initialized;
+
     /// <summary>
     ///  Gets or sets the theming mode.
     /// </summary>
@@ -35,6 +37,9 @@ public partial class ThemingComponent : BindableComponent
     protected virtual void OnThemingModeChanged()
     {
         ThemingModeChanged?.Invoke(this, EventArgs.Empty);
-        ApplyTheming();
+        if (_initialized)
+        {
+            ApplyTheming();
+        }
     }
 }
