@@ -8,22 +8,25 @@ namespace WinFormsPowerToolsDemo
 {
     public partial class DarkModeTestForm : Form
     {
-        private Timer _delayOperationTimer;
-        private Timer _propertyReportTimer;
+        private Timer? _delayOperationTimer;
+        private readonly Timer? _propertyReportTimer;
 
         public DarkModeTestForm()
         {
             InitializeComponent();
-            saveToolStripButton.Click += saveToolStripButton_Clicked;
+            saveToolStripButton.Click += SaveToolStripButton_Clicked;
 
-            _propertyReportTimer = new Timer();
-            _propertyReportTimer.Interval = 500;
+            _propertyReportTimer = new Timer
+            {
+                Interval = 500
+            };
+
             //_propertyReportTimer.Enabled = true;
             _propertyReportTimer.Tick += PropertyReportTimer_Tick;
             //_propertyReportTimer.Start();
         }
 
-        private void PropertyReportTimer_Tick(object sender, EventArgs e)
+        private void PropertyReportTimer_Tick(object? sender, EventArgs e)
         {
             var objectValuePropertiesReport = new StringBuilder();
             var typedValuePropertiesReport = new StringBuilder();
@@ -41,38 +44,46 @@ namespace WinFormsPowerToolsDemo
             lblTypedValues.Text = typedValuePropertiesReport.ToString();
         }
 
-        private void saveToolStripButton_Clicked(object sender, EventArgs e)
+        private void SaveToolStripButton_Clicked(object? sender, EventArgs e)
         {
             textBox1.Clear();
             textBox1.WriteLine($"Value of {dataEntry1.Name}: {dataEntry1.ObjectValue?.ToString()}");
             textBox1.WriteLine($"Value of {dataEntry2.Name}: {dataEntry2.ObjectValue?.ToString()}");
         }
 
-        private void btnSetValueDelayed_Click(object sender, EventArgs e)
+        private void BtnSetValueDelayed_Click(object? sender, EventArgs e)
         {
-            _delayOperationTimer = new Timer() { Tag = new Action(WriteDelayedTypedValues) };
-            _delayOperationTimer.Interval = 1000;
+            _delayOperationTimer = new Timer
+            {
+                Tag = new Action(WriteDelayedTypedValues),
+                Interval = 1000
+            };
+
             btnSetTypesValueDelayed.Tag = (5, Text);
-            _delayOperationTimer.Tick += _delayOperationTimer_Tick;
+            _delayOperationTimer.Tick += DelayOperationTimer_Tick;
             _delayOperationTimer.Enabled = true;
         }
 
-        private void btnSetObjectValuesDelayed_Click(object sender, EventArgs e)
+        private void BtnSetObjectValuesDelayed_Click(object? sender, EventArgs e)
         {
-            _delayOperationTimer = new Timer() { Tag = new Action(WriteDelayedObjectValues) };
-            _delayOperationTimer.Interval = 1000;
+            _delayOperationTimer = new Timer
+            {
+                Tag = new Action(WriteDelayedObjectValues),
+                Interval = 1000
+            };
+
             btnSetTypesValueDelayed.Tag = (5, Text);
-            _delayOperationTimer.Tick += _delayOperationTimer_Tick;
+            _delayOperationTimer.Tick += DelayOperationTimer_Tick;
             _delayOperationTimer.Enabled = true;
         }
 
-        private void _delayOperationTimer_Tick(object sender, EventArgs e)
+        private void DelayOperationTimer_Tick(object? sender, EventArgs e)
         {
             btnSetTypesValueDelayed.Enabled = false;
             (int counter, string oldText) = ((int, string))btnSetTypesValueDelayed.Tag;
             if (counter--==0)
             {
-                _delayOperationTimer.Dispose();
+                _delayOperationTimer?.Dispose();
                 btnSetTypesValueDelayed.Text = oldText;
                 btnSetTypesValueDelayed.Enabled = true;
                 ((Action)(_delayOperationTimer).Tag).Invoke();

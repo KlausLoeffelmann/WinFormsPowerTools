@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Globalization;
-using System.Linq;
 using Windows.Win32;
 using Windows.Win32.Graphics.DirectWrite;
 
@@ -9,29 +7,27 @@ namespace System.Windows.Forms.Direct2D
 {
     internal class Direct2DFormat
     {
-        private static QueuedLookup<Direct2DFormat> s_cached2DFormats = new(100);
+        private static readonly QueuedLookup<Direct2DFormat> s_cached2DFormats = new(100);
         private static readonly int MaxFormatCache = 100;
 
-        IDWriteFactory _writeFactory;
+        private readonly IDWriteFactory _writeFactory;
+        private IDWriteTextFormat? _cachedInstance;
 
-        string _fontFamilyName;
-        float _fontSize;
-        float? _lineSpacing;
-        float? _baseLine;
+        private string _fontFamilyName;
+        private float _fontSize;
+        private float? _lineSpacing;
+        private float? _baseLine;
+        private readonly char _delimiterChar = Char.MinValue;
+        private readonly int _delimiterCount = 1;
 
-        DWRITE_FONT_WEIGHT _dwFontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_NORMAL;
-        DWRITE_FONT_STYLE _dwFontStyle = DWRITE_FONT_STYLE.DWRITE_FONT_STYLE_NORMAL;
-        DWRITE_FONT_STRETCH _dwFontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_NORMAL;
-        DWRITE_LINE_SPACING_METHOD _dwLineSpacingMethod = DWRITE_LINE_SPACING_METHOD.DWRITE_LINE_SPACING_METHOD_DEFAULT;
-        DWRITE_PARAGRAPH_ALIGNMENT _dwParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
-        DWRITE_TEXT_ALIGNMENT _dwTextAlignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_LEADING;
-        DWRITE_TRIMMING_GRANULARITY _dwTrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_NONE;
-        DWRITE_WORD_WRAPPING _dwWordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_NO_WRAP;
-
-        char _delimiterChar = Char.MinValue;
-        int _delimiterCount = 1;
-
-        IDWriteTextFormat? _cachedInstance;
+        private DWRITE_FONT_WEIGHT _dwFontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_NORMAL;
+        private DWRITE_FONT_STYLE _dwFontStyle = DWRITE_FONT_STYLE.DWRITE_FONT_STYLE_NORMAL;
+        private DWRITE_FONT_STRETCH _dwFontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_NORMAL;
+        private DWRITE_LINE_SPACING_METHOD _dwLineSpacingMethod = DWRITE_LINE_SPACING_METHOD.DWRITE_LINE_SPACING_METHOD_DEFAULT;
+        private DWRITE_PARAGRAPH_ALIGNMENT _dwParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
+        private DWRITE_TEXT_ALIGNMENT _dwTextAlignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_LEADING;
+        private DWRITE_TRIMMING_GRANULARITY _dwTrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_NONE;
+        private DWRITE_WORD_WRAPPING _dwWordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_NO_WRAP;
 
         public Direct2DFormat(
             IDWriteFactory writeFactory,
@@ -58,8 +54,10 @@ namespace System.Windows.Forms.Direct2D
                 textFormat.SetParagraphAlignment(_dwParagraphAlignment);
                 textFormat.SetTextAlignment(_dwTextAlignment);
 
-                var trimming = new DWRITE_TRIMMING();
-                trimming.granularity = _dwTrimmingGranularity;
+                var trimming = new DWRITE_TRIMMING
+                {
+                    granularity = _dwTrimmingGranularity
+                };
 
                 if (_delimiterChar != char.MinValue)
                 {
@@ -214,15 +212,16 @@ namespace System.Windows.Forms.Direct2D
             d2dFormat = new Direct2DFormat(
                 writeFactory,
                 font.FontFamily.Name,
-                font.Size);
-
-            d2dFormat.FontWeight = font.Bold
+                font.Size)
+            {
+                FontWeight = font.Bold
                 ? IDirectWriteTextFormat.FontWeight.Bold
-                : IDirectWriteTextFormat.FontWeight.Normal;
+                : IDirectWriteTextFormat.FontWeight.Normal,
 
-            d2dFormat.FontStyle = font.Italic
+                FontStyle = font.Italic
                 ? IDirectWriteTextFormat.FontStyle.Italic
-                : IDirectWriteTextFormat.FontStyle.Normal;
+                : IDirectWriteTextFormat.FontStyle.Normal
+            };
 
             s_cached2DFormats.Add(font, d2dFormat);
 
@@ -285,7 +284,7 @@ namespace System.Windows.Forms.Direct2D
 
         private static IDWriteTextFormat CreateTextFormat(
             IDWriteFactory writeFactory,
-            string fontFamilyname,
+            string fontFamilyName,
             float fontSize,
             DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_NORMAL,
             DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE.DWRITE_FONT_STYLE_NORMAL,
@@ -298,7 +297,7 @@ namespace System.Windows.Forms.Direct2D
             }
 
             writeFactory.CreateTextFormat(
-                fontFamilyname,
+                fontFamilyName,
                 fontCollection: null,
                 fontWeight,
                 fontStyle,

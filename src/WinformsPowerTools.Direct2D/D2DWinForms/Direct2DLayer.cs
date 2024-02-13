@@ -116,7 +116,10 @@ namespace System.Windows.Forms.Direct2D
 
         unsafe public void EndDraw()
         {
-            RenderTarget.EndDraw(out ulong tag1, out ulong tag2);
+            ulong* tag1 = null;
+            ulong* tag2 = null;
+
+            RenderTarget.EndDraw(tag1, tag2);
         }
 
         public void Clear(System.Drawing.Color color)
@@ -142,7 +145,10 @@ namespace System.Windows.Forms.Direct2D
 
         unsafe public void Flush()
         {
-            RenderTarget.Flush(out ulong tag1, out ulong tag2);
+            ulong* tag1 = null;
+            ulong* tag2 = null;
+
+            RenderTarget.Flush(tag1, tag2);
         }
 
         internal void DrawLine(float x1, float y1, float x2, float y2, 
@@ -162,12 +168,12 @@ namespace System.Windows.Forms.Direct2D
 
         internal unsafe void DrawImage(IDirect2DImage image, float x, float y, float width, float height)
         {
-            D2D_RECT_F rrectangle;
-            rrectangle = new() { left = x, top = y, right = x + width, bottom = y + height };
+            D2D_RECT_F rectangle;
+            rectangle = new() { left = x, top = y, right = x + width, bottom = y + height };
 
             RenderTarget.DrawBitmap(
                 ((Direct2DImage) image).NativeImage,
-                rrectangle,
+                rectangle,
                 opacity: 1,
                 D2D1_BITMAP_INTERPOLATION_MODE.D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
                 sourceRectangle: null);
@@ -179,38 +185,38 @@ namespace System.Windows.Forms.Direct2D
         internal void DrawRectangle(float x, float y, float width, float height,
             ID2D1SolidColorBrush strokeColorBrush, float strokeSize, ID2D1StrokeStyle? strokeStyle)
         {
-            D2D_RECT_F rrectangle;
-            rrectangle = new() { left = x, top = y, right = x + width, bottom = y + height };
-            RenderTarget.DrawRectangle(rrectangle, strokeColorBrush, strokeSize, strokeStyle);
+            D2D_RECT_F rectangle;
+            rectangle = new() { left = x, top = y, right = x + width, bottom = y + height };
+            RenderTarget.DrawRectangle(rectangle, strokeColorBrush, strokeSize, strokeStyle);
         }
 
         internal void FillRectangle(float x, float y, float width, float height, ID2D1SolidColorBrush fillColorBrush)
         {
-            D2D_RECT_F rrectangle;
-            rrectangle = new() { left = x, top = y, right = x + width, bottom = y + height };
-            RenderTarget.FillRectangle(rrectangle, fillColorBrush);
+            D2D_RECT_F rectangle;
+            rectangle = new() { left = x, top = y, right = x + width, bottom = y + height };
+            RenderTarget.FillRectangle(rectangle, fillColorBrush);
         }
 
         internal void DrawRoundedRectangle(float x, float y, float width, float height, float cornerRadius,
             ID2D1SolidColorBrush strokeColorBrush, float strokeSize, ID2D1StrokeStyle? strokeStyle)
         {
-            D2D1_ROUNDED_RECT rrectangle;
-            rrectangle.rect = new() { left = x, top = y, right = x + width, bottom = y + height };
-            rrectangle.radiusX = cornerRadius;
-            rrectangle.radiusY = cornerRadius;
+            D2D1_ROUNDED_RECT rectangle;
+            rectangle.rect = new() { left = x, top = y, right = x + width, bottom = y + height };
+            rectangle.radiusX = cornerRadius;
+            rectangle.radiusY = cornerRadius;
 
-            RenderTarget.DrawRoundedRectangle(rrectangle, strokeColorBrush, strokeSize, strokeStyle);
+            RenderTarget.DrawRoundedRectangle(rectangle, strokeColorBrush, strokeSize, strokeStyle);
         }
 
         internal void FillRoundedRectangle(float x, float y, float width, float height, 
             float cornerRadius, ID2D1SolidColorBrush fillColorBrush)
         {
-            D2D1_ROUNDED_RECT rrectangle;
-            rrectangle.rect = new() { left = x, top = y, right = x + width, bottom = y + height };
-            rrectangle.radiusX = cornerRadius;
-            rrectangle.radiusY = cornerRadius;
+            D2D1_ROUNDED_RECT rectangle;
+            rectangle.rect = new() { left = x, top = y, right = x + width, bottom = y + height };
+            rectangle.radiusX = cornerRadius;
+            rectangle.radiusY = cornerRadius;
 
-            RenderTarget.FillRoundedRectangle(rrectangle, fillColorBrush);
+            RenderTarget.FillRoundedRectangle(rectangle, fillColorBrush);
         }
 
         internal void DrawArc(float x1, float y1, float x2, float y2, float startAngle, float endAngle, bool clockwise, bool closed,
@@ -243,11 +249,13 @@ namespace System.Windows.Forms.Direct2D
 
         internal void DrawText(string? s, Direct2DBrush d2dBrush, Direct2DFormat d2dFormat, float x, float y)
         {
-            D2D_RECT_F layoutRect = new();
-            layoutRect.left = x;
-            layoutRect.top = y;
-            layoutRect.right = x + 1;
-            layoutRect.bottom = y + 1;
+            D2D_RECT_F layoutRect = new()
+            {
+                left = x,
+                top = y,
+                right = x + 1,
+                bottom = y + 1
+            };
 
             RenderTarget.DrawText(
                 s ?? string.Empty,
@@ -261,11 +269,13 @@ namespace System.Windows.Forms.Direct2D
 
         internal void DrawText(string? s, Direct2DBrush d2dBrush, Direct2DFormat d2dFormat, RectangleF layoutRectangle)
         {
-            D2D_RECT_F layoutRect = new();
-            layoutRect.left = layoutRectangle.Left;
-            layoutRect.top = layoutRectangle.Top;
-            layoutRect.bottom = layoutRectangle.Bottom;
-            layoutRect.right = layoutRectangle.Right;
+            D2D_RECT_F layoutRect = new()
+            {
+                left = layoutRectangle.Left,
+                top = layoutRectangle.Top,
+                bottom = layoutRectangle.Bottom,
+                right = layoutRectangle.Right
+            };
 
             RenderTarget.DrawText(
                 s ?? string.Empty,
