@@ -33,8 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\WinFormsDx\src\WinFormsDx\WinFormsPowerTools.Direct2D\WinForms.PowerTools.Direct2D.csproj" />
     <ProjectReference Include="..\WinForms.PowerTools.Controls\WinForms.PowerTools.Controls.csproj" />
-    <ProjectReference Include="..\WinformsPowerTools.Direct2D\Winforms.PowerTools.Direct2D.csproj" />
     <ProjectReference Include="..\WinFormsPowerTools.StandardLib\WinForms.PowerTools.StandardLib.csproj" />
     <ProjectReference Include="..\WinFormsPowerTools\WinForms.PowerTools.csproj" />
   </ItemGroup>
