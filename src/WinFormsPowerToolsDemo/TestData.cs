@@ -4,6 +4,7 @@ using WinFormsPowerTools.AutoLayout;
 
 namespace WinFormsPowerToolsDemo
 {
+#pragma warning disable IDE0051 // Remove unused private members
     public class Foo
     {
         public Guid IDContact { get; set; }
@@ -27,3 +28,4 @@ namespace WinFormsPowerToolsDemo
         public string? Test { get; set; }
     }
 }
+#pragma warning restore IDE0051 // Remove unused private members

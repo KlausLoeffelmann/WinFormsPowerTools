@@ -141,7 +141,6 @@
 
         private PowerTools.Components.ThemingComponent themingComponent1;
         private PowerTools.Controls.ToolStripSymbolMenuItem toolStripFluentSymbolMenuItem1;
-        private PowerTools.Components.ThemingComponent themingComponent2;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripSplitButton toolStripSplitButton1;

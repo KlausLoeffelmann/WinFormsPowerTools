@@ -4,6 +4,9 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataEntryForms;
 using System.Windows.Forms.DataEntryForms.Controls;
 
+#pragma warning disable CS8605 // Unboxing a possibly null value.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 namespace WinFormsPowerToolsDemo
 {
     public partial class DarkModeTestForm : Form
@@ -112,3 +115,6 @@ namespace WinFormsPowerToolsDemo
         }
     }
 }
+#pragma warning restore CS8605 // Unboxing a possibly null value.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.

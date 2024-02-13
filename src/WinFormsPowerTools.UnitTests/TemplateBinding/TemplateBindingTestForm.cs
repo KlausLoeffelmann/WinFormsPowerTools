@@ -12,7 +12,7 @@ namespace WinFormsPowerTools.UnitTests.TemplateBinding
 
         internal NestedPropertyChangedManager? PcmTree { get; set; }
 
-        public Employee? DataContext
+        public new Employee? DataContext
         {
             get => (Employee?)PcmTree?.RootNode.Value;
             set

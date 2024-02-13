@@ -8,7 +8,7 @@ namespace System.Windows.Forms.Direct2D
     internal class Direct2DFormat
     {
         private static readonly QueuedLookup<Direct2DFormat> s_cached2DFormats = new(100);
-        private static readonly int MaxFormatCache = 100;
+        // private static readonly int MaxFormatCache = 100;
 
         private readonly IDWriteFactory _writeFactory;
         private IDWriteTextFormat? _cachedInstance;

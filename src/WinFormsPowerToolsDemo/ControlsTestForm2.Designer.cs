@@ -1,4 +1,7 @@
-﻿namespace WinForms.PowerToolsDemo
+﻿using WinForms.PowerTools.Components;
+using WinForms.PowerTools.Controls;
+
+namespace WinForms.PowerToolsDemo
 {
     partial class ControlsTestForm2
     {
@@ -247,11 +250,10 @@
 
         #endregion
 
-        private PowerTools.Components.ThemingComponent _themingComponent;
-        private PowerTools.Controls.ToolStripSymbolMenuItem toolStripFluentSymbolMenuItem1;
+        private ThemingComponent _themingComponent;
+        private ToolStripSymbolMenuItem toolStripFluentSymbolMenuItem1;
         private PowerTools.Components.ThemingComponent themingComponent2;
         private System.Windows.Forms.MenuStrip _mainMenuStrip;
-        private PowerTools.Controls.ToolStripSymbolMenuItem _open;
         private System.Windows.Forms.MenuStrip _bottomMenuStrip;
         private PowerTools.Controls.ToolStripSymbolMenuItem _tsmClear;
         private PowerTools.Controls.ToolStripSymbolMenuItem _addMenuItem;

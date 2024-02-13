@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<IncludeBuildOutput>true</IncludeBuildOutput>
 		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -25,10 +25,7 @@
 
 	<Target Name="_GetFilesToPackage">
 		<ItemGroup>
-			<_File Include="$(SolutionDir)\WinformsPowerTools.Direct2D\bin\$(Configuration)\net6.0-windows\WinformsPowerTools.Direct2D.dll" />
-
-			<!--We need this during Control development, so we get proper Debug-Support at runtime. -->
-			<_File Include="$(SolutionDir)\WinformsPowerTools.Direct2D\bin\$(Configuration)\net6.0-windows\WinformsPowerTools.Direct2D.pdb" />
+			<_File Include="$(SolutionDir)\WinformsPowerTools.Direct2D\bin\$(Configuration)\net8.0-windows\WinformsPowerTools.Direct2D.dll" />
 		</ItemGroup>
 
 		<ItemGroup>

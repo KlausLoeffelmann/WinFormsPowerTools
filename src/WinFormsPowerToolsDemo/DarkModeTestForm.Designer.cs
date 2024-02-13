@@ -239,7 +239,7 @@ namespace WinFormsPowerToolsDemo
             btnSetTypesValueDelayed.TabIndex = 6;
             btnSetTypesValueDelayed.Text = "Set types values delayed";
             btnSetTypesValueDelayed.UseVisualStyleBackColor = true;
-            btnSetTypesValueDelayed.Click += btnSetValueDelayed_Click;
+            btnSetTypesValueDelayed.Click += BtnSetValueDelayed_Click;
             // 
             // tableLayoutPanel1
             // 
@@ -301,7 +301,7 @@ namespace WinFormsPowerToolsDemo
             btnSetObjectValuesDelayed.TabIndex = 11;
             btnSetObjectValuesDelayed.Text = "Set object values delayed";
             btnSetObjectValuesDelayed.UseVisualStyleBackColor = true;
-            btnSetObjectValuesDelayed.Click += btnSetObjectValuesDelayed_Click;
+            btnSetObjectValuesDelayed.Click += BtnSetObjectValuesDelayed_Click;
             // 
             // DarkModeTestForm
             // 

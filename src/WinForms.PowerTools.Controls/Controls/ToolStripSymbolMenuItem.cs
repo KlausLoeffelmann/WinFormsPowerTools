@@ -109,6 +109,8 @@ public class ToolStripSymbolMenuItem : ToolStripMenuItem, IToolStripItemSymbolPr
     protected override void OnOwnerChanged(EventArgs e)
     {
         base.OnOwnerChanged(e);
+        
+        // This is intended to force to run the setter code.
         SymbolColor = SymbolColor;
     }
 
