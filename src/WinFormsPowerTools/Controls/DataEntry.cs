@@ -5,10 +5,8 @@ using System.Windows.Forms.DataEntryForms.Components;
 
 namespace System.Windows.Forms.DataEntryForms.Controls
 {
-    [
-    DefaultBindingProperty(nameof(DataEntry.ObjectValue)),
-    ToolboxBitmap(typeof(DataEntry),"DataEntry.bmp")
-    ]
+    [DefaultBindingProperty(nameof(DataEntry.ObjectValue))]
+    [ToolboxBitmap(typeof(DataEntry),"DataEntry.bmp")]
     public class DataEntry : TextBox, ISupportInitialize
     {
         public event EventHandler ObjectValueChanged;
@@ -17,7 +15,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
 
         private readonly Color ErrorColorDefaultSetting = Color.Red;
         private readonly Color FocusColorDefaultSetting = Color.Yellow;
-        private readonly FocusSelectionBehaviours FocusSelectionBehaviorDefaultSetting = FocusSelectionBehaviours.PreSelectInput;
+        private readonly FocusSelectionBehaviors FocusSelectionBehaviorDefaultSetting = FocusSelectionBehaviors.PreSelectInput;
 
         private bool _initializing;
         private bool _hasFocus;
@@ -59,10 +57,10 @@ namespace System.Windows.Forms.DataEntryForms.Controls
 
             switch (FocusSelectionBehavior)
             {
-                case FocusSelectionBehaviours.PreSelectInput:
+                case FocusSelectionBehaviors.PreSelectInput:
                     SelectAll();
                     break;
-                case FocusSelectionBehaviours.PlaceCaretAtEnd:
+                case FocusSelectionBehaviors.PlaceCaretAtEnd:
                     SelectionStart = Text.Length;
                     SelectionLength = 0;
                     break;
@@ -272,7 +270,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
         Description("Sets or retrieves how the preselection of text in the control is handled when it gets the focus."),
         Category("Behavior"),
         EditorBrowsable(EditorBrowsableState.Always), Browsable(true)]
-        public FocusSelectionBehaviours FocusSelectionBehavior { get; set; }
+        public FocusSelectionBehaviors FocusSelectionBehavior { get; set; }
 
         [RefreshProperties(RefreshProperties.All)]
         public IDataEntryFormatterComponent Formatter
