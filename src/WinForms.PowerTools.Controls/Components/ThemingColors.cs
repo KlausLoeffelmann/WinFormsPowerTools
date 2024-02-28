@@ -18,7 +18,7 @@ public partial class ThemingColors
     {
         return theming switch
         {
-            ThemingMode.BlackMode => _darkModeColors ??= GetBlackModeColors(),
+            ThemingMode.DarkHighContrastMode => _darkModeColors ??= GetBlackModeColors(),
             ThemingMode.DarkMode => _darkModeColors ??= GetDefaultDarkModeColors(),
             ThemingMode.LightMode => _lightModeColors ??= GetDefaultLightModeColors(),
             ThemingMode.System => _systemColors ??= GetDefaultSystemColors(),

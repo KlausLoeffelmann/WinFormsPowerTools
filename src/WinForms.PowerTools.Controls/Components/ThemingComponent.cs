@@ -268,7 +268,7 @@ public partial class ThemingComponent : BindableComponent, ISupportInitialize
     protected virtual void OnApplyToolStripTheming(ThemingEventArgs eventArgs, ToolStrip toolStrip)
     {
         if (eventArgs.ThemingMode == ThemingMode.DarkMode 
-            || eventArgs.ThemingMode == ThemingMode.BlackMode)
+            || eventArgs.ThemingMode == ThemingMode.DarkHighContrastMode)
         {
             toolStrip.Renderer = new ToolStripProfessionalRenderer(
                 new ThemingColors.DarkProfessionalColors(eventArgs.ThemingMode));
