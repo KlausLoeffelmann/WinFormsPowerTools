@@ -12,6 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\DarkMode\DarkModeStatusStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Controls\ToolStripSymbolDropDownButton.cs" />
   </ItemGroup>
 

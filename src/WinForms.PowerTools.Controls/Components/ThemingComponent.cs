@@ -112,6 +112,9 @@ public partial class ThemingComponent : BindableComponent, ISupportInitialize
             case ToolStrip toolStrip:
                 OnApplyToolStripTheming(eventArgs, toolStrip);
                 break;
+            case SplitContainer splitContainer:
+                OnApplySplitContainerTheming(eventArgs, splitContainer);
+                break;
 
             default:
                 OnApplyDefaultControlTheming(eventArgs);
@@ -283,6 +286,15 @@ public partial class ThemingComponent : BindableComponent, ISupportInitialize
             toolStrip.BackColor = eventArgs.ColorContainer.Window;
             toolStrip.ForeColor = eventArgs.ColorContainer.WindowText;
         }
+    }
+
+    protected virtual void OnApplySplitContainerTheming(ThemingEventArgs eventArgs, SplitContainer splitContainer)
+    {
+        splitContainer.Panel1.BackColor = eventArgs.ColorContainer.Window;
+        splitContainer.Panel2.BackColor = eventArgs.ColorContainer.Window;
+
+        splitContainer.Panel1.ForeColor = eventArgs.ColorContainer.WindowText;
+        splitContainer.Panel2.ForeColor = eventArgs.ColorContainer.WindowText;
     }
 
     public void BeginInit() { }
