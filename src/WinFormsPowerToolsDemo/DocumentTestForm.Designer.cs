@@ -45,8 +45,9 @@ namespace WinFormsPowerToolsDemo
             document1.Height = 600F;
             document1.Width = 800F;
             this.documentControl1.MainDocument = document1;
+            this.documentControl1.Location = new System.Drawing.Point(12, 83);
             this.documentControl1.Name = "documentControl1";
-            this.documentControl1.Size = new System.Drawing.Size(959, 717);
+            this.documentControl1.Size = new System.Drawing.Size(806, 548);
             this.documentControl1.TabIndex = 0;
             this.documentControl1.Text = "documentControl1";
             // 

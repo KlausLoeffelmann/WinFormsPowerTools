@@ -166,7 +166,7 @@ namespace WinFormsPowerToolsDemo
             dataEntry1.ErrorColor = System.Drawing.Color.Red;
             dataEntry1.FocusColor = System.Drawing.Color.Yellow;
             dataEntry1.FocusEmphasize = true;
-            dataEntry1.FocusSelectionBehavior = FocusSelectionBehaviours.PreSelectInput;
+            dataEntry1.FocusSelectionBehavior = FocusSelectionBehaviors.PreSelectInput;
             dataEntry1.Formatter = decimalEntryFormatterComponent1;
             decimalDataEntryFormatter2.CurrencySymbol = null;
             decimalDataEntryFormatter2.DecimalPlaces = 0;
@@ -189,7 +189,7 @@ namespace WinFormsPowerToolsDemo
             dataEntry2.ErrorColor = System.Drawing.Color.Red;
             dataEntry2.FocusColor = System.Drawing.Color.Yellow;
             dataEntry2.FocusEmphasize = true;
-            dataEntry2.FocusSelectionBehavior = FocusSelectionBehaviours.PreSelectInput;
+            dataEntry2.FocusSelectionBehavior = FocusSelectionBehaviors.PreSelectInput;
             dataEntry2.Formatter = decimalEntryFormatterComponent1;
             decimalDataEntryFormatter1.CurrencySymbol = null;
             decimalDataEntryFormatter1.DecimalPlaces = 0;
@@ -206,7 +206,7 @@ namespace WinFormsPowerToolsDemo
             dataEntry3.ErrorColor = System.Drawing.Color.Red;
             dataEntry3.FocusColor = System.Drawing.Color.Yellow;
             dataEntry3.FocusEmphasize = true;
-            dataEntry3.FocusSelectionBehavior = FocusSelectionBehaviours.PreSelectInput;
+            dataEntry3.FocusSelectionBehavior = FocusSelectionBehaviors.PreSelectInput;
             dataEntry3.Formatter = dateEntryFormatterComponent1;
             dateEntryFormatterComponent1.SetFormattingProperties(dataEntry3, dateDataEntryFormatter1);
             dataEntry3.Location = new System.Drawing.Point(135, 151);

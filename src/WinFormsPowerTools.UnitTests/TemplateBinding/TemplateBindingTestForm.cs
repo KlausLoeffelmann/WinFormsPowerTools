@@ -1,3 +1,4 @@
+using System;
 using System.Windows.Forms;
 using System.Windows.Forms.TemplateBinding;
 
@@ -5,33 +6,53 @@ namespace WinFormsPowerTools.UnitTests.TemplateBinding
 {
     public partial class TemplateBindingTestForm : Form
     {
+        Chain? _chain;
+
         public TemplateBindingTestForm()
         {
             InitializeComponent();
         }
 
-        internal NestedPropertyChangedManager? PcmTree { get; set; }
+        public void Test()
+        {
+            Type dataSourceType = typeof(Employee);
+            string propertyPath = $"{nameof(Employee)}.{nameof(Employee.Contact)}.{nameof(Employee.Contact.Address)}.{nameof(Employee.Contact.Address.City)}";
+        }
 
         public new Employee? DataContext
         {
-            get => (Employee?)PcmTree?.RootNode.Value;
+            get => (Employee?)(_chain is null
+                ? null
+                : _chain.DataContext);
+
             set
             {
-                if (PcmTree is not null)
+                if (_chain is null)
                 {
-                    PcmTree.RootNode.Remove();
-
+                    _chain = new Chain(value);
+                    BuildPropertyTree();
+                    this.Disposed += TemplateBindingTestForm_Disposed;
+                    _chain.ChainValueChanged += _chain_ChainValueChanged;
                 }
-
-                if (value is null)
+                else
                 {
-                    PcmTree = null;
-                    return;
+                    _chain.DataContext = value;
                 }
+            }
+        }
 
-                PcmTree = new(value, NodeValueChangedEventProc);
-                BuildPropertyTree();
-                UpdateValuesFromDataSource();
+        private void _chain_ChainValueChanged(object? sender, ChainValueChangedEventArgs e)
+        {
+            // TODO: Assign DataSource to View value changed.
+        }
+
+        private void TemplateBindingTestForm_Disposed(object? sender, System.EventArgs e)
+        {
+            if (_chain is not null)
+            {
+                _chain.ChainValueChanged -= _chain_ChainValueChanged;
+                this.Disposed -= TemplateBindingTestForm_Disposed;
+                _chain.DataContext = null;
             }
         }
 
@@ -51,19 +72,16 @@ namespace WinFormsPowerTools.UnitTests.TemplateBinding
             }
         }
 
-        private PcmTreeNode<object> BuildPropertyTree()
+        private ChainLink BuildPropertyTree()
         {
-            var node = PcmTree!.RootNode.AddNode(DataContext?.Contact);
-            node = node.AddNode(DataContext?.Contact?.Address);
-            node = node.AddNode(DataContext?.Contact?.Address?.City);
-            return node;
-        }
+            // We are simulating binding City, so we need to have the whole property path
+            // build up as a node. This is what later needs to be code-generated from the 
+            // binding definition.
 
-        private void NodeValueChangedEventProc(object? sender, NodeValueChangedEventArgs<object> e)
-        {
-            if (sender is Contact || sender is Address)
-            {
-            }
+            var node = _chain!.RootLink.AddLink(dataContext => ((Employee?)dataContext)?.Contact, nameof(Employee.Contact));
+            node = node.AddLink(dataContext => ((Employee?)dataContext)?.Contact?.Address, nameof(Employee.Contact.Address));
+            node = node.AddLink(dataContext => ((Employee?)dataContext)?.Contact?.Address?.City, nameof(Employee.Contact.Address.City));
+            return node;
         }
     }
 }
