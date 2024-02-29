@@ -15,6 +15,9 @@
         ComboBox,
         ListBox,
         Button,
-        MenuItem
+        MenuItem,
+        DetailsList,
+        ListView,
+        DataTable
     }
 }

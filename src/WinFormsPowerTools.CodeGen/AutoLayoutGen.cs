@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -81,10 +82,9 @@ namespace WinFormsPowerTools.CodeGen
                     StringBuilder extensionClass = new();
                     extensionClass.AppendLine($"using System;");
                     extensionClass.AppendLine($"using System.Collections.Generic;");
+                    extensionClass.AppendLine($"using System.Collections.ObjectModel;");
                     extensionClass.AppendLine($"using System.Runtime.CompilerServices;");
                     extensionClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
-                    extensionClass.AppendLine();
-                    extensionClass.AppendLine($"using static {viewControllerNamespace}.{viewModelItem.ClassDeclaration.Identifier.Text}BindingExtensions;");
                     extensionClass.AppendLine();
                     extensionClass.AppendLine($"namespace {viewControllerNamespace}");
                     extensionClass.AppendLine($"{{");
@@ -109,7 +109,7 @@ namespace WinFormsPowerTools.CodeGen
                     bindingExtensionClass.AppendLine();
                     bindingExtensionClass.AppendLine($"namespace {viewControllerNamespace}");
                     bindingExtensionClass.AppendLine($"{{");
-                    bindingExtensionClass.AppendLine($"    public static class {viewModelItem.ClassDeclaration.Identifier.Text}BindingExtensions");
+                    bindingExtensionClass.AppendLine($"    public partial class {viewModelItem.ClassDeclaration.Identifier.Text}");
                     bindingExtensionClass.AppendLine($"    {{");
 
                     StringBuilder viewModelRelayCommandInitializer = new();
@@ -118,9 +118,6 @@ namespace WinFormsPowerTools.CodeGen
 
                     foreach (var commandMethodInfo in viewModelItem.CommandMethodDefinitions)
                     {
-                        if (Debugger.IsAttached)
-                            Debugger.Break();
-                        
                         var mappingAttribute = GetCommandMappingAttribute(commandMethodInfo.Key, commandMethodInfo.Value.CommandAttribute);
                         var displayName = mappingAttribute.DisplayName;
                         
@@ -371,11 +368,11 @@ namespace WinFormsPowerTools.CodeGen
 
                 if (defaultValueAssignment is not null)
                 {
-                    extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutLabel<{vmTypeName}> label = new(name: \"{propertyName}Label\", text: \"{defaultValueAssignment}\", bindings: To{propertyName}(nameof(AutoLayoutTextEntry<{vmTypeName}>.Text)));");
+                    extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutLabel<{vmTypeName}> label = new(name: \"{propertyName}Label\", text: \"{defaultValueAssignment}\", bindings: {vmTypeName}.To{propertyName}(nameof(AutoLayoutTextEntry<{vmTypeName}>.Text)));");
                 }
                 else
                 {
-                    extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutLabel<{vmTypeName}> label = new(name: \"{propertyName}Label\", bindings: To{propertyName}(nameof(AutoLayoutTextEntry<{vmTypeName}>.Text)));");
+                    extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutLabel<{vmTypeName}> label = new(name: \"{propertyName}Label\", bindings: {vmTypeName}.To{propertyName}(nameof(AutoLayoutTextEntry<{vmTypeName}>.Text)));");
                 }
 
                 extensionClassSourceCode.AppendLine($"{In2}        grid.AddComponent(label, row, column, rowSpan, columnSpan);");
@@ -391,7 +388,9 @@ namespace WinFormsPowerTools.CodeGen
                 extensionClassSourceCode.AppendLine($"{In2}    this AutoLayoutGrid<{vmTypeName}> grid,");
                 extensionClassSourceCode.AppendLine($"{In2}    int row, int column, int rowSpan = 1, int columnSpan = 1)");
                 extensionClassSourceCode.AppendLine($"{In2}    {{");
-                extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutTextEntry<{vmTypeName}> textEntry = new(name: \"{propertyName}TextEntry\", bindings: To{propertyName}(nameof(AutoLayoutTextEntry<{vmTypeName}>.Text)));");
+                extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutTextEntry<{vmTypeName}> textEntry = new(name: \"{propertyName}TextEntry\",");
+                extensionClassSourceCode.AppendLine($"{In2}            bindings: {vmTypeName}.To{propertyName}(nameof(AutoLayoutTextEntry<{vmTypeName}>.Text)));");
+                extensionClassSourceCode.AppendLine($"");
                 extensionClassSourceCode.AppendLine($"{In2}        grid.AddComponent(textEntry, row, column, rowSpan, columnSpan);");
                 extensionClassSourceCode.AppendLine($"");
                 extensionClassSourceCode.AppendLine($"{In2}        return grid;");
@@ -411,14 +410,46 @@ namespace WinFormsPowerTools.CodeGen
                 extensionClassSourceCode.AppendLine($"{In2}    int row, int column, int rowSpan = 1, int columnSpan = 1)");
                 extensionClassSourceCode.AppendLine($"{In2}    {{");
                 extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutButton<{vmTypeName}> button = new(name: \"{propertyName}Button\", text: \"{forcedTextPropertyContentInExtensionMethod}\", null,");
-                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}(nameof(AutoLayoutButton<{vmTypeName}>.Command)),");
-                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}Caption(nameof(AutoLayoutButton<{vmTypeName}>.Text)));");
+                extensionClassSourceCode.AppendLine($"{In2}            {vmTypeName}.To{propertyName}(nameof(AutoLayoutButton<{vmTypeName}>.Command)),");
+                extensionClassSourceCode.AppendLine($"{In2}            {vmTypeName}.To{propertyName}Caption(nameof(AutoLayoutButton<{vmTypeName}>.Text)));");
                 extensionClassSourceCode.AppendLine($"");
                 extensionClassSourceCode.AppendLine($"{In2}        grid.AddComponent(button, row, column, rowSpan, columnSpan);");
                 extensionClassSourceCode.AppendLine($"");
                 extensionClassSourceCode.AppendLine($"{In2}        return grid;");
                 extensionClassSourceCode.AppendLine($"{In2}    }}");
                 extensionClassSourceCode.AppendLine($"");
+            }
+
+            if (autoLayoutTarget == AutoLayoutTarget.DetailsList && propertyType.Name.StartsWith("ObservableCollection"))
+            {
+                if (string.IsNullOrWhiteSpace(forcedTextPropertyContentInExtensionMethod))
+                {
+                    forcedTextPropertyContentInExtensionMethod = "Not defined.";
+                }
+
+                if (Debugger.IsAttached)
+                    Debugger.Break();
+
+                var typeArgument = (propertyType as INamedTypeSymbol)?.TypeArguments.FirstOrDefault();
+                string? obColGenericTypeName = typeArgument?.Name;
+
+                if (obColGenericTypeName != null)
+                {
+                    extensionClassSourceCode.AppendLine($"{In2}public static AutoLayoutGrid<{vmTypeName}> Add{propertyName}DataGrid(");
+                    extensionClassSourceCode.AppendLine($"{In2}    this AutoLayoutGrid<{vmTypeName}> grid,");
+                    extensionClassSourceCode.AppendLine($"{In2}    AutoLayoutSchema<{obColGenericTypeName}> autoLayoutSchema,");
+                    extensionClassSourceCode.AppendLine($"{In2}    int row, int column, int rowSpan = 1, int columnSpan = 1)");
+                    extensionClassSourceCode.AppendLine($"{In2}    {{");
+                    extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutTableView<{vmTypeName},{obColGenericTypeName}> tableView = new(autoLayoutSchema: autoLayoutSchema, name: \"{propertyName}TableView\", null,");
+                    extensionClassSourceCode.AppendLine($"{In2}            {vmTypeName}.To{propertyName}(nameof(AutoLayoutTableView<{vmTypeName},{obColGenericTypeName}>.DataSource)),");
+                    extensionClassSourceCode.AppendLine($"{In2}            {vmTypeName}.To{propertyName}Caption(nameof(AutoLayoutTableView<{vmTypeName},{obColGenericTypeName}>.Text)));");
+                    extensionClassSourceCode.AppendLine($"");
+                    extensionClassSourceCode.AppendLine($"{In2}        grid.AddComponent(tableView, row, column, rowSpan, columnSpan);");
+                    extensionClassSourceCode.AppendLine($"");
+                    extensionClassSourceCode.AppendLine($"{In2}        return grid;");
+                    extensionClassSourceCode.AppendLine($"{In2}    }}");
+                    extensionClassSourceCode.AppendLine($"");
+                }
             }
 
             if (autoLayoutTarget == AutoLayoutTarget.MenuItem)
@@ -432,8 +463,8 @@ namespace WinFormsPowerTools.CodeGen
                 extensionClassSourceCode.AppendLine($"{In2}    this AutoLayoutMenu<{vmTypeName}> menu)");
                 extensionClassSourceCode.AppendLine($"{In2}    {{");
                 extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutMenuItem<{vmTypeName}> menuItem = new(name: \"{propertyName}MenuItem\", text: \"{forcedTextPropertyContentInExtensionMethod}\", null, true, false, ");
-                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}(nameof(AutoLayoutMenuItem<{vmTypeName}>.Command)),");
-                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}Caption(nameof(AutoLayoutMenuItem<{vmTypeName}>.Text)));");
+                extensionClassSourceCode.AppendLine($"{In2}            {vmTypeName}.To{propertyName}(nameof(AutoLayoutMenuItem<{vmTypeName}>.Command)),");
+                extensionClassSourceCode.AppendLine($"{In2}            {vmTypeName}.To{propertyName}Caption(nameof(AutoLayoutMenuItem<{vmTypeName}>.Text)));");
                 extensionClassSourceCode.AppendLine($"");
                 extensionClassSourceCode.AppendLine($"{In2}        menu.Add(menuItem);");
                 extensionClassSourceCode.AppendLine($"");
@@ -445,8 +476,8 @@ namespace WinFormsPowerTools.CodeGen
                 extensionClassSourceCode.AppendLine($"{In2}    this AutoLayoutMenuItem<{vmTypeName}> menuItem)");
                 extensionClassSourceCode.AppendLine($"{In2}    {{");
                 extensionClassSourceCode.AppendLine($"{In2}        AutoLayoutMenuItem<{vmTypeName}> subMenuItem = new(name: \"{propertyName}MenuItem\", text: \"{forcedTextPropertyContentInExtensionMethod}\", null, true, false,");
-                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}(nameof(AutoLayoutMenuItem<{vmTypeName}>.Command)),");
-                extensionClassSourceCode.AppendLine($"{In2}            To{propertyName}Caption(nameof(AutoLayoutMenuItem<{vmTypeName}>.Text)));");
+                extensionClassSourceCode.AppendLine($"{In2}            {vmTypeName}.To{propertyName}(nameof(AutoLayoutMenuItem<{vmTypeName}>.Command)),");
+                extensionClassSourceCode.AppendLine($"{In2}            {vmTypeName}.To{propertyName}Caption(nameof(AutoLayoutMenuItem<{vmTypeName}>.Text)));");
                 extensionClassSourceCode.AppendLine($"");
                 extensionClassSourceCode.AppendLine($"{In2}        menuItem.Add(subMenuItem);");
                 extensionClassSourceCode.AppendLine($"");
@@ -458,9 +489,6 @@ namespace WinFormsPowerTools.CodeGen
 
         private PropertyMappingAttribute GetPropertyMappingAttribute(string fieldName, AttributeData attributeData)
         {
-            if (Debugger.IsAttached)
-                Debugger.Break();
-
             if (attributeData is null)
             {
                 return new PropertyMappingAttribute(

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WinFormsPowerTools.AutoLayout;
+﻿using WinFormsPowerTools.AutoLayout;
 
 namespace WinFormsPowerToolsDemo
 {
@@ -21,8 +16,6 @@ namespace WinFormsPowerToolsDemo
                 AddIdContextCaptionLabel(row: 0, column: 0).AddIdContextLabel(row: 0, column: 1).
                 AddFirstNameCaptionLabel(row: 1, column: 0).AddFirstNameTextEntry(row: 1, column: 1).
                 AddLastNameCaptionLabel(row: 2, column: 0).AddLastNameTextEntry(row: 2, column: 1).
-                AddAddressline1CaptionLabel(row: 3, column: 0).AddAddressline1TextEntry(row: 3, column: 1).
-                AddAddressline2CaptionLabel(row: 4, column: 0).AddAddressline2TextEntry(row: 4, column: 1).
                 AddCityCaptionLabel(row: 5, column: 0).AddCityTextEntry(row: 5, column: 1).
                 AddDateOfBirthCaptionLabel(row: 6, column: 0).AddDateOfBirthTextEntry(row: 6, column: 1).
                 AddMiddleNameCaptionLabel(row: 7, column: 0).AddMiddleNameTextEntry(row: 7, column: 1);
