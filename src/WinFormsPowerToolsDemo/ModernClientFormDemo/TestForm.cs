@@ -121,21 +121,6 @@ public class ThemedChildForm : Form
         Invalidate();
     }
 
-    protected override void OnPaint(PaintEventArgs e)
-    {
-        base.OnPaint(e);    
-    }
-
-    protected override void SetClientSizeCore(int x, int y)
-    {
-        base.SetClientSizeCore(x, y);
-    }
-
-    protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
-    {
-        base.SetBoundsCore(x, y, width, height, specified);
-    }
-
     protected override void OnClientSizeChanged(EventArgs e)
     {
         if (_clientSize == Size)
@@ -230,4 +215,3 @@ public static class GraphicsPathExtensions
         path.CloseFigure();
     }
 }
-
