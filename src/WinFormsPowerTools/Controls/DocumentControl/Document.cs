@@ -6,15 +6,16 @@ namespace System.Windows.Forms.Documents
 {
     public class Document
     {
-        private List<DocumentItem>? _documentItems;
+        private List<AsyncDocumentItem>? _documentItems;
         private bool _suspendUpdates;
 
         public float Width { get; set; } = 800;
         public float Height { get; set; } = 600;
+
         internal DocumentControl? HostControl { get; set; }
 
-        internal List<DocumentItem> DocumentItems
-            => _documentItems ??= new List<DocumentItem>();
+        internal List<AsyncDocumentItem> DocumentItems
+            => _documentItems ??= new List<AsyncDocumentItem>();
 
         public void SuspendUpdates()
         {
@@ -37,7 +38,7 @@ namespace System.Windows.Forms.Documents
             HostControl?.Invalidate();
         }
 
-        public void AddDocumentItem(DocumentItem documentItem)
+        public void AddDocumentItem(AsyncDocumentItem documentItem)
         {
             documentItem.SetParentDocument(this);
             DocumentItems.Add(documentItem);

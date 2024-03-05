@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Threading;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
@@ -13,6 +15,8 @@ namespace System.Windows.Forms.Documents
 {
     public partial class DocumentControl : Control
     {
+        public event EventHandler? ScrollDragTrackingModeChanged;
+
         private int _scrollState;
         private Document? _mainDocument;
 
@@ -29,7 +33,7 @@ namespace System.Windows.Forms.Documents
         ///  scrollbar is first shown.
         /// </summary>
         private bool resetRTLHScrollValue;
-
+        private ScrollDragTrackingMode _scrollTracking;
         protected const int ScrollStateAutoScrolling = 0x0001;      // We no longer use this. What was AutoScroll is default here.
         protected const int ScrollStateHScrollVisible = 0x0002;
         protected const int ScrollStateVScrollVisible = 0x0004;
@@ -46,6 +50,9 @@ namespace System.Windows.Forms.Documents
             SetStyle(ControlStyles.ContainerControl, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint, false);
             MainDocument = new Document();
+            
+            // Setup the drag mode based on the system setting.
+            UpdateFullDrag();
         }
 
         public Document? MainDocument
@@ -74,15 +81,40 @@ namespace System.Windows.Forms.Documents
             }
         }
 
-        public IEnumerable<DocumentItem>? HorizontalFixedMarginItems { get; }
-
-        public IEnumerable<DocumentItem>? VerticalFixedMarginItems { get; }
-
-        public IEnumerable<DocumentItem>? FixedMarginItems { get; }
-
-        protected override void OnLayout(LayoutEventArgs levent)
+        /// <summary>
+        ///  Determines if the control should should redraw/layout already when the user is dragging the thumb of the scroll bar. 
+        ///  The default is <see cref="ScrollDragTrackingMode.SystemDragSetting"/>.
+        /// </summary>
+        [DefaultValue(ScrollDragTrackingMode.SystemDragSetting)]
+        public ScrollDragTrackingMode ScrollDragTracking
         {
-            base.OnLayout(levent);
+            get => _scrollTracking;
+            set
+            {
+                if (value == _scrollTracking)
+                {
+                    return;
+                }
+
+                _scrollTracking = value;
+                UpdateFullDrag();
+                OnScrollDragTrackingChanged();
+            }
+        }
+        private void OnScrollDragTrackingChanged()
+        {
+            ScrollDragTrackingModeChanged?.Invoke(this, EventArgs.Empty);
+        }
+        
+        public IEnumerable<AsyncDocumentItem>? HorizontalFixedMarginItems { get; }
+
+        public IEnumerable<AsyncDocumentItem>? VerticalFixedMarginItems { get; }
+
+        public IEnumerable<AsyncDocumentItem>? FixedMarginItems { get; }
+
+        protected override void OnLayout(LayoutEventArgs layoutEventArgs)
+        {
+            base.OnLayout(layoutEventArgs);
             SetDisplayRectLocation(0, 0);
             ApplyScrollbarChanges(_displayRect);
         }
@@ -130,17 +162,17 @@ namespace System.Windows.Forms.Documents
         protected bool GetScrollState(int bit) => (bit & _scrollState) == bit;
 
         /// <summary>
-        ///  Actually displays or hides the horiz and vert autoscrollbars. This will
+        ///  Actually displays or hides the horizontal and vertical AutoScrollBars. This will
         ///  also adjust the values of formState to reflect the new state
         /// </summary>
-        private bool SetVisibleScrollbars(bool horiz, bool vert)
+        private bool SetVisibleScrollbars(bool horizontal, bool vertical)
         {
             bool needLayout = false;
 
-            if ((!horiz && HScroll)
-                || (horiz && !HScroll)
-                || (!vert && VScroll)
-                || (vert && !VScroll))
+            if ((!horizontal && HScroll)
+                || (horizontal && !HScroll)
+                || (!vertical && VScroll)
+                || (vertical && !VScroll))
             {
                 needLayout = true;
             }
@@ -148,7 +180,7 @@ namespace System.Windows.Forms.Documents
             // If we are about to show the horizontal scrollbar, then
             // set this flag, so that we can set the right initial value
             // based on whether we are right to left.
-            if (horiz && !HScroll && (RightToLeft == RightToLeft.Yes))
+            if (horizontal && !HScroll && (RightToLeft == RightToLeft.Yes))
             {
                 resetRTLHScrollValue = true;
             }
@@ -157,23 +189,23 @@ namespace System.Windows.Forms.Documents
             {
                 int x = _displayRect.X;
                 int y = _displayRect.Y;
-                if (!horiz)
+                if (!horizontal)
                 {
                     x = 0;
                 }
 
-                if (!vert)
+                if (!vertical)
                 {
                     y = 0;
                 }
 
                 SetDisplayRectLocation(x, y);
                 SetScrollState(ScrollStateUserHasScrolled, false);
-                HScroll = horiz;
-                VScroll = vert;
+                HScroll = horizontal;
+                VScroll = vertical;
 
                 // Update the visible member of ScrollBars.
-                if (horiz)
+                if (horizontal)
                 {
                     HorizontalScroll._visible = true;
                 }
@@ -182,7 +214,7 @@ namespace System.Windows.Forms.Documents
                     ResetScrollProperties(HorizontalScroll);
                 }
 
-                if (vert)
+                if (vertical)
                 {
                     VerticalScroll._visible = true;
                 }
@@ -198,7 +230,7 @@ namespace System.Windows.Forms.Documents
         }
 
         /// <summary>
-        ///  Sets the width and height of the virtual client area used in autoscrolling.
+        ///  Sets the width and height of the virtual client area used in AutoScrolling.
         ///  This will also adjust the x and y location of the virtual client area if the
         ///  new size forces it.
         /// </summary>
@@ -312,7 +344,7 @@ namespace System.Windows.Forms.Documents
         }
 
         /// <summary>
-        ///  Updates the value of the autoscroll scrollbars based on the current form
+        ///  Updates the value of the AutoScroll scrollbars based on the current form
         ///  state. This is a one-way sync, updating the scrollbars only.
         /// </summary>
         private void SyncScrollbars()
@@ -393,7 +425,7 @@ namespace System.Windows.Forms.Documents
         /// </summary>
         private void WmVScroll(ref Message m)
         {
-            // The lparam is handle of the sending scrollbar, or NULL when
+            // The lParam is handle of the sending scrollbar, or NULL when
             // the scrollbar sending the message is the "form" scrollbar.
             if ((nint)m.LParam != 0)
             {
@@ -633,7 +665,7 @@ namespace System.Windows.Forms.Documents
         /// </summary>
         private void WmHScroll(ref Message m)
         {
-            // The lparam is handle of the sending scrollbar, or NULL when
+            // The lParam is handle of the sending scrollbar, or NULL when
             // the scrollbar sending the message is the "form" scrollbar.
             if ((nint) m.LParam != 0)
             {
@@ -723,7 +755,15 @@ namespace System.Windows.Forms.Documents
         /// </summary>
         private void UpdateFullDrag()
         {
-            SetScrollState(ScrollStateFullDrag, SystemInformation.DragFullWindows);
+            bool drag = ScrollDragTracking switch
+            { 
+                ScrollDragTrackingMode.SystemDragSetting => SystemInformation.DragFullWindows, 
+                ScrollDragTrackingMode.ForceDragTracking => false, 
+                ScrollDragTrackingMode.ForceNoDragTracking => true, 
+                _ => throw new ArgumentOutOfRangeException() 
+            };
+
+            SetScrollState(ScrollStateFullDrag, drag);
         }
 
         private void WmSettingChange(ref Message m)
@@ -736,16 +776,48 @@ namespace System.Windows.Forms.Documents
         {
             base.OnPaint(e);
 
-            if (MainDocument?.DocumentItems is { } documentItems)
+            if (MainDocument is null)
             {
-                foreach (var documentItem in documentItems)
+                return;
+            }
+
+            Graphics graphics = e.Graphics;
+
+            Task.Run(async () =>
+            {
+                List<Task> renderTasks = new List<Task>();
+                SemaphoreSlim semaphore = new SemaphoreSlim(4);
+
+                foreach (var documentItem in MainDocument.DocumentItems)
                 {
-                    if (documentItem is GraphicsDocumentItem graphicsDocumentItem)
+                    if (documentItem is AsyncDocumentItem graphicsDocumentItem)
                     {
-                        graphicsDocumentItem.OnRender(new PointF(HorizontalScroll.Value, VerticalScroll.Value), e.Graphics);
+                        Task renderTask = Task.Run(async () =>
+                        {
+                            await semaphore.WaitAsync();
+
+                            try
+                            {
+                                await graphicsDocumentItem.OnRenderAsync(
+                                    new PointF(HorizontalScroll.Value, VerticalScroll.Value), 
+                                    graphics);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex);
+                            }
+                            finally
+                            {
+                                semaphore.Release();
+                            }
+                        });
+
+                        renderTasks.Add(renderTask);
                     }
                 }
-            }
+
+                await Task.WhenAll(renderTasks);
+            });
         }
 
         /// <summary>
@@ -778,8 +850,8 @@ namespace System.Windows.Forms.Documents
         private bool ApplyScrollbarChanges(Rectangle display)
         {
             bool needLayout = false;
-            bool needHscroll = false;
-            bool needVscroll = false;
+            bool needHScroll = false;
+            bool needVScroll = false;
 
             Rectangle currentClient = ClientRectangle;
             Rectangle fullClient = currentClient;
@@ -810,8 +882,8 @@ namespace System.Windows.Forms.Documents
             {
                 maxX = (int) MainDocument.Width;
                 maxY = (int) MainDocument.Height;
-                needHscroll = true;
-                needVscroll = true;
+                needHScroll = true;
+                needVScroll = true;
             }
 
             // Check maxX/maxY against the clientRect, we must compare it to the
@@ -821,46 +893,46 @@ namespace System.Windows.Forms.Documents
             //
             if (maxX <= fullClient.Width)
             {
-                needHscroll = false;
+                needHScroll = false;
             }
             if (maxY <= fullClient.Height)
             {
-                needVscroll = false;
+                needVScroll = false;
             }
             Rectangle clientToBe = fullClient;
 
-            if (needHscroll)
+            if (needHScroll)
             {
                 clientToBe.Height -= SystemInformation.HorizontalScrollBarHeight;
             }
 
-            if (needVscroll)
+            if (needVScroll)
             {
                 clientToBe.Width -= SystemInformation.VerticalScrollBarWidth;
             }
 
-            if (needHscroll && maxY > clientToBe.Height)
+            if (needHScroll && maxY > clientToBe.Height)
             {
-                needVscroll = true;
+                needVScroll = true;
             }
 
-            if (needVscroll && maxX > clientToBe.Width)
+            if (needVScroll && maxX > clientToBe.Width)
             {
-                needHscroll = true;
+                needHScroll = true;
             }
 
-            if (!needHscroll)
+            if (!needHScroll)
             {
                 maxX = clientToBe.Width;
             }
 
-            if (!needVscroll)
+            if (!needVScroll)
             {
                 maxY = clientToBe.Height;
             }
 
             // Show the needed scrollbars
-            needLayout = (SetVisibleScrollbars(needHscroll, needVscroll) || needLayout);
+            needLayout = (SetVisibleScrollbars(needHScroll, needVScroll) || needLayout);
 
             // If needed, adjust the size...
             if (HScroll || VScroll)
