@@ -4,8 +4,10 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-	<RootNamespace>WinForms.PowerTools</RootNamespace>
+    <RootNamespace>WinForms.PowerTools</RootNamespace>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -24,12 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <EmbeddedResource Include="Resources\DataEntry.bmp">
-		  <LogicalName>System.Windows.Forms.DataEntryForms.Controls.DataEntry.bmp</LogicalName>
-	  </EmbeddedResource>
-	  <EmbeddedResource Include="Resources\DecimalEntryFormatter.bmp">
-		  <LogicalName>System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatter.bmp</LogicalName>
-	  </EmbeddedResource>
+      <EmbeddedResource Include="Resources\DataEntry.bmp">
+          <LogicalName>System.Windows.Forms.DataEntryForms.Controls.DataEntry.bmp</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Resources\DecimalEntryFormatter.bmp">
+          <LogicalName>System.Windows.Forms.DataEntryForms.Components.DecimalEntryFormatter.bmp</LogicalName>
+      </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
