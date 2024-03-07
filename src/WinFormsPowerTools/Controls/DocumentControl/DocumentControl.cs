@@ -10,6 +10,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
+using WinForms.PowerTools.Controls;
 
 namespace System.Windows.Forms.Documents
 {
@@ -783,7 +784,12 @@ namespace System.Windows.Forms.Documents
 
             Graphics graphics = e.Graphics;
 
-            Task.Run(async () =>
+            // Create a cancellation token:
+
+
+            // TODO: Cancel this, once it became the previous task in that 
+            // we need to cancel all running a scheduled tasks.
+            var asyncRenderTask = Task.Run(async () =>
             {
                 List<Task> renderTasks = new List<Task>();
                 SemaphoreSlim semaphore = new SemaphoreSlim(4);

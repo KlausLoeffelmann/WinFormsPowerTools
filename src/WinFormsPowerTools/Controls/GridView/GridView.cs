@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms.Documents;
 
-namespace WinForms.PowerTools.Controls
+namespace WinForms.PowerTools.Controls.GridView
 {
     public class GridView : DocumentControl
     {

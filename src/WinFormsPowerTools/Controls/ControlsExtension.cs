@@ -5,7 +5,7 @@ namespace WinForms.PowerTools.Controls;
 public static class ControlsExtension
 {
     /// <summary>
-    /// Executes an asynchronous function in a Task to avoid UI deadlocks, and blocks until the operation completes.
+    ///  Executes an asynchronous function in a Task to avoid UI deadlocks, and blocks until the operation completes.
     /// </summary>
     /// <typeparam name="T">The type of the result returned by the function.</typeparam>
     /// <param name="asyncFunc">The asynchronous function to execute.</param>

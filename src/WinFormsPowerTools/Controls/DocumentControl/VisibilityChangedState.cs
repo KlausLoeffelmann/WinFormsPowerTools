@@ -1,4 +1,4 @@
-﻿public enum VisibilityState
+﻿public enum VisibilityChangeState
 {
     GotPartiallyInvisible,
     GotPartiallyVisible,
