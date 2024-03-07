@@ -17,19 +17,6 @@ public static class ControlsExtension
 
         var tcs = new TaskCompletionSource<T>();
 
-        var callback = async () =>
-        {
-            try
-            {
-                var result = await asyncFunc();
-                tcs.SetResult(result);
-            }
-            catch (Exception ex)
-            {
-                tcs.SetException(ex);
-            }
-        };
-
         // Marshal the asyncFunc execution back to the UI thread
         control.Invoke(async () => await Task.Run(callback));
 
@@ -45,6 +32,19 @@ public static class ControlsExtension
         }
 
         return result;
+
+        async Task callback()
+        {
+            try
+            {
+                var result = await asyncFunc();
+                tcs.SetResult(result);
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+        }
     }
 
     /// <summary>

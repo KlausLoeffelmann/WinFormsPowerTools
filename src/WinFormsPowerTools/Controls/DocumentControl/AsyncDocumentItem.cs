@@ -1,13 +1,20 @@
 ﻿namespace System.Windows.Forms.Documents;
 
-public abstract class AsyncDocumentItem
+public abstract class AsyncDocumentItem : IDisposable
 {
     private SizeF _parentViewSize;
     private PointF _location;
+    private PointF _offset;
     private SizeF _size;
     private VisibilityChangeState _visibilityChangeState;
     private VisibilityChangeState _previousVisibilityChangeState;
-    private Document? _parentDocument;
+    private IDocument? _parentDocument;
+    private bool _disposedValue;
+
+    internal AsyncDocumentItem(WindowsFormsSynchronizationContext syncContext)
+    {
+        SyncContext = syncContext ?? throw new ArgumentNullException(nameof(syncContext));
+    }
 
     public PointF Location
     {
@@ -18,6 +25,18 @@ public abstract class AsyncDocumentItem
 
             _location = value;
             OnLocationChanged();
+        }
+    }
+
+    public PointF Offset
+    {
+        get => _offset;
+        set
+        {
+            if (_offset == value) return;
+
+            _offset = value;
+            OnOffsetChanged();
         }
     }
 
@@ -58,9 +77,11 @@ public abstract class AsyncDocumentItem
         }
     }
 
-    public Document? ParentDocument => _parentDocument;
+    internal IDocument? ParentDocument => _parentDocument;
 
-    internal void SetParentDocument(Document parentDocument)
+    public WindowsFormsSynchronizationContext SyncContext { get; }
+
+    internal void SetParentDocument(IDocument parentDocument)
     {
         _parentDocument = parentDocument ?? throw new ArgumentNullException(nameof(parentDocument));
     }
@@ -98,7 +119,10 @@ public abstract class AsyncDocumentItem
 
     private bool IsFullyInvisible()
     {
-        RectangleF itemRect = new(_location, _size);
+        RectangleF itemRect = new RectangleF(
+            new PointF(_location.X + _offset.X, _location.Y + _offset.Y), 
+            _size);
+
         RectangleF viewRect = new(PointF.Empty, _parentViewSize);
 
         return !itemRect.IntersectsWith(viewRect);
@@ -106,7 +130,10 @@ public abstract class AsyncDocumentItem
 
     private bool IsFullyVisible()
     {
-        RectangleF itemRect = new(_location, _size);
+        RectangleF itemRect = new RectangleF(
+            new PointF(_location.X + _offset.X, _location.Y + _offset.Y),
+            _size);
+
         RectangleF viewRect = new(PointF.Empty, _parentViewSize);
 
         return viewRect.Contains(itemRect);
@@ -121,7 +148,32 @@ public abstract class AsyncDocumentItem
     protected virtual void OnParentViewSizeChanged() 
         => UpdateVisibilityChangeState();
 
+    protected virtual void OnOffsetChanged()
+        => UpdateVisibilityChangeState();
+
     protected abstract void OnVisibilityChangedStateChanged(VisibilityChangeState visibilityChangeState);
 
     internal abstract Task OnRenderAsync(PointF scrollOffset, IDeviceContext deviceContext, CancellationToken cancellationToken);
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                // TODO: dispose managed state (managed objects)
+            }
+
+            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+            // TODO: set large fields to null
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
 }

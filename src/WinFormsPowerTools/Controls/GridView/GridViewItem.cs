@@ -1,9 +1,13 @@
 ﻿using System.Windows.Forms.Documents;
 
-namespace WinForms.PowerTools.Controls.GridView.GridView;
+namespace WinForms.PowerTools.Controls;
 
-internal class GridItem : AsyncDocumentItem
+public class GridViewItem : AsyncDocumentItem
 {
+    public GridViewItem(WindowsFormsSynchronizationContext syncContext) : base(syncContext)
+    {
+    }
+
     protected override void OnVisibilityChangedStateChanged(VisibilityChangeState visibilityChangeState)
     {
     }

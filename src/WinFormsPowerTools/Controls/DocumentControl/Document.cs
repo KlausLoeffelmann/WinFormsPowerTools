@@ -1,47 +1,117 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 
-#nullable enable
+namespace System.Windows.Forms.Documents;
 
-namespace System.Windows.Forms.Documents
+internal interface IDocument
+{     
+    float Width { get; set; }
+    float Height { get; set; }
+    IDocumentControl? HostControl { get; set; }
+}
+
+public class Document<tDocItem> : IDocument, IDisposable
+    where tDocItem : AsyncDocumentItem
 {
-    public class Document
+    private bool _suspendUpdates;
+    private bool disposedValue;
+    private float _width;
+    private float _height;
+    private IDocumentControl? _hostControl;
+
+    internal Document(IDocumentControl hostControl)
     {
-        private List<AsyncDocumentItem>? _documentItems;
-        private bool _suspendUpdates;
+        _hostControl = hostControl ?? throw new ArgumentNullException(nameof(hostControl));
+    }
 
-        public float Width { get; set; } = 800;
-        public float Height { get; set; } = 600;
-
-        internal DocumentControl? HostControl { get; set; }
-
-        internal List<AsyncDocumentItem> DocumentItems
-            => _documentItems ??= new List<AsyncDocumentItem>();
-
-        public void SuspendUpdates()
+    public float Width
+    {
+        get => _width;
+        set
         {
-            if (_suspendUpdates)
+            if (_width == value) return;
+
+            _width = value;
+            OnWidthChanged();
+        }
+    }
+
+    protected virtual void OnWidthChanged()
+    {
+    }
+
+    public float Height
+    {
+        get => _height;
+        set
+        {
+            if (_height == value) return;
+
+            _height = value;
+            OnHeightChanged();
+        }
+    }
+
+    protected virtual void OnHeightChanged()
+    {
+    }
+
+    public ObservableCollection<tDocItem> Items { get; }
+        = new ObservableCollection<tDocItem>();
+
+    IDocumentControl? IDocument.HostControl
+        {
+        get => _hostControl;
+        set
+        {
+            if (_hostControl is not null)
             {
-                throw new InvalidOperationException("Updates are already suspended!");
+                throw new InvalidOperationException("HostControl is already set!");
             }
 
-            _suspendUpdates = true;
+            _hostControl = value;
+        }
+    }
+
+    public void SuspendUpdates()
+    {
+        if (_suspendUpdates)
+        {
+            throw new InvalidOperationException("Updates are already suspended!");
         }
 
-        public void ResumeUpdates()
+        _suspendUpdates = true;
+    }
+
+    public void ResumeUpdates()
+    {
+        if (!_suspendUpdates)
         {
-            if (!_suspendUpdates)
+            throw new InvalidOperationException("Updates are not suspended!");
+        }
+
+        _suspendUpdates = false;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
             {
-                throw new InvalidOperationException("Updates are not suspended!");
+                foreach (var item in Items)
+                {
+                    item.Dispose();
+                }
             }
 
-            _suspendUpdates = false;
-            HostControl?.Invalidate();
+            disposedValue = true;
         }
+    }
 
-        public void AddDocumentItem(AsyncDocumentItem documentItem)
-        {
-            documentItem.SetParentDocument(this);
-            DocumentItems.Add(documentItem);
-        }
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

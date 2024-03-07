@@ -13,19 +13,19 @@ namespace System.Windows.Forms.Documents
     /// </summary>
     public class VDocumentScrollProperties : DocumentScrollProperties
     {
-        public VDocumentScrollProperties(DocumentControl? container) : base(container)
+        internal VDocumentScrollProperties(IDocumentControl? container) : base(container)
         {
         }
 
         private protected override SCROLLBAR_CONSTANTS Orientation => SCROLLBAR_CONSTANTS.SB_VERT;
 
-        private protected override int GetHorizontalDisplayPosition(DocumentControl parent)
+        private protected override int GetHorizontalDisplayPosition(IDocumentControl parent)
             => -_value;
 
-        private protected override int GetPageSize(DocumentControl parent)
+        private protected override int GetPageSize(IDocumentControl parent)
             => parent.ClientRectangle.Height;
 
-        private protected override int GetVerticalDisplayPosition(DocumentControl parent)
+        private protected override int GetVerticalDisplayPosition(IDocumentControl parent)
             => parent.DisplayRectangle.X;
     }
 }
