@@ -6,7 +6,11 @@ GetScrollPos
 SetScrollPos
 GetScrollRange
 SetScrollRange
+GetUpdateRgn
 EnableScrollBar
+
+RegionScope
+
 ScrollWindowEx
 
 SCROLLINFO
@@ -14,8 +18,10 @@ SCROLLBARINFO
 SCROLLBAR_COMMAND
 
 WINDOW_STYLE
+WINDOW_EX_STYLE
 WM_WININICHANGE
 WM_HSCROLL
 WM_VSCROLL
+WM_PAINT
 
 WIN32_ERROR

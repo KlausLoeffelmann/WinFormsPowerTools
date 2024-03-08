@@ -48,6 +48,9 @@
     <Compile Update="Components\DateEntryFormatterComponent.DateDataEntryFormatter.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="Controls\TransparentPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Resources\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

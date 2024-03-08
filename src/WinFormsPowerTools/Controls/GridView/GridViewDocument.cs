@@ -5,29 +5,80 @@ namespace WinForms.PowerTools.Controls;
 
 public class GridViewDocument : Document<GridViewItem>
 {
+    private readonly GridView _gridView;
+
     internal GridViewDocument(IDocumentControl hostControl) : base(hostControl)
     {
+        // Subscribe to the Items collection changed event to update the layout when the collection changes.
+        Items.CollectionChanged += OnItemsChanged;
+
+        if (((IDocument)this).HostControl is GridView gridView)
+        {
+            _gridView = gridView;
+
+            // Subscribe to the SizeChanged event of the GridView to update the size of the document.
+            _gridView.SizeChanged += (s, e) =>
+                Size = new SizeF(
+                    _gridView.ClientSize.Width,
+                    _gridView.ClientSize.Height);
+        }
+        else
+        {
+            throw new InvalidOperationException("The host control must be a GridView.");
+        }
+    }
+
+    protected override void OnSizeChanged()
+    {
+        // We do not need to do anything here, because a size change of the document
+        // automatically triggers a layout update of the items.
     }
 
     internal void LayoutInternal()
     {
         if (((IDocument)this).HostControl is GridView gridView)
         {
-            // Iterate through the items, and position them in logical rows and columns depending on the orientation and adjacent items count:
-            // 1. If the orientation is horizontal, the items are positioned in rows, and the adjacent items count is the number of columns.
-            // 2. If the orientation is vertical, the items are positioned in columns, and the adjacent items count is the number of rows.
-            for (var i = 0; i < Items.Count; i++)
+            if (Items.Count == 0)
             {
-                var adjacentItemsCount = gridView.AdjacentItemsCount;
-                var padding = gridView.Padding;
-
-                var item = Items[i];
-                var row = i / adjacentItemsCount;
-                var column = i % adjacentItemsCount;
-                var x = column * (item.Size.Width + padding.Left + padding.Right);
-                var y = row * (item.Size.Height + padding.Top + padding.Bottom);
-                item.Location = new PointF(x, y);
+                return;
             }
+
+            float currentX = Items[0].Margin.Left + gridView.Padding.Left;
+            float currentY = Items[0].Margin.Top + gridView.Padding.Top;
+
+            for (int i = 0; i < Items.Count; i++)
+            {
+                if (gridView.Orientation == Orientation.Horizontal)
+                {
+                    // We are in horizontal mode, so place the items next to each other, starting from the left,
+                    // either until we reach the right border or or we run out of items.
+                    if (currentX + Items[i].Size.Width > Size.Width)
+                    {
+                        currentX = 0;
+                        currentY += Items[i].Size.Height;
+                    }
+
+                    Items[i].Location = new PointF(currentX, currentY);
+                    currentX += Items[i].Size.Width;
+                }
+                else
+                {
+                    // We are in vertical mode, so place the items below each other, starting from the top,
+                    // either until we reach the bottom border or we run out of items.
+                    if (currentY + Items[i].Size.Height > Size.Height)
+                    {
+                        currentY = 0;
+                        currentX += Items[i].Size.Width;
+                    }
+
+                    Items[i].Location = new PointF(currentX, currentY);
+                    currentY += Items[i].Size.Height;
+                }
+
+                Items[i].HasBeenLayouted = true;
+            }
+
+            Invalidate();
         }
     }
 
@@ -41,7 +92,7 @@ public class GridViewDocument : Document<GridViewItem>
                     return;
                 }
 
-                LayoutInternal();
+                _gridView.PerformLayout();
                 break;
 
             case NotifyCollectionChangedAction.Remove:
@@ -50,8 +101,18 @@ public class GridViewDocument : Document<GridViewItem>
                     return;
                 }
 
-                LayoutInternal();
+                _gridView.PerformLayout();
                 break;
+        }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+ 
+        if (disposing)
+        {
+            Items.CollectionChanged -= OnItemsChanged;
         }
     }
 }

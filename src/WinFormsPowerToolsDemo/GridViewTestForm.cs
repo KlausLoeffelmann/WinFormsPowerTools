@@ -9,7 +9,15 @@ public partial class GridViewTestForm : Form
         InitializeComponent();
     }
 
-    private void button1_Click(object sender, System.EventArgs e)
+    private void test1ToolStripMenuItem_Click(object sender, System.EventArgs e)
     {
+        _gridView.SuspendLayout();
+
+        for (int i = 0; i < 10; i++)
+        {
+            _gridView.Add(_gridView.NewItem(20, new(100, 100)));
+        }
+
+        _gridView.ResumeLayout();
     }
 }

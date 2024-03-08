@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -7,15 +6,6 @@ using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace System.Windows.Forms.Documents;
-
-internal interface IDocumentControl
-{
-    IntPtr Handle { get; }
-    Rectangle ClientRectangle { get; }
-    Rectangle DisplayRectangle { get; }
-    void SetDisplayFromScrollProps(int x, int y);
-    bool IsHandleCreated { get; }
-}
 
 public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentControl 
     where TDoc : Document<TDocItem>
@@ -29,7 +19,8 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     private VDocumentScrollProperties? _verticalScroll;
     private HDocumentScrollProperties? _horizontalScroll;
 
-    private readonly List<Task> _renderTasks = [];
+    private readonly List<Task> _itemRenderTasks = [];
+    private Task? _lastDocumentRenderTask;
     private CancellationTokenSource _cancellationTokenSource = new();
     private CancellationToken _lastCancellationToken;
 
@@ -64,6 +55,9 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         UpdateFullDrag();
     }
 
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public TDoc? MainDocument
     {
         get => _mainDocument;
@@ -85,8 +79,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             }
 
             _mainDocument = value;
-            ((IDocument)_mainDocument).HostControl = this;
-            _displayRect = new Rectangle(0, 0, (int)_mainDocument.Width, (int)_mainDocument.Height);
+            _displayRect = new Rectangle(0, 0, (int)_mainDocument.Size.Width, (int)_mainDocument.Size.Height);
             PerformLayout();
         }
     }
@@ -786,51 +779,82 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     {
         base.OnPaint(e);
 
-        if (MainDocument is null)
+        if (MainDocument is null || MainDocument.Items.Count == 0)
         {
             return;
         }
 
         Graphics graphics = e.Graphics;
+        var cancellationToken = _cancellationTokenSource.Token;
 
-        // TODO: Cancel this, once it became the previous task in that 
-        // we need to cancel all running a scheduled tasks.
-        var asyncRenderTask = Task.Run(async () =>
+        if (_lastDocumentRenderTask is not null && _lastDocumentRenderTask.IsCompleted)
         {
-            SemaphoreSlim semaphore = new SemaphoreSlim(4);
+            // We need to cancel the previous task, because it's not needed anymore.
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource = new CancellationTokenSource();
+            _lastDocumentRenderTask = null;
+        }
 
-            foreach (var documentItem in MainDocument.Items)
+        Task documentRenderTask = Task.CompletedTask;
+
+        try
+        {
+
+            // TODO: Cancel this, once it became the previous task in that 
+            // we need to cancel all running a scheduled tasks.
+            documentRenderTask = Task.Run(async () =>
             {
-                if (documentItem is not AsyncDocumentItem graphicsDocumentItem)
+                SemaphoreSlim semaphore = new SemaphoreSlim(4);
+
+                foreach (TDocItem documentItem in MainDocument.Items)
                 {
-                    continue;
+                    if (documentItem is not AsyncDocumentItem graphicsDocumentItem)
+                    {
+                        continue;
+                    }
+
+                    if (documentItem.IsFullyInvisible())
+                    {
+                        continue;
+                    }
+
+                    Task renderTask = Task.Run(async () =>
+                    {
+                        await semaphore.WaitAsync();
+
+                        try
+                        {
+                            await graphicsDocumentItem.OnRenderAsync(
+                                scrollOffset: new PointF(
+                                    x: HorizontalScroll.Value,
+                                    y: VerticalScroll.Value),
+                                deviceContext: graphics,
+                                cancellationToken: _lastCancellationToken);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
+                        finally
+                        {
+                            semaphore.Release();
+                        }
+                    }, cancellationToken);
+
+                    _itemRenderTasks.Add(renderTask);
                 }
 
-                Task renderTask = Task.Run(async () =>
-                {
-                    await semaphore.WaitAsync();
+                await Task.WhenAll(_itemRenderTasks);
+            }, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
 
-                    try
-                    {
-                        await graphicsDocumentItem.OnRenderAsync(
-                            new PointF(HorizontalScroll.Value, VerticalScroll.Value),
-                            graphics, _lastCancellationToken);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-                    finally
-                    {
-                        semaphore.Release();
-                    }
-                });
-
-                _renderTasks.Add(renderTask);
-            }
-
-            await Task.WhenAll(_renderTasks);
-        });
+        _lastCancellationToken = _cancellationTokenSource.Token;
+        _lastDocumentRenderTask = documentRenderTask;
     }
 
     /// <summary>
@@ -893,8 +917,8 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
         if (MainDocument is not null)
         {
-            maxX = (int) MainDocument.Width;
-            maxY = (int) MainDocument.Height;
+            maxX = (int) MainDocument.Size.Width;
+            maxY = (int) MainDocument.Size.Height;
             needHScroll = true;
             needVScroll = true;
         }

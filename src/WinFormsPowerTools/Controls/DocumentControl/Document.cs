@@ -2,20 +2,11 @@
 
 namespace System.Windows.Forms.Documents;
 
-internal interface IDocument
-{     
-    float Width { get; set; }
-    float Height { get; set; }
-    IDocumentControl? HostControl { get; set; }
-}
-
-public class Document<tDocItem> : IDocument, IDisposable
+public abstract class Document<tDocItem> : IDocument, IDisposable
     where tDocItem : AsyncDocumentItem
 {
-    private bool _suspendUpdates;
     private bool disposedValue;
-    private float _width;
-    private float _height;
+    private SizeF _size;
     private IDocumentControl? _hostControl;
 
     internal Document(IDocumentControl hostControl)
@@ -23,36 +14,19 @@ public class Document<tDocItem> : IDocument, IDisposable
         _hostControl = hostControl ?? throw new ArgumentNullException(nameof(hostControl));
     }
 
-    public float Width
+    public SizeF Size
     {
-        get => _width;
+        get => _size;
         set
         {
-            if (_width == value) return;
+            if (_size == value)
+            {
+                return;
+            }
 
-            _width = value;
-            OnWidthChanged();
+            _size = value;
+            OnSizeChanged();
         }
-    }
-
-    protected virtual void OnWidthChanged()
-    {
-    }
-
-    public float Height
-    {
-        get => _height;
-        set
-        {
-            if (_height == value) return;
-
-            _height = value;
-            OnHeightChanged();
-        }
-    }
-
-    protected virtual void OnHeightChanged()
-    {
     }
 
     public ObservableCollection<tDocItem> Items { get; }
@@ -72,25 +46,7 @@ public class Document<tDocItem> : IDocument, IDisposable
         }
     }
 
-    public void SuspendUpdates()
-    {
-        if (_suspendUpdates)
-        {
-            throw new InvalidOperationException("Updates are already suspended!");
-        }
-
-        _suspendUpdates = true;
-    }
-
-    public void ResumeUpdates()
-    {
-        if (!_suspendUpdates)
-        {
-            throw new InvalidOperationException("Updates are not suspended!");
-        }
-
-        _suspendUpdates = false;
-    }
+    protected abstract void OnSizeChanged();
 
     protected virtual void Dispose(bool disposing)
     {
@@ -106,6 +62,11 @@ public class Document<tDocItem> : IDocument, IDisposable
 
             disposedValue = true;
         }
+    }
+
+    protected void Invalidate()
+    {
+        _hostControl?.Invalidate();
     }
 
     public void Dispose()
