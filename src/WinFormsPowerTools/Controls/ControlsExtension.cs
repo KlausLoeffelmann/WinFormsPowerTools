@@ -10,6 +10,12 @@ public static class ControlsExtension
     /// <typeparam name="T">The type of the result returned by the function.</typeparam>
     /// <param name="asyncFunc">The asynchronous function to execute.</param>
     /// <returns>The result of the asynchronous operation.</returns>
+    /// <summary>
+    ///  Executes an asynchronous function in a Task to avoid UI deadlocks, and blocks until the operation completes.
+    /// </summary>
+    /// <typeparam name="T">The type of the result returned by the function.</typeparam>
+    /// <param name="asyncFunc">The asynchronous function to execute.</param>
+    /// <returns>The result of the asynchronous operation.</returns>
     public static T? AsyncInvoke<T>(this Control control, Func<Task<T>> asyncFunc)
     {
         if (!control.IsHandleCreated)
@@ -17,8 +23,16 @@ public static class ControlsExtension
 
         var tcs = new TaskCompletionSource<T>();
 
-        // Marshal the asyncFunc execution back to the UI thread
-        control.Invoke(async () => await Task.Run(callback));
+        if (!control.InvokeRequired)
+        {
+            // We're already on the UI thread, so we spin up a new task to avoid blocking the UI thread.
+            control.Invoke(async () => await Task.Run(Callback).ConfigureAwait(false));
+        }
+        else
+        {
+            // We're already on a different thread, so we can just invoke the callback directly.
+            control.Invoke(async () => await Callback().ConfigureAwait(false));
+        }
 
         T? result = default;
 
@@ -33,11 +47,11 @@ public static class ControlsExtension
 
         return result;
 
-        async Task callback()
+        async Task Callback()
         {
             try
             {
-                var result = await asyncFunc();
+                var result = await asyncFunc().ConfigureAwait(false);
                 tcs.SetResult(result);
             }
             catch (Exception ex)
@@ -50,13 +64,17 @@ public static class ControlsExtension
     /// <summary>
     ///  Executes the specified asynchronous function on the thread that owns the control's handle.
     /// </summary>
-    /// <param name="asyncAction">The asynchronous function to execute.</param>
-    /// <param name="args">The arguments to pass to the function.</param>
-    /// <returns>A task representing the operation.</returns>
+    /// <typeparam name="T">The type of the input argument to be converted into the args array.</typeparam>
+    /// <typeparam name="U">The return type of the asynchronous function.</typeparam>
+    /// <param name="asyncFunc">
+    ///  The asynchronous function to execute, which takes an input of type T
+    ///  and returns a <see cref="Task{U}"/>.</param>
+    /// <param name="input">The input of type T to be used by the asynchronous function.</param>
+    /// <returns>A task representing the operation and containing the function's result of type U.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the control's handle is not yet created.</exception>
-    public static Task<object> InvokeAsync(this Control control, Func<object[], Task<object>> asyncAction, params object[] args)
+    public static Task<T> InvokeAsync<T>(this Control control, Func<T> asyncFunc)
     {
-        var tcs = new TaskCompletionSource<object>();
+        var tcs = new TaskCompletionSource<T>();
 
         if (!control.IsHandleCreated)
         {
@@ -64,20 +82,45 @@ public static class ControlsExtension
             return tcs.Task;
         }
 
-        control.BeginInvoke(new Action(async () =>
+        if (control.InvokeRequired)
         {
-            try
+            control.BeginInvoke(() =>
             {
-                object result = await asyncAction(args).ConfigureAwait(true);
-                tcs.SetResult(result);
-            }
-            catch (Exception ex)
-            {
-                tcs.SetException(ex);
-            }
-        }));
+                try
+                {
+                    T result = asyncFunc();
+                    tcs.SetResult(result);
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            });
 
-        return tcs.Task;
+            return tcs.Task;
+        }
+        else
+        {
+            control.BeginInvoke(
+                async () => await Task.Run(Callback).ConfigureAwait(false));
+
+            return tcs.Task;
+
+            Task Callback()
+            {
+                try
+                {
+                    T result = asyncFunc();
+                    tcs.SetResult(result);
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+
+                return tcs.Task;
+            }
+        }
     }
 
     /// <summary>
@@ -87,23 +130,23 @@ public static class ControlsExtension
     /// <param name="args">The arguments to pass to the delegate.</param>
     /// <returns>A task representing the operation.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the control's handle is not yet created.</exception>
-    public static Task<object?> InvokeAsync(this Control control, Delegate method, params object[] args)
-    {
-        var tcs = new TaskCompletionSource<object?>();
+    //public static Task<object?> InvokeAsync(this Control control, Delegate method, params object[] args)
+    //{
+    //    var tcs = new TaskCompletionSource<object?>();
 
-        control.BeginInvoke(new Action(() =>
-        {
-            try
-            {
-                object? result = method.DynamicInvoke(args);
-                tcs.SetResult(result);
-            }
-            catch (Exception ex)
-            {
-                tcs.SetException(ex);
-            }
-        }));
+    //    control.BeginInvoke(new Action(() =>
+    //    {
+    //        try
+    //        {
+    //            object? result = method.DynamicInvoke(args);
+    //            tcs.SetResult(result);
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            tcs.SetException(ex);
+    //        }
+    //    }));
 
-        return tcs.Task;
-    }
+    //    return tcs.Task;
+    //}
 }

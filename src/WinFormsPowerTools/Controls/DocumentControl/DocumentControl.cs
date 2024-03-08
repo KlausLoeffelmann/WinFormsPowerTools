@@ -4,6 +4,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
+using WinForms.PowerTools.Controls;
 
 namespace System.Windows.Forms.Documents;
 
@@ -784,7 +785,6 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             return;
         }
 
-        Graphics graphics = e.Graphics;
         var cancellationToken = _cancellationTokenSource.Token;
 
         if (_lastDocumentRenderTask is not null && _lastDocumentRenderTask.IsCompleted)
@@ -797,61 +797,81 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         }
 
         Task documentRenderTask = Task.CompletedTask;
+        Graphics? threadSafeGraphics = null;
 
         try
         {
+            // We cannot use the Graphics object from the PaintEventArgs, because it's not thread safe.
+            // Instead, we need to create a new Graphics object from the handle of the control.
+            // And then after all the drawing is done, we need to dispose the Graphics object.
 
             // TODO: Cancel this, once it became the previous task in that 
             // we need to cancel all running a scheduled tasks.
+
             documentRenderTask = Task.Run(async () =>
             {
-                SemaphoreSlim semaphore = new SemaphoreSlim(4);
-
-                foreach (TDocItem documentItem in MainDocument.Items)
+                try
                 {
-                    if (documentItem is not AsyncDocumentItem graphicsDocumentItem)
+                    threadSafeGraphics = await this.InvokeAsync(() => Graphics.FromHwnd(Handle));
+
+                    SemaphoreSlim semaphore = new(4);
+
+                    foreach (TDocItem documentItem in MainDocument.Items)
                     {
-                        continue;
+                        if (documentItem is not AsyncDocumentItem graphicsDocumentItem)
+                        {
+                            continue;
+                        }
+
+                        if (documentItem.IsFullyInvisible())
+                        {
+                            continue;
+                        }
+
+                        Task renderTask = Task.Run(async () =>
+                        {
+                            await semaphore.WaitAsync();
+
+                            try
+                            {
+                                await graphicsDocumentItem.OnRenderAsync(
+                                    scrollOffset: new PointF(
+                                        x: HorizontalScroll.Value,
+                                        y: VerticalScroll.Value),
+                                    deviceContext: threadSafeGraphics,
+                                    cancellationToken: _lastCancellationToken);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex);
+                            }
+                            finally
+                            {
+                                semaphore.Release();
+                            }
+                        }, cancellationToken);
+
+                        _itemRenderTasks.Add(renderTask);
                     }
 
-                    if (documentItem.IsFullyInvisible())
-                    {
-                        continue;
-                    }
-
-                    Task renderTask = Task.Run(async () =>
-                    {
-                        await semaphore.WaitAsync();
-
-                        try
-                        {
-                            await graphicsDocumentItem.OnRenderAsync(
-                                scrollOffset: new PointF(
-                                    x: HorizontalScroll.Value,
-                                    y: VerticalScroll.Value),
-                                deviceContext: graphics,
-                                cancellationToken: _lastCancellationToken);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex);
-                        }
-                        finally
-                        {
-                            semaphore.Release();
-                        }
-                    }, cancellationToken);
-
-                    _itemRenderTasks.Add(renderTask);
+                    await Task.WhenAll(_itemRenderTasks);
                 }
-
-                await Task.WhenAll(_itemRenderTasks);
+                catch (Exception)
+                {
+                }
             }, cancellationToken);
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
+
+        documentRenderTask.ContinueWith(documentRenderTask =>
+        {
+            threadSafeGraphics?.Dispose();
+
+        }, TaskContinuationOptions.OnlyOnFaulted);
+
 
         _lastCancellationToken = _cancellationTokenSource.Token;
         _lastDocumentRenderTask = documentRenderTask;

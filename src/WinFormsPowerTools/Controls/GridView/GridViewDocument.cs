@@ -75,7 +75,7 @@ public class GridViewDocument : Document<GridViewItem>
                     currentY += Items[i].Size.Height;
                 }
 
-                Items[i].HasBeenLayouted = true;
+                Items[i].HasBeenLayout = true;
             }
 
             Invalidate();
