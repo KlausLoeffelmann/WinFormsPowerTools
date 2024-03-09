@@ -7,9 +7,11 @@ public abstract class Document<tDocItem> : IDocument, IDisposable
 {
     private bool disposedValue;
     private SizeF _size;
+    private RectangleF _displayBounds;
     private IDocumentControl? _hostControl;
 
     public event EventHandler? SizeChanged;
+    public event EventHandler? DisplayBoundsChanged;
 
     internal Document(IDocumentControl hostControl)
     {
@@ -34,9 +36,10 @@ public abstract class Document<tDocItem> : IDocument, IDisposable
     public ObservableCollection<tDocItem> Items { get; }
         = new ObservableCollection<tDocItem>();
 
-    IDocumentControl? IDocument.HostControl
-        {
-        get => _hostControl;
+    IDocumentControl IDocument.HostControl
+    {
+        // Todo: This needs to be done more robust by introducing a ParkingParent. A document should at no point be without a host control.
+        get => _hostControl!;
         set
         {
             if (_hostControl is not null)
@@ -45,6 +48,21 @@ public abstract class Document<tDocItem> : IDocument, IDisposable
             }
 
             _hostControl = value;
+        }
+    }
+
+    public RectangleF DisplayBounds 
+    { 
+        get => _displayBounds;
+        internal set
+        {
+            if (_displayBounds == value)
+            {
+                return;
+            }
+
+            _displayBounds = value;
+            DisplayBoundsChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 

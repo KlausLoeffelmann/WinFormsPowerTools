@@ -1,4 +1,5 @@
-﻿using Windows.Win32;
+﻿using System.Runtime.CompilerServices;
+using Windows.Win32;
 
 namespace System.Windows.Forms.DataEntryForms
 {

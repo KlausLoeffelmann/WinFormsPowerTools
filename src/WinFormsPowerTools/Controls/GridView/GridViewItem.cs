@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms.Documents;
+﻿using System.Diagnostics;
+using System.Windows.Forms.Documents;
 
 namespace WinForms.PowerTools.Controls;
 
@@ -46,8 +47,9 @@ public class GridViewItem : AsyncDocumentItem
         // Let's start a new Task, which counts from 1 to 100 and shows that in the middle of the grid item.
         for (int i = 0; i < 10; i++)
         {
-            SyncContext.Post(_ =>
+            SyncContext.Post((param) =>
             {
+                int index = (int)param!;
                 var tempColor = Color.LightBlue;
 
                 // Restrict the drawing to the clip area
@@ -61,8 +63,10 @@ public class GridViewItem : AsyncDocumentItem
                     new Pen(tempColor, 1),
                     new RectangleF(EffectiveLocation, ClientSize));
 
+                Debug.Assert(index < 10, "How can index > 9?");
+
                 graphics.DrawString(
-                    i.ToString(),
+                    index.ToString(),
                     _bigFont,
                     Brushes.Black,
                     new PointF(
@@ -85,9 +89,15 @@ public class GridViewItem : AsyncDocumentItem
                         EffectiveLocation.X + ClientSize.Width - 100,
                         EffectiveLocation.Y + ClientSize.Height - 20));
 
-            }, null);
+            }, i);
 
             await Task.Delay(s_random.Next(200), cancellationToken);
+
+            // Cancel the loop, if the token has been cancelled.
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
         }
     }
 }

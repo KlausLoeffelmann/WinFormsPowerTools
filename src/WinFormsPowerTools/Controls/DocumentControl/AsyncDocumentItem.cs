@@ -1,4 +1,5 @@
-﻿using WinForms.PowerTools.Controls;
+﻿using System.Diagnostics;
+using WinForms.PowerTools.Controls;
 
 namespace System.Windows.Forms.Documents;
 
@@ -101,14 +102,19 @@ public abstract class AsyncDocumentItem : IDisposable
     /// <summary>
     ///  Updates the visibility change state of the document item.
     /// </summary>
-    public void UpdateVisibilityChangeState()
+    public void UpdateVisibilityChangeState(PointF offset)
     {
         _isFullyInvisible = null;
         _parentViewSize = _parentDocument!.Size;
 
-        bool isNowFullyVisible = IsFullyVisible();
-        bool isNowPartiallyVisible = IsPartiallyVisible();
-        bool isNowFullyInvisible = IsFullyInvisible();
+        bool isNowFullyVisible = IsFullyVisible(offset);
+        bool isNowPartiallyVisible = IsPartiallyVisible(offset);
+        bool isNowFullyInvisible = IsFullyInvisible(offset);
+
+        // Assert, that only one of the states is true:
+        Debug.Assert(
+            isNowFullyVisible ^ isNowPartiallyVisible ^ isNowFullyInvisible,
+            "Only one of the visibility states should be true.");
 
         bool wasFullyVisible =
             _previousVisibilityChangeState == VisibilityChangeState.GotFullyVisible
@@ -128,58 +134,55 @@ public abstract class AsyncDocumentItem : IDisposable
         };
     }
 
-    public bool IsPartiallyVisible()
+    public bool IsPartiallyVisible(PointF offset)
     {
         // Assuming this means the item is either fully
         // or partially visible but not fully invisible
-        return !IsFullyInvisible() && !IsFullyVisible();
+        return !IsFullyInvisible(offset) && !IsFullyVisible(offset);
     }
 
-    public bool IsFullyInvisible()
+    public bool IsFullyInvisible(PointF offset)
     {
         return _isFullyInvisible ??= IsItemFullyInvisible();
 
         bool IsItemFullyInvisible()
         {
             RectangleF viewRect = new(PointF.Empty, _parentViewSize);
-            return !viewRect.IntersectsWith(Bounds);
+            RectangleF itemRect = Bounds;
+            itemRect.Offset(offset);
+
+            return !viewRect.IntersectsWith(itemRect);
         }
     }
 
-    public bool IsFullyVisible()
+    public bool IsFullyVisible(PointF offset)
     {
         return _isFullyVisible ??= IsItemFullyVisible();
 
         bool IsItemFullyVisible()
         {
             RectangleF viewRect = new(PointF.Empty, _parentViewSize);
-            return viewRect.Contains(Bounds);
+            RectangleF itemRect = Bounds;
+            itemRect.Offset(offset);
+
+            return viewRect.Contains(itemRect);
         }
     }
 
     /// <summary>
     ///  Called when the location of the document item changes.
     /// </summary>
-    protected virtual void OnLocationChanged()
-        => UpdateVisibilityChangeState();
+    protected virtual void OnLocationChanged() { }
 
     /// <summary>
     ///  Called when the size of the document item changes.
     /// </summary>
-    protected virtual void OnSizeChanged()
-        => UpdateVisibilityChangeState();
+    protected virtual void OnSizeChanged() { }
 
     /// <summary>
     ///  Called when the parent view size changes.
     /// </summary>
-    protected virtual void OnParentViewSizeChanged()
-        => UpdateVisibilityChangeState();
-
-    /// <summary>
-    ///  Called when the offset of the document item changes.
-    /// </summary>
-    protected virtual void OnOffsetChanged()
-        => UpdateVisibilityChangeState();
+    protected virtual void OnParentViewSizeChanged() { }
 
     /// <summary>
     ///  Called when the visibility change state of the document item changes.

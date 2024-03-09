@@ -13,6 +13,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     where TDoc : Document<TDocItem>
     where TDocItem : AsyncDocumentItem
 {
+    public event ScrollEventHandler? ScrollEvent;
     public event EventHandler? ScrollDragTrackingModeChanged;
 
     private int _scrollState;
@@ -42,8 +43,6 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     protected const int ScrollStateVScrollVisible = 0x0004;
     protected const int ScrollStateUserHasScrolled = 0x0008;
     protected const int ScrollStateFullDrag = 0x0010;
-
-    public event ScrollEventHandler? ScrollEvent;
 
     /// <summary>
     ///  Initializes a new instance of the <see cref='ScrollableControl'/> class.
@@ -827,15 +826,20 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
                     foreach (TDocItem documentItem in MainDocument.Items)
                     {
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+
                         if (documentItem is not AsyncDocumentItem graphicsDocumentItem 
-                            || documentItem.IsFullyInvisible())
+                            || documentItem.IsFullyInvisible(_displayRect.Location))
                         {
                             continue;
                         }
 
                         Task renderTask = Task.Run(async () =>
                         {
-                            await semaphore.WaitAsync();
+                            await semaphore.WaitAsync(cancellationToken);
 
                             try
                             {
@@ -847,7 +851,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
                                 await graphicsDocumentItem.OnRenderAsync(
                                     deviceContext: threadSafeGraphics,
-                                    cancellationToken: _lastCancellationToken);
+                                    cancellationToken: cancellationToken);
 
                                 Debug.Print($"Item {documentItem.DebugInfo}: Finish render async.");
                             }
@@ -878,6 +882,26 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
         _lastCancellationToken = _cancellationTokenSource.Token;
         _lastDocumentRenderTask = documentRenderTask;
+    }
+
+    private void UpdateVisibilityInfo()
+    {
+        if (MainDocument is null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < MainDocument.Items.Count; i++)
+        {
+            if (MainDocument.Items[i] is not AsyncDocumentItem documentItem)
+            {
+                continue;
+            }
+
+            // Todo: We need to check, if this process can be streamlined,
+            // but then again for 10,000 items its taking less than 20 ms.
+            documentItem.UpdateVisibilityChangeState(_displayRect.Location);
+        }
     }
 
     /// <summary>
