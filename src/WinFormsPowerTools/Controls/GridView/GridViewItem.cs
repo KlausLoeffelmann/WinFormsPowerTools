@@ -17,46 +17,77 @@ public class GridViewItem : AsyncDocumentItem
     {
     }
 
-    internal override Task OnRenderAsync(PointF scrollOffset, IDeviceContext deviceContext, CancellationToken cancellationToken)
+    public Rectangle ClipArea
+    {
+        get
+        {
+            var location = EffectiveLocation;
+            var size = ClientSize;
+            return new Rectangle(
+                (int)location.X - 1,
+                (int)location.Y - 1,
+                (int)size.Width + 2,
+                (int)size.Height + 2);
+        }
+    }
+
+    private Font _bigFont = new Font(SystemFonts.DefaultFont.FontFamily, 20);
+    private static readonly Random s_random = new Random();
+
+    internal async override Task OnRenderAsync(IDeviceContext deviceContext, CancellationToken cancellationToken)
     {
         if (!HasBeenLayout 
             || deviceContext is not Graphics graphics)
         {
-            return Task.CompletedTask;
+            await Task.CompletedTask;
+            return;
         }
 
         // Let's start a new Task, which counts from 1 to 100 and shows that in the middle of the grid item.
-        return Task.Run(async () =>
+        for (int i = 0; i < 10; i++)
         {
-            for (int i = 0; i < 10; i++)
+            SyncContext.Post(_ =>
             {
-                SyncContext.Post(_ =>
-                {
-                    var tempColor = Application.SystemColors.Control;
+                var tempColor = Color.LightBlue;
 
-                    // Constrain everything to the bounds of this item:
-                    graphics.SetClip(new RectangleF(Location, Size));
+                // Restrict the drawing to the clip area
+                graphics.SetClip(ClipArea);
 
-                    graphics.Clear(SystemColors.Control);
+                // Clear the Background
+                graphics.Clear(tempColor);
 
-                    // draw frame around this item:
-                    graphics.DrawRectangle(
-                        new Pen(tempColor, 1), 
-                        new RectangleF(Location, Size));
+                // draw frame around this item:
+                graphics.DrawRectangle(
+                    new Pen(tempColor, 1),
+                    new RectangleF(EffectiveLocation, ClientSize));
 
-                    graphics.DrawString(
-                        i.ToString(), 
-                        SystemFonts.DefaultFont, 
-                        Brushes.Black, 
-                        new PointF(
-                            Location.X + Size.Width / 2, 
-                            Location.Y + Size.Height / 2));
+                graphics.DrawString(
+                    i.ToString(),
+                    _bigFont,
+                    Brushes.Black,
+                    new PointF(
+                        EffectiveLocation.X + ClientSize.Width / 2,
+                        EffectiveLocation.Y + ClientSize.Height / 2));
 
-                    graphics.ResetClip();
-                }, null);
+                graphics.DrawString(
+                    $"Location: {Location}",
+                    SystemFonts.DefaultFont,
+                    Brushes.Black,
+                    new PointF(
+                        EffectiveLocation.X,
+                        EffectiveLocation.Y));
 
-                await Task.Delay(100, cancellationToken);
-            }
-        }, cancellationToken);
+                graphics.DrawString(
+                    $"Size: {Size}",
+                    SystemFonts.DefaultFont,
+                    Brushes.Black,
+                    new PointF(
+                        EffectiveLocation.X + ClientSize.Width - 100,
+                        EffectiveLocation.Y + ClientSize.Height - 20));
+
+            }, null);
+
+            await Task.Delay(s_random.Next(200), cancellationToken);
+        }
     }
 }

@@ -13,9 +13,9 @@ public partial class GridViewTestForm : Form
     {
         _gridView.SuspendLayout();
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 100; i++)
         {
-            _gridView.Add(_gridView.NewItem(20, new(100, 100)));
+            _gridView.Add(_gridView.NewItem(20, new(200, 200)));
         }
 
         _gridView.ResumeLayout();

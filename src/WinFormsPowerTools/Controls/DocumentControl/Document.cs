@@ -9,6 +9,8 @@ public abstract class Document<tDocItem> : IDocument, IDisposable
     private SizeF _size;
     private IDocumentControl? _hostControl;
 
+    public event EventHandler? SizeChanged;
+
     internal Document(IDocumentControl hostControl)
     {
         _hostControl = hostControl ?? throw new ArgumentNullException(nameof(hostControl));

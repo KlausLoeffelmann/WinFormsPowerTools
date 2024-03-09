@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -51,6 +52,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     {
         SetStyle(ControlStyles.ContainerControl, true);
         SetStyle(ControlStyles.AllPaintingInWmPaint, false);
+        DoubleBuffered = true;
         
         // Setup the drag mode based on the system setting.
         UpdateFullDrag();
@@ -69,7 +71,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             {
                 if (_mainDocument is not null)
                 {
-                    ((IDocument)_mainDocument).HostControl = null;
+                    ((IDocument)_mainDocument).HostControl = null!;
                 }
 
                 _mainDocument = null;
@@ -120,7 +122,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     {
         base.OnLayout(layoutEventArgs);
         SetDisplayRectLocation(0, 0);
-        ApplyScrollbarChanges(_displayRect);
+        ApplyScrollbarChanges();
     }
 
     /// <summary>
@@ -548,7 +550,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     void IDocumentControl.SetDisplayFromScrollProps(int x, int y)
     {
         Rectangle display = GetDisplayRectInternal();
-        ApplyScrollbarChanges(display);
+        ApplyScrollbarChanges();
         SetDisplayRectLocation(x, y);
     }
 
@@ -785,8 +787,6 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             return;
         }
 
-        var cancellationToken = _cancellationTokenSource.Token;
-
         if (_lastDocumentRenderTask is not null && _lastDocumentRenderTask.IsCompleted)
         {
             // We need to cancel the previous task, because it's not needed anymore.
@@ -795,9 +795,8 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             _cancellationTokenSource = new CancellationTokenSource();
             _lastDocumentRenderTask = null;
         }
-
+        var cancellationToken = _cancellationTokenSource.Token;
         Task documentRenderTask = Task.CompletedTask;
-        Graphics? threadSafeGraphics = null;
 
         try
         {
@@ -812,18 +811,24 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             {
                 try
                 {
-                    threadSafeGraphics = await this.InvokeAsync(() => Graphics.FromHwnd(Handle));
+                    using Graphics threadSafeGraphics = await this.InvokeAsync(
+                        () =>
+                        {
+                            var graphics = Graphics.FromHwnd(Handle);
+
+                            graphics.TranslateTransform(
+                                -HorizontalScroll.Value,
+                                -VerticalScroll.Value);
+
+                            return graphics;
+                        });
 
                     SemaphoreSlim semaphore = new(4);
 
                     foreach (TDocItem documentItem in MainDocument.Items)
                     {
-                        if (documentItem is not AsyncDocumentItem graphicsDocumentItem)
-                        {
-                            continue;
-                        }
-
-                        if (documentItem.IsFullyInvisible())
+                        if (documentItem is not AsyncDocumentItem graphicsDocumentItem 
+                            || documentItem.IsFullyInvisible())
                         {
                             continue;
                         }
@@ -834,16 +839,21 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
                             try
                             {
+                                // We need to prepare the graphics object for the document item:
+                                // * Taking its location and scroll-offset into account, so that 
+                                //   the item's drawing logic is always (0,0)-based.
+                                // * Clipping the graphics object to the item's bounds, so that the
+                                //   item's drawing logic cannot draw outside of its bounds.
+
                                 await graphicsDocumentItem.OnRenderAsync(
-                                    scrollOffset: new PointF(
-                                        x: HorizontalScroll.Value,
-                                        y: VerticalScroll.Value),
                                     deviceContext: threadSafeGraphics,
                                     cancellationToken: _lastCancellationToken);
+
+                                Debug.Print($"Item {documentItem.DebugInfo}: Finish render async.");
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine(ex);
+                                Debug.Print(ex.ToString());
                             }
                             finally
                             {
@@ -865,13 +875,6 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         {
             Console.WriteLine(ex);
         }
-
-        documentRenderTask.ContinueWith(documentRenderTask =>
-        {
-            threadSafeGraphics?.Dispose();
-
-        }, TaskContinuationOptions.OnlyOnFaulted);
-
 
         _lastCancellationToken = _cancellationTokenSource.Token;
         _lastDocumentRenderTask = documentRenderTask;
@@ -904,7 +907,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         }
     }
 
-    private bool ApplyScrollbarChanges(Rectangle display)
+    private bool ApplyScrollbarChanges()
     {
         bool needLayout = false;
         bool needHScroll = false;

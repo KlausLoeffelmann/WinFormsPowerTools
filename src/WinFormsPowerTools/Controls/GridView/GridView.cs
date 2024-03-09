@@ -148,8 +148,8 @@ public partial class GridView
 
     protected override void OnLayout(LayoutEventArgs layoutEventArgs)
     {
+        var newDisplaySize = MainDocument?.LayoutInternal();
         base.OnLayout(layoutEventArgs);
-        MainDocument?.LayoutInternal();
     }
 
     protected override void OnPaint(PaintEventArgs e)

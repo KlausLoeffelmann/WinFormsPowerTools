@@ -1,15 +1,16 @@
-﻿namespace System.Windows.Forms.Documents;
+﻿using WinForms.PowerTools.Controls;
+
+namespace System.Windows.Forms.Documents;
 
 /// <summary>
 ///  Represents an abstract base class for asynchronous document items.
 /// </summary>
 public abstract class AsyncDocumentItem : IDisposable
 {
-    private static int _index;
+    private static int s_index;
 
-    private readonly int _id = _index++;
+    private readonly int _id = s_index++;
     private PointF _location;
-    private PointF _offset;
     private SizeF _size;
     private VisibilityChangeState _visibilityChangeState;
     private VisibilityChangeState _previousVisibilityChangeState;
@@ -20,6 +21,7 @@ public abstract class AsyncDocumentItem : IDisposable
     private bool _disposedValue;
 
     private bool? _isFullyInvisible;
+    private bool? _isFullyVisible;
 
     internal AsyncDocumentItem(IDocument parentDocument, WindowsFormsSynchronizationContext syncContext)
     {
@@ -42,24 +44,21 @@ public abstract class AsyncDocumentItem : IDisposable
         }
     }
 
+    public PointF EffectiveLocation => new(
+        _location.X + Margin.Left,
+        _location.Y + Margin.Top);
+
+    public RectangleF Bounds => new(
+        _location, 
+        _size);
+
     public PaddingF Padding { get; set; }
 
     public PaddingF Margin { get; set; }
 
-    /// <summary>
-    ///  Gets or sets the offset of the document item.
-    /// </summary>
-    public PointF Offset
-    {
-        get => _offset;
-        set
-        {
-            if (_offset == value) return;
-
-            _offset = value;
-            OnOffsetChanged();
-        }
-    }
+    public SizeF ClientSize => new(
+        _size.Width - Margin.Right - Margin.Left,
+        _size.Height - Margin.Top - Margin.Bottom);
 
     /// <summary>
     ///  Gets or sets the size of the document item.
@@ -97,6 +96,8 @@ public abstract class AsyncDocumentItem : IDisposable
     /// </summary>
     public WindowsFormsSynchronizationContext SyncContext { get; }
 
+    public string DebugInfo => $"{_id:0000} - Location:{this.Location} Size:{this.Size}";
+
     /// <summary>
     ///  Updates the visibility change state of the document item.
     /// </summary>
@@ -131,34 +132,29 @@ public abstract class AsyncDocumentItem : IDisposable
     {
         // Assuming this means the item is either fully
         // or partially visible but not fully invisible
-        return !IsFullyInvisible();
+        return !IsFullyInvisible() && !IsFullyVisible();
     }
 
     public bool IsFullyInvisible()
     {
-        return _isFullyInvisible ??= IsItemFullyVisible();
+        return _isFullyInvisible ??= IsItemFullyInvisible();
 
-        bool IsItemFullyVisible()
+        bool IsItemFullyInvisible()
         {
-            RectangleF itemRect = new RectangleF(
-                new PointF(_location.X + _offset.X, _location.Y + _offset.Y),
-                _size);
-
             RectangleF viewRect = new(PointF.Empty, _parentViewSize);
-
-            return !itemRect.IntersectsWith(viewRect);
+            return !viewRect.IntersectsWith(Bounds);
         }
     }
 
     public bool IsFullyVisible()
     {
-        RectangleF itemRect = new RectangleF(
-            new PointF(_location.X + _offset.X, _location.Y + _offset.Y),
-            _size);
+        return _isFullyVisible ??= IsItemFullyVisible();
 
-        RectangleF viewRect = new(PointF.Empty, _parentViewSize);
-
-        return viewRect.Contains(itemRect);
+        bool IsItemFullyVisible()
+        {
+            RectangleF viewRect = new(PointF.Empty, _parentViewSize);
+            return viewRect.Contains(Bounds);
+        }
     }
 
     /// <summary>
@@ -198,7 +194,13 @@ public abstract class AsyncDocumentItem : IDisposable
     /// <param name="deviceContext">The device context.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous rendering operation.</returns>
-    internal abstract Task OnRenderAsync(PointF scrollOffset, IDeviceContext deviceContext, CancellationToken cancellationToken);
+    internal abstract Task OnRenderAsync(IDeviceContext deviceContext, CancellationToken cancellationToken);
+
+    public T? AsyncInvoke<T>(Func<Task<T>> asyncFunc)
+        => ((Control)_parentDocument.HostControl).AsyncInvoke(asyncFunc);
+
+    public Task InvokeAsync(Action syncFunc) 
+        => ((Control)_parentDocument.HostControl).InvokeAsync(syncFunc);
 
     protected virtual void Dispose(bool disposing)
     {
@@ -222,4 +224,7 @@ public abstract class AsyncDocumentItem : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
+    public override string ToString()
+        => $"#: {DebugInfo} V:{VisibilityChangeState}";
 }

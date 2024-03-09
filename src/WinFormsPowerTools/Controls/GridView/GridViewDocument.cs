@@ -34,52 +34,86 @@ public class GridViewDocument : Document<GridViewItem>
         // automatically triggers a layout update of the items.
     }
 
-    internal void LayoutInternal()
+    internal SizeF LayoutInternal()
     {
         if (((IDocument)this).HostControl is GridView gridView)
         {
             if (Items.Count == 0)
             {
-                return;
+                return Size;
             }
 
             float currentX = Items[0].Margin.Left + gridView.Padding.Left;
             float currentY = Items[0].Margin.Top + gridView.Padding.Top;
+            float highestItemHeight = Items[0].Bounds.Bottom;
 
-            for (int i = 0; i < Items.Count; i++)
+            Items[0].Location = new PointF(
+                currentX,
+                currentY);
+
+            Items[0].HasBeenLayout = true;
+
+            if (Items.Count==1)
+            {
+                return Size;
+            }
+
+            for (int i = 1; i < Items.Count; i++)
             {
                 if (gridView.Orientation == Orientation.Horizontal)
                 {
                     // We are in horizontal mode, so place the items next to each other, starting from the left,
                     // either until we reach the right border or or we run out of items.
+                    currentX += Items[i-1].Size.Width + Items[i-1].Margin.Right;
+
                     if (currentX + Items[i].Size.Width > Size.Width)
                     {
-                        currentX = 0;
-                        currentY += Items[i].Size.Height;
+                        currentX = Items[i].Margin.Left + gridView.Padding.Left;
+                        currentY += Items[i].Margin.Top + highestItemHeight;
+                        highestItemHeight = Items[i].Size.Height;
                     }
 
                     Items[i].Location = new PointF(currentX, currentY);
-                    currentX += Items[i].Size.Width;
+
+                    if (Items[i].Size.Height > highestItemHeight)
+                    {
+                        highestItemHeight = Items[i].Size.Height;
+                    }
+
                 }
                 else
                 {
                     // We are in vertical mode, so place the items below each other, starting from the top,
                     // either until we reach the bottom border or we run out of items.
-                    if (currentY + Items[i].Size.Height > Size.Height)
+                    currentY += Items[i].Size.Height + Items[i].Margin.Bottom;
+
+                    if (Items[i].Margin.Right > highestItemHeight)
                     {
-                        currentY = 0;
-                        currentX += Items[i].Size.Width;
+                        highestItemHeight = Items[i].Margin.Right;
+                    }
+
+                    if (currentY > Size.Height)
+                    {
+                        currentY = Items[i].Margin.Top + gridView.Padding.Top;
+                        currentX += Items[i].Size.Width + Items[i].Margin.Left + highestItemHeight;
+                        highestItemHeight = 0;
                     }
 
                     Items[i].Location = new PointF(currentX, currentY);
-                    currentY += Items[i].Size.Height;
                 }
 
                 Items[i].HasBeenLayout = true;
             }
 
+            Size = new SizeF(
+                Size.Width,
+                currentY + highestItemHeight + gridView.Padding.Bottom);
+
             Invalidate();
+
         }
+
+        return Size;
     }
 
     private void OnItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
