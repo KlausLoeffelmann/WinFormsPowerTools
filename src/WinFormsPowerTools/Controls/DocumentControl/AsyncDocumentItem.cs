@@ -11,6 +11,7 @@ public abstract class AsyncDocumentItem : IDisposable
     private static int s_index;
 
     private readonly int _id = s_index++;
+
     private PointF _location;
     private SizeF _size;
     private VisibilityChangeState _visibilityChangeState;
@@ -20,9 +21,6 @@ public abstract class AsyncDocumentItem : IDisposable
     private SizeF _parentViewSize;
 
     private bool _disposedValue;
-
-    private bool? _isFullyInvisible;
-    private bool? _isFullyVisible;
 
     internal AsyncDocumentItem(IDocument parentDocument, WindowsFormsSynchronizationContext syncContext)
     {
@@ -104,17 +102,17 @@ public abstract class AsyncDocumentItem : IDisposable
     /// </summary>
     public void UpdateVisibilityChangeState(PointF offset)
     {
-        _isFullyInvisible = null;
-        _parentViewSize = _parentDocument!.Size;
+        _parentViewSize = _parentDocument.Size;
 
         bool isNowFullyVisible = IsFullyVisible(offset);
-        bool isNowPartiallyVisible = IsPartiallyVisible(offset);
-        bool isNowFullyInvisible = IsFullyInvisible(offset);
+        bool isNowPartiallyVisible = false;
+        bool isNowFullyInvisible = false;
 
-        // Assert, that only one of the states is true:
-        Debug.Assert(
-            isNowFullyVisible ^ isNowPartiallyVisible ^ isNowFullyInvisible,
-            "Only one of the visibility states should be true.");
+        if (isNowFullyVisible) goto actualMethod;
+        if (isNowPartiallyVisible = IsPartiallyVisible(offset)) goto actualMethod;
+        isNowFullyInvisible = IsFullyInvisible(offset);
+
+actualMethod:
 
         bool wasFullyVisible =
             _previousVisibilityChangeState == VisibilityChangeState.GotFullyVisible
@@ -143,30 +141,20 @@ public abstract class AsyncDocumentItem : IDisposable
 
     public bool IsFullyInvisible(PointF offset)
     {
-        return _isFullyInvisible ??= IsItemFullyInvisible();
+        RectangleF viewRect = new(PointF.Empty, _parentViewSize);
+        RectangleF itemRect = Bounds;
+        itemRect.Offset(offset);
 
-        bool IsItemFullyInvisible()
-        {
-            RectangleF viewRect = new(PointF.Empty, _parentViewSize);
-            RectangleF itemRect = Bounds;
-            itemRect.Offset(offset);
-
-            return !viewRect.IntersectsWith(itemRect);
-        }
+        return !viewRect.IntersectsWith(itemRect);
     }
 
     public bool IsFullyVisible(PointF offset)
     {
-        return _isFullyVisible ??= IsItemFullyVisible();
+        RectangleF viewRect = new(PointF.Empty, _parentViewSize);
+        RectangleF itemRect = Bounds;
+        itemRect.Offset(offset);
 
-        bool IsItemFullyVisible()
-        {
-            RectangleF viewRect = new(PointF.Empty, _parentViewSize);
-            RectangleF itemRect = Bounds;
-            itemRect.Offset(offset);
-
-            return viewRect.Contains(itemRect);
-        }
+        return viewRect.Contains(itemRect);
     }
 
     /// <summary>

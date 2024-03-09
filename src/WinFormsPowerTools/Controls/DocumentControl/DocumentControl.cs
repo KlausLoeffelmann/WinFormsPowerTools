@@ -9,7 +9,7 @@ using WinForms.PowerTools.Controls;
 
 namespace System.Windows.Forms.Documents;
 
-public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentControl 
+public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentControl
     where TDoc : Document<TDocItem>
     where TDocItem : AsyncDocumentItem
 {
@@ -52,7 +52,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         SetStyle(ControlStyles.ContainerControl, true);
         SetStyle(ControlStyles.AllPaintingInWmPaint, false);
         DoubleBuffered = true;
-        
+
         // Setup the drag mode based on the system setting.
         UpdateFullDrag();
     }
@@ -110,7 +110,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     {
         ScrollDragTrackingModeChanged?.Invoke(this, EventArgs.Empty);
     }
-    
+
     public IEnumerable<AsyncDocumentItem>? HorizontalFixedMarginItems { get; }
 
     public IEnumerable<AsyncDocumentItem>? VerticalFixedMarginItems { get; }
@@ -122,6 +122,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         base.OnLayout(layoutEventArgs);
         SetDisplayRectLocation(0, 0);
         ApplyScrollbarChanges();
+        UpdateVisibilityInfo();
     }
 
     /// <summary>
@@ -439,10 +440,10 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         }
 
         Rectangle client = ClientRectangle;
-        var loWord = (SCROLLBAR_COMMAND) Interop.PARAM.LOWORD(m.WParam);
+        var loWord = (SCROLLBAR_COMMAND)Interop.PARAM.LOWORD(m.WParam);
         bool thumbTrack = loWord != SCROLLBAR_COMMAND.SB_THUMBTRACK;
 
-        int pos = 0-_displayRect.Y;
+        int pos = 0 - _displayRect.Y;
         int oldValue = pos;
         int maxPos = -(client.Height - _displayRect.Height);
 
@@ -528,6 +529,8 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     /// </summary>
     private void WmOnScroll(ref Message m, int oldValue, int value, ScrollOrientation scrollOrientation)
     {
+        UpdateVisibilityInfo();
+
         ScrollEventType type = (ScrollEventType)Interop.PARAM.LOWORD(m.WParam);
 
         if (type != ScrollEventType.EndScroll)
@@ -540,7 +543,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     /// <summary>
     ///  Raises the <see cref='System.Windows.Forms.ScrollBar.OnScroll'/> event.
     /// </summary>
-    protected virtual void OnScroll(ScrollEventArgs scrollEventArgs) 
+    protected virtual void OnScroll(ScrollEventArgs scrollEventArgs)
         => ScrollEvent?.Invoke(this, scrollEventArgs);
 
     /// <summary>
@@ -642,12 +645,12 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
             if (result == 0)
             {
-                WIN32_ERROR errorCode = (WIN32_ERROR) Marshal.GetLastWin32Error();
+                WIN32_ERROR errorCode = (WIN32_ERROR)Marshal.GetLastWin32Error();
 
                 switch (errorCode)
                 {
                     case WIN32_ERROR.ERROR_SUCCESS:
-                            // No error, although this is unlikely if result is 0
+                        // No error, although this is unlikely if result is 0
                         break;
 
                     case WIN32_ERROR.ERROR_INVALID_HANDLE:
@@ -672,7 +675,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     {
         // The lParam is handle of the sending scrollbar, or NULL when
         // the scrollbar sending the message is the "form" scrollbar.
-        if ((nint) m.LParam != 0)
+        if ((nint)m.LParam != 0)
         {
             base.WndProc(ref m);
             return;
@@ -684,7 +687,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         int oldValue = pos;
         int maxPos = -(client.Width - _displayRect.Width);
 
-        var loWord = (SCROLLBAR_COMMAND) Interop.PARAM.LOWORD(m.WParam);
+        var loWord = (SCROLLBAR_COMMAND)Interop.PARAM.LOWORD(m.WParam);
         switch (loWord)
         {
             case SCROLLBAR_COMMAND.SB_THUMBPOSITION:
@@ -761,11 +764,11 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     private void UpdateFullDrag()
     {
         bool drag = ScrollDragTracking switch
-        { 
-            ScrollDragTrackingMode.SystemDragSetting => SystemInformation.DragFullWindows, 
-            ScrollDragTrackingMode.ForceDragTracking => false, 
-            ScrollDragTrackingMode.ForceNoDragTracking => true, 
-            _ => throw new ArgumentOutOfRangeException() 
+        {
+            ScrollDragTrackingMode.SystemDragSetting => SystemInformation.DragFullWindows,
+            ScrollDragTrackingMode.ForceDragTracking => false,
+            ScrollDragTrackingMode.ForceNoDragTracking => true,
+            _ => throw new ArgumentOutOfRangeException()
         };
 
         SetScrollState(ScrollStateFullDrag, drag);
@@ -831,7 +834,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
                             break;
                         }
 
-                        if (documentItem is not AsyncDocumentItem graphicsDocumentItem 
+                        if (documentItem is not AsyncDocumentItem graphicsDocumentItem
                             || documentItem.IsFullyInvisible(_displayRect.Location))
                         {
                             continue;
@@ -886,7 +889,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
     private void UpdateVisibilityInfo()
     {
-        if (MainDocument is null)
+        if (MainDocument is null || MainDocument.Items.Count == 0)
         {
             return;
         }
@@ -905,14 +908,14 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     }
 
     /// <summary>
-    ///  The button's window procedure. Inheriting classes can override this
+    ///  The control's window procedure. Inheriting classes can override this
     ///  to add extra functionality, but should not forget to call
-    ///  base.wndProc(m); to ensure the button continues to function properly.
+    ///  base.wndProc(m); to ensure the control continues to function properly.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     protected override void WndProc(ref Message m)
     {
-        switch ((uint) m.Msg)
+        switch ((uint)m.Msg)
         {
             case PInvoke.WM_VSCROLL:
                 WmVScroll(ref m);
@@ -920,7 +923,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             case PInvoke.WM_HSCROLL:
                 WmHScroll(ref m);
                 break;
-            
+
             // Same as WM_SETTINGCHANGE
             case PInvoke.WM_WININICHANGE:
                 WmSettingChange(ref m);
@@ -964,8 +967,8 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
         if (MainDocument is not null)
         {
-            maxX = (int) MainDocument.Size.Width;
-            maxY = (int) MainDocument.Size.Height;
+            maxX = (int)MainDocument.Size.Width;
+            maxY = (int)MainDocument.Size.Height;
             needHScroll = true;
             needVScroll = true;
         }
