@@ -38,6 +38,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     /// </summary>
     private bool resetRTLHScrollValue;
     private ScrollDragTrackingMode _scrollTracking;
+    private Rectangle _lastDisplayRect;
     protected const int ScrollStateAutoScrolling = 0x0001;
     protected const int ScrollStateHScrollVisible = 0x0002;
     protected const int ScrollStateVScrollVisible = 0x0004;
@@ -782,6 +783,8 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
     protected override void OnPaint(PaintEventArgs e)
     {
+        Debug.Print("--> OnPaint");
+
         base.OnPaint(e);
 
         if (MainDocument is null || MainDocument.Items.Count == 0)
@@ -789,16 +792,25 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             return;
         }
 
-        if (_lastDocumentRenderTask is not null && _lastDocumentRenderTask.IsCompleted)
-        {
-            // We need to cancel the previous task, because it's not needed anymore.
-            _cancellationTokenSource.Cancel();
-            _cancellationTokenSource.Dispose();
-            _cancellationTokenSource = new CancellationTokenSource();
-            _lastDocumentRenderTask = null;
-        }
-        var cancellationToken = _cancellationTokenSource.Token;
+        CancellationToken cancellationToken = default;
         Task documentRenderTask = Task.CompletedTask;
+
+        try
+        {
+            if (_lastDocumentRenderTask is not null)
+            {
+                // We need to cancel the previous task, because it's not needed anymore.
+                _cancellationTokenSource.Cancel(true);
+                _cancellationTokenSource = new CancellationTokenSource();
+            }
+
+            cancellationToken = _cancellationTokenSource.Token;
+            documentRenderTask = Task.CompletedTask;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
 
         try
         {
@@ -829,13 +841,10 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
                     foreach (TDocItem documentItem in MainDocument.Items)
                     {
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            break;
-                        }
+                        cancellationToken.ThrowIfCancellationRequested();
 
                         if (documentItem is not AsyncDocumentItem graphicsDocumentItem
-                            || documentItem.IsFullyInvisible(_displayRect.Location))
+                            || documentItem.VisibilityChangeState == VisibilityChangeState.GotFullyInvisible)
                         {
                             continue;
                         }
@@ -843,6 +852,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
                         Task renderTask = Task.Run(async () =>
                         {
                             await semaphore.WaitAsync(cancellationToken);
+                            cancellationToken.ThrowIfCancellationRequested();
 
                             try
                             {
@@ -861,6 +871,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
                             catch (Exception ex)
                             {
                                 Debug.Print(ex.ToString());
+                                return;
                             }
                             finally
                             {
@@ -873,22 +884,33 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
                     await Task.WhenAll(_itemRenderTasks);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Debug.Print($"{ex}");
+                    return;
                 }
             }, cancellationToken);
+
+            _lastDocumentRenderTask = documentRenderTask;
+            _lastCancellationToken = _cancellationTokenSource.Token;
+
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Debug.Print($"{ex}");
         }
-
-        _lastCancellationToken = _cancellationTokenSource.Token;
-        _lastDocumentRenderTask = documentRenderTask;
     }
 
     private void UpdateVisibilityInfo()
     {
+        if (_lastDisplayRect == _displayRect)
+        {
+            return;
+        }
+
+        _lastDisplayRect = _displayRect;
+
+        Debug.Print($"--> UpdateVisibilityInfo {_displayRect}");
         if (MainDocument is null || MainDocument.Items.Count == 0)
         {
             return;
@@ -902,7 +924,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             }
 
             // Todo: We need to check, if this process can be streamlined,
-            // but then again for 10,000 items its taking less than 20 ms.
+            // but then again for 10,000 items its taking less than 10 ms.
             documentItem.UpdateVisibilityChangeState(_displayRect.Location);
         }
     }
@@ -936,6 +958,8 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
 
     private bool ApplyScrollbarChanges()
     {
+        Debug.Print("--> ApplyScrollbarChanges");
+
         bool needLayout = false;
         bool needHScroll = false;
         bool needVScroll = false;

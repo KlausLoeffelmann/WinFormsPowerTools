@@ -17,7 +17,7 @@ namespace WinFormsPowerToolsDemo
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //Application.SetDefaultDarkMode(DarkMode.Enabled);
+            Application.SetDefaultDarkMode(DarkMode.Enabled);
 
             Application.Run(new GridViewTestForm());
         }
