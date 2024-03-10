@@ -63,7 +63,7 @@ public static class ControlsExtension
     /// <param name="control">The control on which to invoke the function.</param>
     /// <param name="syncFunc">The synchronous function to execute asynchronously.</param>
     /// <returns>A task representing the operation and containing the result of the asynchronous operation.</returns>
-    public static Task InvokeAsync(this Control control, Action syncFunc)
+    public static Task InvokeAsync(this Control control, Action syncFunc, CancellationToken cancellationToken = default)
     {
         var tcs = new TaskCompletionSource();
 
@@ -73,7 +73,7 @@ public static class ControlsExtension
             return tcs.Task;
         }
 
-        var task = Task.Run(() => control.BeginInvoke(() => CallBack()));
+        var task = Task.Run(() => control.BeginInvoke(() => CallBack()), cancellationToken);
         return tcs.Task;
 
         void CallBack()
@@ -90,6 +90,36 @@ public static class ControlsExtension
         }
     }
 
+    public static Task<T> InvokeAsync<T>(this Control control, Func<T> function)
+    {
+        var tcs = new TaskCompletionSource<T>();
+
+        if (control is null)
+            tcs.SetException(new ArgumentNullException(nameof(control)));
+
+        if (function is null)
+            tcs.SetException(new ArgumentNullException(nameof(function)));
+
+        // Return, if we're already faulted:
+        if (tcs.Task.IsFaulted)
+            return tcs.Task;
+
+        control!.Invoke(new Action(() =>
+        {
+            try
+            {
+                T result = function!();
+                tcs.SetResult(result);
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+        }));
+
+        return tcs.Task;
+    }
+
     /// <summary>
     /// Executes the specified asynchronous function on the thread that owns the control's handle.
     /// </summary>
@@ -100,55 +130,20 @@ public static class ControlsExtension
     /// <param name="input">The input of type T to be used by the asynchronous function.</param>
     /// <returns>A task representing the operation and containing the function's result of type U.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the control's handle is not yet created.</exception>
-    public static Task<T> InvokeAsync<T>(this Control control, Func<T> asyncFunc)
+    public static async Task<T> InvokeAsync<T>(this Control control, Func<Task<T>> asyncFunc, CancellationToken cancellationToken=default)
     {
         var tcs = new TaskCompletionSource<T>();
 
         if (!control.IsHandleCreated)
         {
             tcs.SetException(new InvalidOperationException("Control handle not created."));
-            return tcs.Task;
+            return await tcs.Task;
         }
 
-        if (control.InvokeRequired)
-        {
-            control.BeginInvoke(() =>
-            {
-                try
-                {
-                    T result = asyncFunc();
-                    tcs.SetResult(result);
-                }
-                catch (Exception ex)
-                {
-                    tcs.SetException(ex);
-                }
-            });
-
-            return tcs.Task;
-        }
-        else
-        {
-            control.BeginInvoke(
-                async () => await Task.Run(Callback).ConfigureAwait(false));
-
-            return tcs.Task;
-
-            Task Callback()
-            {
-                try
-                {
-                    T result = asyncFunc();
-                    tcs.SetResult(result);
-                }
-                catch (Exception ex)
-                {
-                    tcs.SetException(ex);
-                }
-
-                return tcs.Task;
-            }
-        }
+        var result = await Task.Run(
+            () => control.Invoke(async () => await asyncFunc()), 
+            cancellationToken);
+        return result;
     }
 
     /// <summary>

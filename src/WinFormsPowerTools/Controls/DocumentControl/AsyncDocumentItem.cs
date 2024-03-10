@@ -28,6 +28,8 @@ public abstract class AsyncDocumentItem : IDisposable
         _parentDocument = parentDocument ?? throw new ArgumentNullException(nameof(parentDocument));
     }
 
+    protected int Id => _id;
+
     /// <summary>
     ///  Gets or sets the location of the document item.
     /// </summary>
@@ -185,7 +187,7 @@ actualMethod:
     /// <param name="deviceContext">The device context.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous rendering operation.</returns>
-    internal abstract Task OnRenderAsync(IDeviceContext deviceContext, CancellationToken cancellationToken);
+    protected internal abstract void OnGetRenderPredicate(out Func<IDeviceContext, CancellationToken, Task> asyncRenderPredicate);
 
     public T? AsyncInvoke<T>(Func<Task<T>> asyncFunc)
         => ((Control)_parentDocument.HostControl).AsyncInvoke(asyncFunc);

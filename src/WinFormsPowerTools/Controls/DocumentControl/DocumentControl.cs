@@ -825,7 +825,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             {
                 try
                 {
-                    using Graphics threadSafeGraphics = await this.InvokeAsync(
+                    Graphics threadSafeGraphics = await this.InvokeAsync(
                         () =>
                         {
                             var graphics = Graphics.FromHwnd(Handle);
@@ -852,19 +852,16 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
                         Task renderTask = Task.Run(async () =>
                         {
                             await semaphore.WaitAsync(cancellationToken);
-                            cancellationToken.ThrowIfCancellationRequested();
 
                             try
                             {
-                                // We need to prepare the graphics object for the document item:
-                                // * Taking its location and scroll-offset into account, so that 
-                                //   the item's drawing logic is always (0,0)-based.
-                                // * Clipping the graphics object to the item's bounds, so that the
-                                //   item's drawing logic cannot draw outside of its bounds.
+                                // Let's get the render predicate from the document item:
+                                graphicsDocumentItem.OnGetRenderPredicate(out Func<IDeviceContext, CancellationToken, Task> renderPredicateAsync);
 
-                                await graphicsDocumentItem.OnRenderAsync(
-                                    deviceContext: threadSafeGraphics,
-                                    cancellationToken: cancellationToken);
+                                await this.InvokeAsync(async () =>
+                                    {
+                                        await renderPredicateAsync(threadSafeGraphics, cancellationToken);
+                                    });
 
                                 Debug.Print($"Item {documentItem.DebugInfo}: Finish render async.");
                             }
@@ -1062,6 +1059,9 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         // Sync up the scrollbars
         //
         SyncScrollbars();
+
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource = new CancellationTokenSource();
 
         return needLayout;
     }

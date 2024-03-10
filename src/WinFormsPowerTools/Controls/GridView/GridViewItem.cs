@@ -32,24 +32,32 @@ public class GridViewItem : AsyncDocumentItem
         }
     }
 
-    private Font _bigFont = new Font(SystemFonts.DefaultFont.FontFamily, 20);
+    private Font _bigFont = new(SystemFonts.DefaultFont.FontFamily, 20);
     private static readonly Random s_random = new Random();
-
-    internal async override Task OnRenderAsync(IDeviceContext deviceContext, CancellationToken cancellationToken)
+    private static readonly StringFormat s_counterStringFormat= new StringFormat
     {
-        if (!HasBeenLayout 
-            || deviceContext is not Graphics graphics)
-        {
-            await Task.CompletedTask;
-            return;
-        }
+        Alignment = StringAlignment.Center,
+        LineAlignment = StringAlignment.Center
+    };
 
-        // Let's start a new Task, which counts from 1 to 100 and shows that in the middle of the grid item.
-        for (int i = 0; i < 10; i++)
+    protected internal override void OnGetRenderPredicate(out Func<IDeviceContext, CancellationToken , Task> asyncRenderPredicate)
+    {
+        asyncRenderPredicate = async (deviceContext, cancellationToken) =>
         {
-            SyncContext.Post((param) =>
+            if (!HasBeenLayout
+                || deviceContext is not Graphics graphics)
             {
-                int index = (int)param!;
+                await Task.CompletedTask;
+                return;
+            }
+
+            // Let's start a new Task, which counts from 1 to 100 and shows that in the middle of the grid item.
+            for (int i = 0; i < 10; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // We need to signal the instance which holds the graphics object, that it cannot be disposed right now.
+
                 var tempColor = Color.LightBlue;
 
                 // Restrict the drawing to the clip area
@@ -63,41 +71,38 @@ public class GridViewItem : AsyncDocumentItem
                     new Pen(tempColor, 1),
                     new RectangleF(EffectiveLocation, ClientSize));
 
-                Debug.Assert(index < 10, "How can index > 9?");
-
                 graphics.DrawString(
-                    index.ToString(),
+                    i.ToString(),
                     _bigFont,
                     Brushes.Black,
                     new PointF(
-                        EffectiveLocation.X + ClientSize.Width / 2,
-                        EffectiveLocation.Y + ClientSize.Height / 2));
+                        EffectiveLocation.X + ClientSize.Width / 2 - 5,
+                        EffectiveLocation.Y + ClientSize.Height / 2 - 5),
+                    s_counterStringFormat);
 
                 graphics.DrawString(
-                    $"Location: {Location}",
+                    $"Id:{Id}, L: {Location}",
                     SystemFonts.DefaultFont,
                     Brushes.Black,
                     new PointF(
                         EffectiveLocation.X,
                         EffectiveLocation.Y));
 
+                string sizeString = $"Size: {Size}";
+
+                // Measure the string:
+                var size = graphics.MeasureString(sizeString, SystemFonts.DefaultFont);
+
                 graphics.DrawString(
-                    $"Size: {Size}",
+                    sizeString,
                     SystemFonts.DefaultFont,
                     Brushes.Black,
                     new PointF(
-                        EffectiveLocation.X + ClientSize.Width - 100,
-                        EffectiveLocation.Y + ClientSize.Height - 20));
+                        EffectiveLocation.X + ClientSize.Width - size.Width,
+                        EffectiveLocation.Y + ClientSize.Height - size.Height));
 
-            }, i);
-
-            await Task.Delay(s_random.Next(200), cancellationToken);
-
-            // Cancel the loop, if the token has been cancelled.
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
+                await Task.Delay(s_random.Next(200), cancellationToken);
             }
-        }
+        };
     }
 }
