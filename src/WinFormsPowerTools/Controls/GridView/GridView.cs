@@ -150,6 +150,11 @@ public partial class GridView
     {
         var newDisplaySize = MainDocument?.LayoutInternal();
         base.OnLayout(layoutEventArgs);
+        UpdateVisibilityInfo();
+    }
+
+    protected override void OnPaintBackground(PaintEventArgs pevent)
+    {
     }
 
     protected override void OnPaint(PaintEventArgs e)
@@ -167,9 +172,10 @@ public partial class GridView
     public GridViewItem NewItem(object? tag) => NewItem(new PaddingF(20), new SizeF(100, 100), tag);
     public GridViewItem NewItem(SizeF size, object? tag) => NewItem(new PaddingF(20), size, tag);
     public GridViewItem NewItem(float allMargin, SizeF size, object? tag) => NewItem(new PaddingF(allMargin), size, tag);
+    
     public GridViewItem NewItem(PaddingF margin, SizeF size, object? tag)
     {
-        var item = new GridViewItem(MainDocument!, _syncContext) 
+        var item = new GridViewItem(MainDocument!, Handle)
         { 
             Margin = margin, 
             Size=size, 

@@ -52,7 +52,9 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     {
         SetStyle(ControlStyles.ContainerControl, true);
         SetStyle(ControlStyles.AllPaintingInWmPaint, false);
-        DoubleBuffered = true;
+
+        // Enable double buffering
+        SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
         // Setup the drag mode based on the system setting.
         UpdateFullDrag();
@@ -123,7 +125,6 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         base.OnLayout(layoutEventArgs);
         SetDisplayRectLocation(0, 0);
         ApplyScrollbarChanges();
-        UpdateVisibilityInfo();
     }
 
     /// <summary>
@@ -530,8 +531,6 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     /// </summary>
     private void WmOnScroll(ref Message m, int oldValue, int value, ScrollOrientation scrollOrientation)
     {
-        UpdateVisibilityInfo();
-
         ScrollEventType type = (ScrollEventType)Interop.PARAM.LOWORD(m.WParam);
 
         if (type != ScrollEventType.EndScroll)
@@ -539,6 +538,11 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             ScrollEventArgs se = new(type, oldValue, value, scrollOrientation);
             OnScroll(se);
         }
+
+        UpdateVisibilityInfo();
+
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource = new CancellationTokenSource();
     }
 
     /// <summary>
@@ -812,6 +816,8 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             throw ex;
         }
 
+        nint controlHandle = Handle;
+
         try
         {
             // We cannot use the Graphics object from the PaintEventArgs, because it's not thread safe.
@@ -825,45 +831,51 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
             {
                 try
                 {
-                    Graphics threadSafeGraphics = await this.InvokeAsync(
-                        () =>
-                        {
-                            var graphics = Graphics.FromHwnd(Handle);
-
-                            graphics.TranslateTransform(
-                                -HorizontalScroll.Value,
-                                -VerticalScroll.Value);
-
-                            return graphics;
-                        });
-
                     SemaphoreSlim semaphore = new(4);
+                    _itemRenderTasks.Clear();
 
                     foreach (TDocItem documentItem in MainDocument.Items)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        if (documentItem is not AsyncDocumentItem graphicsDocumentItem
-                            || documentItem.VisibilityChangeState == VisibilityChangeState.GotFullyInvisible)
+                        if (documentItem.VisibilityChangeState == VisibilityChangeState.GotFullyInvisible)
+                        {
+                            continue;
+                        }
+
+                        bool skipUpdate = (documentItem is not AsyncDocumentItem)
+                            || documentItem.VisibilityChangeState switch
+                            {
+                                VisibilityChangeState.StillFullyInvisible => true,
+                                VisibilityChangeState.StillFullyVisible => true,
+                                VisibilityChangeState.GotFullyInvisible => true,
+                                _ => false
+                            };
+
+                        // We don't need to render items, which are still fully visible, since they have been scrolled in place.
+                        // We also don't need to render items, which are still fully invisible, since they have not been scrolled into view yet.
+                        // We also don't need to render items, which got fully invisible, since they have been scrolled out of view.
+                        if (skipUpdate)
                         {
                             continue;
                         }
 
                         Task renderTask = Task.Run(async () =>
                         {
-                            await semaphore.WaitAsync(cancellationToken);
+                            semaphore.Wait(cancellationToken);
+
+                            var graphicsDocumentItem = (AsyncDocumentItem)documentItem;
 
                             try
                             {
                                 // Let's get the render predicate from the document item:
-                                graphicsDocumentItem.OnGetRenderPredicate(out Func<IDeviceContext, CancellationToken, Task> renderPredicateAsync);
+                                var renderPredicateAsync = graphicsDocumentItem.OnGetRenderPredicate();
+                                Debug.Print($"Item {documentItem}: Start render async.");
 
-                                await this.InvokeAsync(async () =>
-                                    {
-                                        await renderPredicateAsync(threadSafeGraphics, cancellationToken);
-                                    });
+                                Func<Task> renderTask = async () => await renderPredicateAsync(_displayRect.Location, cancellationToken);
+                                await this.InvokeAsync<Task>(renderTask, cancellationToken);
 
-                                Debug.Print($"Item {documentItem.DebugInfo}: Finish render async.");
+                                Debug.Print($"Item {documentItem}: Finish render async.");
                             }
                             catch (Exception ex)
                             {
@@ -898,7 +910,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         }
     }
 
-    private void UpdateVisibilityInfo()
+    protected void UpdateVisibilityInfo()
     {
         if (_lastDisplayRect == _displayRect)
         {
@@ -906,6 +918,9 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         }
 
         _lastDisplayRect = _displayRect;
+
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource = new CancellationTokenSource();
 
         Debug.Print($"--> UpdateVisibilityInfo {_displayRect}");
         if (MainDocument is null || MainDocument.Items.Count == 0)
@@ -1059,9 +1074,6 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
         // Sync up the scrollbars
         //
         SyncScrollbars();
-
-        _cancellationTokenSource.Cancel();
-        _cancellationTokenSource = new CancellationTokenSource();
 
         return needLayout;
     }

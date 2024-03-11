@@ -41,11 +41,11 @@ namespace WinFormsPowerToolsDemo
             // _gridView
             // 
             _gridView.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            _gridView.Location = new System.Drawing.Point(14, 34);
+            _gridView.Location = new System.Drawing.Point(12, 43);
             _gridView.MinimumAdjacentItemsCount = 1;
             _gridView.Name = "_gridView";
             _gridView.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            _gridView.Size = new System.Drawing.Size(1079, 559);
+            _gridView.Size = new System.Drawing.Size(1082, 551);
             _gridView.TabIndex = 0;
             _gridView.Text = "gridView1";
             _gridView.ViewTemplate = null;
@@ -65,7 +65,7 @@ namespace WinFormsPowerToolsDemo
             // test1ToolStripMenuItem
             // 
             test1ToolStripMenuItem.Name = "test1ToolStripMenuItem";
-            test1ToolStripMenuItem.Size = new System.Drawing.Size(61, 24);
+            test1ToolStripMenuItem.Size = new System.Drawing.Size(67, 27);
             test1ToolStripMenuItem.Text = "Test &1";
             test1ToolStripMenuItem.Click += test1ToolStripMenuItem_Click;
             // 

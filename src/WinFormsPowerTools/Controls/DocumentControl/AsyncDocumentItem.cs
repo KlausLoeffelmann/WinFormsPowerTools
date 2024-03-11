@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using WinForms.PowerTools.Controls;
-
-namespace System.Windows.Forms.Documents;
+﻿namespace System.Windows.Forms.Documents;
 
 /// <summary>
 ///  Represents an abstract base class for asynchronous document items.
@@ -19,12 +16,13 @@ public abstract class AsyncDocumentItem : IDisposable
 
     private IDocument _parentDocument;
     private SizeF _parentViewSize;
+    private nint _parentControlHandle;
 
     private bool _disposedValue;
 
-    internal AsyncDocumentItem(IDocument parentDocument, WindowsFormsSynchronizationContext syncContext)
+    internal AsyncDocumentItem(IDocument parentDocument, nint parentControlHandle)
     {
-        SyncContext = syncContext ?? throw new ArgumentNullException(nameof(syncContext));
+        _parentControlHandle = parentControlHandle;
         _parentDocument = parentDocument ?? throw new ArgumentNullException(nameof(parentDocument));
     }
 
@@ -45,15 +43,17 @@ public abstract class AsyncDocumentItem : IDisposable
         }
     }
 
-    public PointF EffectiveLocation => new(
-        _location.X + Margin.Left,
-        _location.Y + Margin.Top);
+    protected nint ParentControlHandle => _parentControlHandle;
 
     public RectangleF Bounds => new(
         _location, 
         _size);
 
-    public PaddingF Padding { get; set; }
+    public RectangleF ClientRectangle => new(
+        x: 0,
+        y: 0,
+        width: _size.Width - Margin.Right - Margin.Left,
+        height: _size.Height - Margin.Bottom - Margin.Top);
 
     public PaddingF Margin { get; set; }
 
@@ -92,11 +92,6 @@ public abstract class AsyncDocumentItem : IDisposable
         }
     }
 
-    /// <summary>
-    ///  Gets the synchronization context associated with the document item.
-    /// </summary>
-    public WindowsFormsSynchronizationContext SyncContext { get; }
-
     public string DebugInfo => $"{_id:0000} - Location:{this.Location} Size:{this.Size}";
 
     /// <summary>
@@ -107,31 +102,56 @@ public abstract class AsyncDocumentItem : IDisposable
         _parentViewSize = _parentDocument.Size;
 
         bool isNowFullyVisible = IsFullyVisible(offset);
-        bool isNowPartiallyVisible = false;
-        bool isNowFullyInvisible = false;
-
-        if (isNowFullyVisible) goto actualMethod;
-        if (isNowPartiallyVisible = IsPartiallyVisible(offset)) goto actualMethod;
-        isNowFullyInvisible = IsFullyInvisible(offset);
-
-actualMethod:
+        bool isNowPartiallyVisible = IsPartiallyVisible(offset);
+        bool isNowFullyInvisible = IsFullyInvisible(offset);
 
         bool wasFullyVisible =
             _previousVisibilityChangeState == VisibilityChangeState.GotFullyVisible
-            || _previousVisibilityChangeState == VisibilityChangeState.GotPartiallyInvisible;
+            || _previousVisibilityChangeState == VisibilityChangeState.StillFullyVisible;
 
-        VisibilityChangeState = (
+        bool wasPartiallyVisible =
+            _previousVisibilityChangeState == VisibilityChangeState.GotPartiallyVisible
+            || _previousVisibilityChangeState == VisibilityChangeState.StillPartiallyVisible;
+
+        bool wasFullyInvisible =
+            _previousVisibilityChangeState == VisibilityChangeState.GotFullyInvisible
+            || _previousVisibilityChangeState == VisibilityChangeState.StillFullyInvisible;
+
+        VisibilityChangeState = DetermineVisibilityChangeState(
             isNowFullyVisible,
             isNowPartiallyVisible,
             isNowFullyInvisible,
-            wasFullyVisible) switch
+            wasFullyVisible,
+            wasPartiallyVisible,
+            wasFullyInvisible);
+
+        _previousVisibilityChangeState = VisibilityChangeState;
+
+        VisibilityChangeState DetermineVisibilityChangeState(bool isNowFullyVisible, bool isNowPartiallyVisible, bool isNowFullyInvisible, bool wasFullyVisible, bool wasPartiallyVisible, bool wasFullyInvisible)
         {
-            (true, _, _, false) => VisibilityChangeState.GotFullyVisible,
-            (_, true, _, true) => VisibilityChangeState.GotPartiallyInvisible,
-            (_, true, true, _) => VisibilityChangeState.GotPartiallyVisible,
-            (_, _, true, _) => VisibilityChangeState.GotFullyInvisible,
-            _ => _visibilityChangeState // No change
-        };
+            if (isNowFullyVisible)
+            {
+                return wasFullyVisible 
+                    ? VisibilityChangeState.StillFullyVisible 
+                    : VisibilityChangeState.GotFullyVisible;
+            }
+
+            if (isNowPartiallyVisible)
+            {
+                return wasPartiallyVisible 
+                    ? VisibilityChangeState.StillPartiallyVisible 
+                    : VisibilityChangeState.GotPartiallyVisible;
+            }
+
+            if (isNowFullyInvisible)
+            {
+                return wasFullyInvisible 
+                    ? VisibilityChangeState.StillFullyInvisible 
+                    : VisibilityChangeState.GotFullyInvisible;
+            }
+
+            throw new InvalidOperationException("Invalid visibility state transition.");
+        }
     }
 
     public bool IsPartiallyVisible(PointF offset)
@@ -178,7 +198,15 @@ actualMethod:
     ///  Called when the visibility change state of the document item changes.
     /// </summary>
     /// <param name="visibilityChangeState">The new visibility change state.</param>
-    protected abstract void OnVisibilityChangedStateChanged(VisibilityChangeState visibilityChangeState);
+    protected void OnVisibilityChangedStateChanged(VisibilityChangeState visibilityChangeState)
+    {
+        if (visibilityChangeState == VisibilityChangeState.GotFullyInvisible)
+        {
+            // We need to signal the instance which holds the graphics object, that it can be disposed now.
+            DeviceContext?.Dispose();
+            DeviceContext = null;
+        }
+    }
 
     /// <summary>
     ///  Renders the document item asynchronously.
@@ -187,13 +215,9 @@ actualMethod:
     /// <param name="deviceContext">The device context.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the asynchronous rendering operation.</returns>
-    protected internal abstract void OnGetRenderPredicate(out Func<IDeviceContext, CancellationToken, Task> asyncRenderPredicate);
+    protected abstract internal Func<PointF, CancellationToken, Task> OnGetRenderPredicate();
 
-    public T? AsyncInvoke<T>(Func<Task<T>> asyncFunc)
-        => ((Control)_parentDocument.HostControl).AsyncInvoke(asyncFunc);
-
-    public Task InvokeAsync(Action syncFunc) 
-        => ((Control)_parentDocument.HostControl).InvokeAsync(syncFunc);
+    protected IDeviceContext? DeviceContext { get; set; }
 
     protected virtual void Dispose(bool disposing)
     {

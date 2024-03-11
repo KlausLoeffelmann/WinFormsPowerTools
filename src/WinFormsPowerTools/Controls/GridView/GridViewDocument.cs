@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Windows.Forms.Documents;
 
 namespace WinForms.PowerTools.Controls;
@@ -38,6 +39,8 @@ public class GridViewDocument : Document<GridViewItem>
     {
         if (((IDocument)this).HostControl is GridView gridView)
         {
+            Debug.Print("--> LayoutInternal");
+
             if (Items.Count == 0)
             {
                 return Size;
@@ -109,9 +112,9 @@ public class GridViewDocument : Document<GridViewItem>
                 Size.Width,
                 currentY + highestItemHeight + gridView.Padding.Bottom);
 
-            Invalidate();
-
         }
+
+        Debug.Print($"--> LayoutInternal - S:{Size}");
 
         return Size;
     }
