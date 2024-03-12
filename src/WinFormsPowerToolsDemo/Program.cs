@@ -19,7 +19,7 @@ namespace WinFormsPowerToolsDemo
 
             Application.SetDefaultDarkMode(DarkMode.Enabled);
 
-            Application.Run(new GridViewTestForm());
+            Application.Run(new EmptyForm());
         }
 
         private static void GenerateForm()

@@ -872,9 +872,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
                                 var renderPredicateAsync = graphicsDocumentItem.OnGetRenderPredicate();
                                 Debug.Print($"Item {documentItem}: Start render async.");
 
-                                Func<Task> renderTask = async () => await renderPredicateAsync(_displayRect.Location, cancellationToken);
-                                await this.InvokeAsync<Task>(renderTask, cancellationToken);
-
+                                await renderPredicateAsync(_displayRect.Location, cancellationToken);
                                 Debug.Print($"Item {documentItem}: Finish render async.");
                             }
                             catch (Exception ex)

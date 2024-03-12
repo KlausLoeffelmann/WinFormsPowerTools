@@ -1,25 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using WinForms.PowerTools.Controls;
+﻿using System.Drawing.Drawing2D;
 
-namespace WinFormsPowerToolsDemo;
-
-public partial class ThreadingGraphicsTestForm : Form
-{
-    public ThreadingGraphicsTestForm()
-    {
-        InitializeComponent();
-    }
-
-    private void toolStripSymbolDropDownButton1_Click(object sender, EventArgs e)
-    {
-        customPanel1.Start();
-    }
-}
+namespace FeatureDemo.Controls;
 
 public class AsyncSpiralContainer : Panel
 {
@@ -45,8 +26,9 @@ public class AsyncSpiralContainer : Panel
 
         var outerRenderTask = Task.Run(async () =>
         {
-            nint handle = await this.InvokeSyncAsyncEx(() => Handle).ConfigureAwait(false);
-            List<Rectangle> areas = DivideScreen(clientSize, 128);
+            // TODO: Add overload for non cancellable InvokeSyncAsync!
+            nint handle = await this.InvokeSyncAsync(() => Handle, CancellationToken.None).ConfigureAwait(false);
+            List<Rectangle> areas = DivideScreen(clientSize, 64);
 
             List<Task> tasks = [];
 

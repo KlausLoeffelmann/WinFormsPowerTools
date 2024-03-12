@@ -11,7 +11,7 @@ public static class ControlsExtension
     /// <param name="control">The control on which to invoke the function.</param>
     /// <param name="asyncFunc">The asynchronous function to execute.</param>
     /// <returns>The result of the asynchronous operation.</returns>
-    public static T? AsyncInvoke<T>(this Control control, Func<Task<T>> asyncFunc)
+    public static T? AsyncInvokeEx<T>(this Control control, Func<Task<T>> asyncFunc)
     {
         if (control is null)
         {
@@ -28,49 +28,31 @@ public static class ControlsExtension
             throw new InvalidOperationException("Control handle not created.");
         }
 
-        // We need this to capture the result of the asynchronous operation.
-        // We don't run the passed task directly, because then we couldn't return the result synchronously.
-        // Instead, we run the task in a separate method and capture the result in a TaskCompletionSource.
-        // Then we can block synchronously on the TaskCompletionSource's Task to get the result.
-        var tcs = new TaskCompletionSource<T>();
+        TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
 
-        if (!control.InvokeRequired)
-        {
-            // We're already on the UI thread, so we spin up a new task to avoid blocking the UI thread.
-            _ = control.Invoke(async () => await Task.Run(Callback).ConfigureAwait(false));
-        }
-        else
-        {
-            // We're already on a different thread, so we can just invoke the callback directly.
-            _ = control.Invoke(async () => await Callback().ConfigureAwait(false));
-        }
-
-        T? result = default;
-
-        try
-        {
-            result = tcs.Task.Result;
-        }
-        catch (Exception ex)
-        {
-            // Should the task-wrapper throw, we want to preserve the original exception.
-            ExceptionDispatchInfo.Throw(ex);
-        }
-
-        return result;
-
-        async Task Callback()
+        var asyncTask = Task.Run(async () =>
         {
             try
             {
-                var result = await asyncFunc().ConfigureAwait(false);
-                tcs.TrySetResult(result);
+                var result = await asyncFunc();
+                tcs.SetResult(result);
             }
             catch (Exception ex)
             {
-                tcs.TrySetException(ex);
+                tcs.SetException(ex);
             }
-        }
+
+            var asyncResult = control.BeginInvoke(() =>
+            {
+            });
+
+            return asyncResult;
+        });
+
+        var result = asyncTask.GetAwaiter().GetResult();
+        control.EndInvoke(result);
+
+        return tcs.Task.Result;
     }
 
     /// <summary>
@@ -78,10 +60,47 @@ public static class ControlsExtension
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="control"></param>
-    /// <param name="function"></param>
+    /// <param name="syncFunction"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async static Task<T> InvokeSyncAsync<T>(this Control control, Func<T> function, CancellationToken cancellationToken = default)
+    public async static Task InvokeSyncAsyncEx(this Control control, Action syncFunction, CancellationToken cancellationToken = default)
+    {
+        var tcs = new TaskCompletionSource();
+
+        if (!control.IsHandleCreated)
+        {
+            tcs.TrySetException(new InvalidOperationException("Control handle not created."));
+
+            await tcs.Task;
+        }
+
+        // We're already on the UI thread, so we spin up a new task to avoid blocking the UI thread.
+        _ = control.BeginInvoke(
+            () =>
+            {
+                try
+                {
+                    syncFunction();
+                    tcs.TrySetResult();
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
+            });
+
+        await tcs.Task.ConfigureAwait(false);
+    }
+
+    /// <summary>
+    ///  Invokes the specified synchronous function asynchronously on the thread that owns the control's handle.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="control"></param>
+    /// <param name="syncFunction"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async static Task<T> InvokeSyncAsyncEx<T>(this Control control, Func<T> syncFunction, CancellationToken cancellationToken = default)
     {
         var tcs = new TaskCompletionSource<T>();
 
@@ -92,13 +111,22 @@ public static class ControlsExtension
             return await tcs.Task;
         }
 
-        var result = await Task.Run(
-            () => control.Invoke(() => function()),
-            cancellationToken);
+        // We're already on the UI thread, so we spin up a new task to avoid blocking the UI thread.
+        _ = control.BeginInvoke(
+            () =>
+            {
+                try
+                {
+                    var result = syncFunction();
+                    tcs.TrySetResult(result);
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
+            });
 
-        tcs.TrySetResult(result);
-
-        return await tcs.Task;
+        return await tcs.Task.ConfigureAwait(false);
     }
 
     /// <summary>

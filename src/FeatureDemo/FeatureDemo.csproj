@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\WinFormsDx\src\WinFormsDx\WinFormsPowerTools.Direct2D\WinForms.PowerTools.Direct2D.csproj" />
+    <ProjectReference Include="..\WinForms.PowerTools.Controls\WinForms.PowerTools.Controls.csproj" />
+    <ProjectReference Include="..\WinFormsPowerTools\WinForms.PowerTools.csproj" />
+  </ItemGroup>
+
+</Project>

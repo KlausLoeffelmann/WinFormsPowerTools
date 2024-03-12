@@ -3,7 +3,7 @@ using WinForms.PowerTools.Components;
 
 namespace WinForms.PowerTools.Controls;
 
-public class DarkModeStatusStrip : StatusStrip, ISupportInitialize
+internal class DarkModeStatusStrip : StatusStrip, ISupportInitialize
 {
     public DarkModeStatusStrip() : base() { }
 

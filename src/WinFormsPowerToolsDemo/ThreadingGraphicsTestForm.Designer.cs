@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            customPanel1 = new CustomPanel();
+            customPanel1 = new AsyncSpiralContainer();
             statusStrip1 = new System.Windows.Forms.StatusStrip();
             toolStripSymbolDropDownButton1 = new WinForms.PowerTools.Controls.ToolStripSymbolDropDownButton();
             statusStrip1.SuspendLayout();
@@ -86,7 +86,7 @@
 
         #endregion
 
-        private CustomPanel customPanel1;
+        private AsyncSpiralContainer customPanel1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private WinForms.PowerTools.Controls.ToolStripSymbolDropDownButton toolStripSymbolDropDownButton1;
     }

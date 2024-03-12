@@ -27,6 +27,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinForms.PowerTools.Direct2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinForms.PowerTools.CodeGen", "WinFormsPowerTools.CodeGen\WinForms.PowerTools.CodeGen.csproj", "{A7CB7A48-F60B-4342-9A4F-7DC061AD8FB3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeatureDemo", "FeatureDemo\FeatureDemo.csproj", "{7FDB28FD-ED1C-4F41-A3E5-B31723CEC37D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "A Summit Feature Demo", "A Summit Feature Demo", "{BA628DA4-89F9-4300-A482-55D4DB5E546D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +69,10 @@ Global
 		{A7CB7A48-F60B-4342-9A4F-7DC061AD8FB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7CB7A48-F60B-4342-9A4F-7DC061AD8FB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7CB7A48-F60B-4342-9A4F-7DC061AD8FB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FDB28FD-ED1C-4F41-A3E5-B31723CEC37D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FDB28FD-ED1C-4F41-A3E5-B31723CEC37D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FDB28FD-ED1C-4F41-A3E5-B31723CEC37D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FDB28FD-ED1C-4F41-A3E5-B31723CEC37D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,6 +86,7 @@ Global
 		{352B9261-9B1C-4D6A-89A4-C67B7B8F2198} = {A6C52EAC-DC9F-4A43-B2F5-A685E9BAA058}
 		{26B07E0D-CC37-4493-8AD0-9548F0C19EC1} = {A6C52EAC-DC9F-4A43-B2F5-A685E9BAA058}
 		{A7CB7A48-F60B-4342-9A4F-7DC061AD8FB3} = {A6C52EAC-DC9F-4A43-B2F5-A685E9BAA058}
+		{7FDB28FD-ED1C-4F41-A3E5-B31723CEC37D} = {BA628DA4-89F9-4300-A482-55D4DB5E546D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {942E4F15-B7AF-4D69-B288-5726FBA46079}

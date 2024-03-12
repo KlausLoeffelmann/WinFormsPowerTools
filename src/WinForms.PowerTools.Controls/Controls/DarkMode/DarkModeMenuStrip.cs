@@ -3,7 +3,7 @@ using WinForms.PowerTools.Components;
 
 namespace WinForms.PowerTools.Controls;
 
-public class DarkModeMenuStrip : MenuStrip, ISupportInitialize
+internal class DarkModeMenuStrip : MenuStrip, ISupportInitialize
 {
     public DarkModeMenuStrip() : base() { }
 
