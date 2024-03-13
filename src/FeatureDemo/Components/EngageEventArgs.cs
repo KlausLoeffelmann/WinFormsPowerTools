@@ -6,16 +6,13 @@
 public class EngageEventArgs : EventArgs
 {
     /// <summary>
-    ///  Gets the periodic timer associated with the engage event.
-    /// </summary>
-    public PeriodicTimer Timer { get; }
-
-    /// <summary>
     ///  Initializes a new instance of the <see cref="EngageEventArgs"/> class.
     /// </summary>
     /// <param name="timer">The periodic timer associated with the engage event.</param>
-    public EngageEventArgs(PeriodicTimer timer)
+    public EngageEventArgs(CancellationToken cancellationToken)
     {
-        Timer = timer;
+        CancellationToken = cancellationToken;
     }
+
+    public CancellationToken CancellationToken { get; }
 }

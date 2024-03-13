@@ -59,9 +59,12 @@ public class PeriodicTimerComponent : Component
             {
                 if (EngageAsync != null)
                 {
-                    await EngageAsync(this, new EngageEventArgs(_timer));
+                    await EngageAsync(this, new EngageEventArgs(cancellationToken));
                 }
             }
+        }
+        catch
+        {
         }
         finally
         {

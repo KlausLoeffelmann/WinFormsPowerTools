@@ -1,10 +1,13 @@
 ﻿using System.Drawing.Drawing2D;
+using WinForms.PowerTools.Controls;
 
 namespace FeatureDemo.Controls;
 
 public class AsyncSpiralContainer : Panel
 {
     private bool _started = false;
+    private CancellationTokenSource? _cancellationTokenSource;
+    private readonly object _syncObject = new object();
 
     public void KickOff()
     {
@@ -15,6 +18,27 @@ public class AsyncSpiralContainer : Panel
     protected override async void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
+
+        CancellationToken cancellationToken = CancellationToken.None;
+
+        lock (_syncObject)
+        {
+            if (_cancellationTokenSource != null)
+            {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+                _cancellationTokenSource = new CancellationTokenSource();
+            }
+            else
+            {
+                _cancellationTokenSource = new CancellationTokenSource();
+            }
+
+            cancellationToken = _cancellationTokenSource.Token;
+        }
+
+        await Task.Delay(100);
+
         var random = new Random();
 
         if (IsAncestorSiteInDesignMode || !_started)
@@ -24,41 +48,83 @@ public class AsyncSpiralContainer : Panel
 
         var clientSize = ClientSize;
 
+        // Outer render task.
         var outerRenderTask = Task.Run(async () =>
         {
             // TODO: Add overload for non cancellable InvokeSyncAsync!
-            nint handle = await this.InvokeSyncAsync(() => Handle, CancellationToken.None).ConfigureAwait(false);
+            nint handle = await this.InvokeSyncAsyncEx(
+                () => Handle, CancellationToken.None).ConfigureAwait(false);
+
             List<Rectangle> areas = DivideScreen(clientSize, 64);
 
             List<Task> tasks = [];
 
-            foreach (var areaItem in areas)
+            try
             {
-                var innerRenderTask = Task.Run(async () =>
+                // Loop through the areas and create a task for each area.
+                foreach (var areaItem in areas)
                 {
-                    Graphics taskGraphics = await Graphics.FromHwndAsync(
-                        handle: handle,
-                        threadConfiningBounds: areaItem).ConfigureAwait(false);
+                    // Each inner render task will render a spiral in a
+                    // specific area using its dedicated graphics object.
+                    var innerRenderTask = Task.Run(async () =>
+                    {
+                        // Planned API for .NET 9:
+                        Graphics taskGraphics = await Graphics.FromHwndAsync(
+                            handle: handle,
+                            threadConfiningBounds: areaItem).ConfigureAwait(false);
 
-                    var backgroundColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
-                    var foregroundColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+                        var backgroundColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+                        var foregroundColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
 
-                    await DrawSpiralAsync(taskGraphics, backgroundColor, foregroundColor, 0).ConfigureAwait(false);
-                });
+                        // Draws our spiral.
+                        await DrawSpiralAsync(
+                            taskGraphics,
+                            backgroundColor,
+                            foregroundColor,
+                            20,
+                            cancellationToken).ConfigureAwait(false);
 
-                tasks.Add(innerRenderTask);
+
+                    }, cancellationToken);
+
+                    if (!innerRenderTask.IsCanceled)
+                    {
+                        tasks.Add(innerRenderTask);
+                    }
+                }
+
+                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
+            catch (Exception ex)
+            {
+            }
+        }, cancellationToken);
 
-            await Task.WhenAll(tasks).ConfigureAwait(false);
-        });
+        try 
+        {
+            await outerRenderTask.ConfigureAwait(false);
+        } 
+        catch 
+        { 
+        }
 
-        await outerRenderTask.ConfigureAwait(false);
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = null;
     }
 
-    public async Task DrawSpiralAsync(Graphics graphics, Color backgroundColor, Color foregroundColor, int delayMilliseconds)
+    public async Task DrawSpiralAsync(
+        Graphics graphics,
+        Color backgroundColor,
+        Color foregroundColor,
+        int delayMilliseconds,
+        CancellationToken cancellationToken)
     {
-        if (graphics == null) throw new ArgumentNullException(nameof(graphics));
-        if (delayMilliseconds < 0) throw new ArgumentOutOfRangeException(nameof(delayMilliseconds), "Delay must be non-negative");
+        if (graphics == null)
+            throw new ArgumentNullException(nameof(graphics));
+
+        if (delayMilliseconds < 20)
+            throw new ArgumentOutOfRangeException(nameof(delayMilliseconds), "Delay must be >=20");
+
 
         // Set the background
         graphics.Clear(backgroundColor);
@@ -78,6 +144,8 @@ public class AsyncSpiralContainer : Panel
         PointF[] points = new PointF[revolutions * pointsPerRevolution];
         for (int i = 0; i < points.Length; i++)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             double angle = Math.PI * 2 * i / pointsPerRevolution;
             float curRadius = radius * i / points.Length;
             points[i] = new PointF(
@@ -89,6 +157,8 @@ public class AsyncSpiralContainer : Panel
         // Draw the spiral with throttling
         for (int i = 1; i < points.Length; i++)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             graphics.DrawLine(pen, points[i - 1], points[i]);
             if (delayMilliseconds > 0)
             {

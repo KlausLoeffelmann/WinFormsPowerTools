@@ -34,7 +34,6 @@ namespace FeatureDemo
             menuStrip1 = new MenuStrip();
             _asyncEventsDemo = new WinForms.PowerTools.Controls.ToolStripSymbolMenuItem();
             _spiralAsyncDemo = new ToolStripMenuItem();
-            toolStripMenuItem2 = new ToolStripSeparator();
             _flashingTitleDemo = new ToolStripMenuItem();
             _asyncListViewBindingDemo = new ToolStripMenuItem();
             toolStripSymbolMenuItem2 = new WinForms.PowerTools.Controls.ToolStripSymbolMenuItem();
@@ -42,12 +41,11 @@ namespace FeatureDemo
             statusStrip1 = new StatusStrip();
             _lblRunningNowText = new ToolStripStatusLabel();
             _lblDemoName = new ToolStripStatusLabel();
-            toolsStripDebugPanel1 = new ToolsStripDebugPanel();
+            _debugStatusPanel = new ToolsStripDebugPanel();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             _clockLabel = new ToolStripStatusLabel();
             _periodicTimerComponent = new PeriodicTimerComponent();
             _flashingTitleTimer = new PeriodicTimerComponent();
-            toolStripClockPanel1 = new ToolStripClockPanel();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             SuspendLayout();
@@ -60,7 +58,7 @@ namespace FeatureDemo
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Padding = new Padding(8, 2, 0, 2);
-            menuStrip1.Size = new Size(982, 38);
+            menuStrip1.Size = new Size(1121, 38);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -80,17 +78,11 @@ namespace FeatureDemo
             // 
             // _spiralAsyncDemo
             // 
-            _spiralAsyncDemo.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuItem2 });
             _spiralAsyncDemo.Margin = new Padding(5);
             _spiralAsyncDemo.Name = "_spiralAsyncDemo";
             _spiralAsyncDemo.Size = new Size(59, 24);
             _spiralAsyncDemo.Text = "Spiral";
             _spiralAsyncDemo.Click += SpiralAsyncDemo_Click;
-            // 
-            // toolStripMenuItem2
-            // 
-            toolStripMenuItem2.Name = "toolStripMenuItem2";
-            toolStripMenuItem2.Size = new Size(57, 6);
             // 
             // _flashingTitleDemo
             // 
@@ -131,12 +123,12 @@ namespace FeatureDemo
             // 
             statusStrip1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             statusStrip1.ImageScalingSize = new Size(20, 20);
-            statusStrip1.Items.AddRange(new ToolStripItem[] { _lblRunningNowText, _lblDemoName, toolsStripDebugPanel1, toolStripStatusLabel1, _clockLabel, toolStripClockPanel1 });
-            statusStrip1.Location = new Point(0, 653);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { _lblRunningNowText, _lblDemoName, _debugStatusPanel, toolStripStatusLabel1, _clockLabel });
+            statusStrip1.Location = new Point(0, 720);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Padding = new Padding(1, 0, 18, 0);
             statusStrip1.RenderMode = ToolStripRenderMode.ManagerRenderMode;
-            statusStrip1.Size = new Size(982, 152);
+            statusStrip1.Size = new Size(1121, 152);
             statusStrip1.TabIndex = 1;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -154,16 +146,16 @@ namespace FeatureDemo
             _lblDemoName.Size = new Size(167, 147);
             _lblDemoName.Text = "No Demo in proces.";
             // 
-            // toolsStripDebugPanel1
+            // _debugStatusPanel
             // 
-            toolsStripDebugPanel1.Name = "toolsStripDebugPanel1";
-            toolsStripDebugPanel1.Size = new Size(400, 150);
-            toolsStripDebugPanel1.Text = "toolsStripDebugPanel1";
+            _debugStatusPanel.Name = "_debugStatusPanel";
+            _debugStatusPanel.Size = new Size(500, 150);
+            _debugStatusPanel.Text = "toolsStripDebugPanel1";
             // 
             // toolStripStatusLabel1
             // 
             toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            toolStripStatusLabel1.Size = new Size(1, 147);
+            toolStripStatusLabel1.Size = new Size(159, 147);
             toolStripStatusLabel1.Spring = true;
             // 
             // _clockLabel
@@ -172,6 +164,7 @@ namespace FeatureDemo
             _clockLabel.Padding = new Padding(10, 0, 10, 0);
             _clockLabel.Size = new Size(160, 147);
             _clockLabel.Text = "#ClockPlaceHolder";
+            _clockLabel.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // _periodicTimerComponent
             // 
@@ -182,19 +175,11 @@ namespace FeatureDemo
             _flashingTitleTimer.IntervalMs = 50;
             _flashingTitleTimer.EngageAsync += FlashingTitleTimer_EngageAsync;
             // 
-            // toolStripClockPanel1
-            // 
-            toolStripClockPanel1.ClockFaceColor = SystemColors.Window;
-            toolStripClockPanel1.Name = "toolStripClockPanel1";
-            toolStripClockPanel1.Size = new Size(157, 150);
-            toolStripClockPanel1.Text = "toolStripClockPanel1";
-            toolStripClockPanel1.TimeAndDate = new DateTime(2024, 3, 12, 17, 28, 42, 123);
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(982, 805);
+            ClientSize = new Size(1121, 872);
             Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
             Font = new Font("Segoe UI", 10.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -214,7 +199,6 @@ namespace FeatureDemo
 
         private MenuStrip menuStrip1;
         private ToolStripMenuItem _spiralAsyncDemo;
-        private ToolStripSeparator toolStripMenuItem2;
         private ToolStripMenuItem _flashingTitleDemo;
         private ToolStripMenuItem _asyncListViewBindingDemo;
         private StatusStrip statusStrip1;
@@ -226,8 +210,7 @@ namespace FeatureDemo
         private PeriodicTimerComponent _periodicTimerComponent;
         private PeriodicTimerComponent _flashingTitleTimer;
         private ToolStripMenuItem debugPaneToolStripMenuItem;
-        private ToolsStripDebugPanel toolsStripDebugPanel1;
+        private ToolsStripDebugPanel _debugStatusPanel;
         private ToolStripStatusLabel toolStripStatusLabel1;
-        private ToolStripClockPanel toolStripClockPanel1;
     }
 }

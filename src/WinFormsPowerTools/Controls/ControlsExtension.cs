@@ -11,6 +11,57 @@ public static class ControlsExtension
     /// <param name="control">The control on which to invoke the function.</param>
     /// <param name="asyncFunc">The asynchronous function to execute.</param>
     /// <returns>The result of the asynchronous operation.</returns>
+    public static void AsyncInvokeEx(this Control control, Func<Task> asyncFunc)
+    {
+        if (control is null)
+        {
+            throw new ArgumentNullException(nameof(control));
+        }
+
+        if (asyncFunc is null)
+        {
+            throw new ArgumentNullException(nameof(asyncFunc));
+        }
+
+        if (!control.IsHandleCreated)
+        {
+            throw new InvalidOperationException("Control handle not created.");
+        }
+
+        TaskCompletionSource tcs = new TaskCompletionSource();
+
+        var asyncTask = Task.Run(async () =>
+        {
+            try
+            {
+                await asyncFunc();
+                tcs.TrySetResult();
+            }
+            catch (Exception ex)
+            {
+                tcs.TrySetException(ex);
+            }
+
+            var asyncResult = control.BeginInvoke(() =>
+            {
+            });
+
+            return asyncResult;
+        });
+
+        var result = asyncTask.GetAwaiter().GetResult();
+        control.EndInvoke(result);
+
+        tcs.Task.Wait();
+    }
+
+    /// <summary>
+    ///  Executes an asynchronous function in a Task to avoid UI deadlocks, and blocks until the operation completes.
+    /// </summary>
+    /// <typeparam name="T">The type of the result returned by the function.</typeparam>
+    /// <param name="control">The control on which to invoke the function.</param>
+    /// <param name="asyncFunc">The asynchronous function to execute.</param>
+    /// <returns>The result of the asynchronous operation.</returns>
     public static T? AsyncInvokeEx<T>(this Control control, Func<Task<T>> asyncFunc)
     {
         if (control is null)

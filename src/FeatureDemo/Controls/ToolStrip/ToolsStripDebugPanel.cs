@@ -8,7 +8,7 @@ public class ToolsStripDebugPanel : ToolStripControlHost
     internal static DebugPanel DebugPanelFactory
         => new()
         {
-            MinimumSize = new Size(400, 150),
+            MinimumSize = new Size(500, 150),
             Padding = new Padding(10)
         };
 
@@ -21,7 +21,4 @@ public class ToolsStripDebugPanel : ToolStripControlHost
     public void Write(string message) => DebugPanel.Write(message);
 
     public void WriteLine(string message) => DebugPanel.WriteLine(message);
-
-    protected override Size DefaultSize => new Size(400, 150);
-   
 }
