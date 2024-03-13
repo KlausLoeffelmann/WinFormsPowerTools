@@ -1,13 +1,16 @@
-﻿namespace FeatureDemo.Controls;
+﻿using System.Windows.Forms.Design;
 
-public class ClockPanel : ToolStripItem
+namespace FeatureDemo.Controls.ToolStrip;
+
+[ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
+public class ToolStripClockPanel : ToolStripItem
 {
     private DateTime _timeAndDate;
     private Color _clockFaceColor;
     private Pen? _drawingPen;
     private SolidBrush? _backColorBrush;
 
-    public ClockPanel()
+    public ToolStripClockPanel()
     {
         _timeAndDate = DateTime.Now;
         _clockFaceColor = Application.SystemColors.Window;

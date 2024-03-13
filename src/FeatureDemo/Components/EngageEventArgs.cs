@@ -1,4 +1,4 @@
-﻿namespace FeatureDemo.Controls;
+﻿namespace FeatureDemo.Components;
 
 /// <summary>
 ///  Provides data for the engage event of the <see cref="AsyncTimerComponent"/>.

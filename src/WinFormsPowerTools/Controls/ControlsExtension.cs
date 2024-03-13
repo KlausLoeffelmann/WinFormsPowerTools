@@ -63,7 +63,7 @@ public static class ControlsExtension
     /// <param name="syncFunction"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async static Task InvokeSyncAsyncEx(this Control control, Action syncFunction, CancellationToken cancellationToken = default)
+    public static Task InvokeSyncAsyncEx(this Control control, Action syncFunction, CancellationToken cancellationToken = default)
     {
         var tcs = new TaskCompletionSource();
 
@@ -71,25 +71,24 @@ public static class ControlsExtension
         {
             tcs.TrySetException(new InvalidOperationException("Control handle not created."));
 
-            await tcs.Task;
+            return tcs.Task;
         }
 
-        // We're already on the UI thread, so we spin up a new task to avoid blocking the UI thread.
-        _ = control.BeginInvoke(
-            () =>
+        var asyncResult = control.BeginInvoke(() =>
+        {
+            try
             {
-                try
-                {
-                    syncFunction();
-                    tcs.TrySetResult();
-                }
-                catch (Exception ex)
-                {
-                    tcs.TrySetException(ex);
-                }
-            });
+                syncFunction();
+                tcs.TrySetResult();
+            }
+            catch (Exception ex)
+            {
+                tcs.TrySetException(ex);
+            }
+        });
 
-        await tcs.Task.ConfigureAwait(false);
+        control.EndInvoke(asyncResult);
+        return tcs.Task;
     }
 
     /// <summary>
@@ -111,22 +110,13 @@ public static class ControlsExtension
             return await tcs.Task;
         }
 
-        // We're already on the UI thread, so we spin up a new task to avoid blocking the UI thread.
-        _ = control.BeginInvoke(
-            () =>
-            {
-                try
-                {
-                    var result = syncFunction();
-                    tcs.TrySetResult(result);
-                }
-                catch (Exception ex)
-                {
-                    tcs.TrySetException(ex);
-                }
-            });
+        var result = await Task.Run(
+            () => control.Invoke(() => syncFunction()),
+            cancellationToken);
 
-        return await tcs.Task.ConfigureAwait(false);
+        tcs.TrySetResult(result);
+
+        return await tcs.Task;
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace FeatureDemo.Controls;
+namespace FeatureDemo.Components;
 
 public delegate Task AsyncEventHandler<TEventArgs>(object sender, TEventArgs e);
 

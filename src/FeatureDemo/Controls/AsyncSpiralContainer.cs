@@ -6,7 +6,7 @@ public class AsyncSpiralContainer : Panel
 {
     private bool _started = false;
 
-    public void Start()
+    public void KickOff()
     {
         _started = true;
         Invalidate();

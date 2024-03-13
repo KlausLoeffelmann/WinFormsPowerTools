@@ -1,4 +1,6 @@
-﻿namespace FeatureDemo.Controls;
+﻿using System.Windows.Forms.Design;
+
+namespace FeatureDemo.Controls;
 
 internal class DebugPanel : Panel
 {
@@ -7,7 +9,8 @@ internal class DebugPanel : Panel
         Multiline = true,
         Dock = DockStyle.Fill,
         ScrollBars = ScrollBars.Vertical,
-        Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0),
+        BorderStyle = BorderStyle.FixedSingle,
     };
 
     public DebugPanel()

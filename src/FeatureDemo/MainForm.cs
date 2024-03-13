@@ -1,3 +1,4 @@
+using FeatureDemo.Components;
 using FeatureDemo.Controls;
 using WinForms.PowerTools.Controls;
 
@@ -5,6 +6,8 @@ namespace FeatureDemo;
 
 public partial class MainForm : Form
 {
+    private const string NoDemo = "(No Demo in progress.)";
+
     public MainForm()
     {
         InitializeComponent();
@@ -15,29 +18,26 @@ public partial class MainForm : Form
         if (_periodicTimerComponent.IsRunning)
         {
             _periodicTimerComponent.SignalCancellation();
+            ResetDemoInfo();
             return;
         }
 
+        SetDemoInfo("Async Periodic Timer.");
         await _periodicTimerComponent.StartAsync();
     }
 
-    private async Task _periodicTimerComponent_EngageAsync(object sender, EngageEventArgs e)
-    {
-        while (await e.Timer.WaitForNextTickAsync())
-        {
-            this.Invoke(() => _clockLabel.Text = $"{DateTime.Now:HH:mm:ss.fff}");
-        }
-    }
+    private void SetDemoInfo(string demoInfo) => _lblDemoName.Text = demoInfo;
+    private void ResetDemoInfo() => _lblDemoName.Text = NoDemo;
 
     private async void Demo2_FlashingTitleDemo_Click(object sender, EventArgs e)
     {
-        if (_flashingTitelTimer.IsRunning)
+        if (_flashingTitleTimer.IsRunning)
         {
-            _flashingTitelTimer.SignalCancellation();
+            _flashingTitleTimer.SignalCancellation();
             return;
         }
 
-        await _flashingTitelTimer.StartAsync();
+        await _flashingTitleTimer.StartAsync();
     }
 
     private async Task FlashingTitleTimer_EngageAsync(object sender, EngageEventArgs e)
@@ -71,7 +71,7 @@ public partial class MainForm : Form
         }
     }
 
-    private void SpiralAsyncDemo_Click(object sender, EventArgs e)
+    private async void SpiralAsyncDemo_Click(object sender, EventArgs e)
     {
         // New Async Features:
         // AsyncInvoke;
@@ -79,28 +79,20 @@ public partial class MainForm : Form
         // InvokeAsync;
         // Async Events.
 
-        AsyncSpiralContainer spiralContainer = new();
+        AsyncSpiralContainer spiralContainer = null!;
 
-        Task.Run(async () =>
+        await this.InvokeSyncAsyncEx(() =>
         {
-            bool OK = await this.InvokeSyncAsyncEx(() =>
-            {
-                try
-                {
-                    spiralContainer.Dock = DockStyle.Fill;
-                    Controls.Add(spiralContainer);
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
+            spiralContainer = new();
 
-            }, CancellationToken.None);
+            spiralContainer.Dock = DockStyle.Fill;
+            Controls.Add(spiralContainer);
         });
+
+        spiralContainer.KickOff();
     }
 
-    internal DebugPanel DebugPanel => _debugPanel;
+    internal DebugPanel DebugPanel => null!;
 
     private static class AsyncDemosAndTests
     {
@@ -182,6 +174,17 @@ public partial class MainForm : Form
                     return true;
                 });
             }
+        }
+    }
+
+    private async Task _periodicTimerComponent_EngageAsync(object sender, EngageEventArgs e)
+    {
+        // ******
+        // DEMO 1
+        // ******
+        while (await e.Timer.WaitForNextTickAsync())
+        {
+            this.Invoke(() => _clockLabel.Text = $"{DateTime.Now:HH:mm:ss.fff}");
         }
     }
 }
