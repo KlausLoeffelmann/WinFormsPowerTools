@@ -1,6 +1,0 @@
-﻿Can you implement a class based on a ToolStripStatusLabel, which provides a TimeAndDate Property of type DateTime. 
-Could you then implement a custom painting for a clock with hour and second hands, 
-which renders a clock inside of that panel according to the DateAndTime property?
-Could you also draw a simple click face and render todays date in the middle of the clock?
-Also important: Implement whatever is necessary, to size the panel to a reasonable size,
-and to center the clock inside of the panel. Thanks so, so much!
