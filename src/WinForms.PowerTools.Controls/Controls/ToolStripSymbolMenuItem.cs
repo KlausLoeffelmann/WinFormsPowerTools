@@ -9,6 +9,8 @@ namespace WinForms.PowerTools.Controls;
 [ToolboxBitmap(typeof(ToolStripMenuItem))]
 public class ToolStripSymbolMenuItem : ToolStripMenuItem, IToolStripItemSymbolProvider
 {
+    private Func<Color> DefaultSymbolColorGetter = () => Application.SystemColors.ControlDark;
+
     private Color? _symbolColor = null;
     private static readonly Color s_transparentColor = Color.Transparent;
 
@@ -127,9 +129,9 @@ public class ToolStripSymbolMenuItem : ToolStripMenuItem, IToolStripItemSymbolPr
             IToolStripItemSymbolProvider.ParentToolStrip(this));
     }
 
-    private bool ShouldSerializeSymbolColor() => _symbolColor != Color.Black;
+    private bool ShouldSerializeSymbolColor() => _symbolColor != DefaultSymbolColorGetter();
 
-    private void ResetSymbolColor() => SymbolColor = Color.Black;
+    private void ResetSymbolColor() => SymbolColor = DefaultSymbolColorGetter();
 
     /// <inheritdoc/>
     public Size? SymbolSize
