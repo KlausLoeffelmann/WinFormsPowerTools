@@ -129,7 +129,7 @@ public class ToolStripSymbolMenuItem : ToolStripMenuItem, IToolStripItemSymbolPr
             IToolStripItemSymbolProvider.ParentToolStrip(this));
     }
 
-    private bool ShouldSerializeSymbolColor() => _symbolColor != DefaultSymbolColorGetter();
+    private bool ShouldSerializeSymbolColor() => false;
 
     private void ResetSymbolColor() => SymbolColor = DefaultSymbolColorGetter();
 

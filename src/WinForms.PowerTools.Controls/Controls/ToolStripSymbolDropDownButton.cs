@@ -128,7 +128,7 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
             IToolStripItemSymbolProvider.ParentToolStrip(this));
     }
 
-    private bool ShouldSerializeSymbolColor() => _symbolColor != DefaultSymbolColor;
+    private bool ShouldSerializeSymbolColor() => false;
 
     private void ResetSymbolColor() => SymbolColor = DefaultSymbolColor;
 
