@@ -106,6 +106,7 @@
             // radioButton2
             // 
             radioButton2.AutoSize = true;
+            radioButton2.Checked = true;
             radioButton2.Location = new System.Drawing.Point(115, 85);
             radioButton2.Margin = new System.Windows.Forms.Padding(4);
             radioButton2.Name = "radioButton2";
@@ -132,14 +133,15 @@
             modernCheckBox.AutoSize = true;
             modernCheckBox.Checked = true;
             modernCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            modernCheckBox.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            modernCheckBox.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
             modernCheckBox.Location = new System.Drawing.Point(783, 230);
             modernCheckBox.Name = "modernCheckBox";
-            modernCheckBox.Size = new System.Drawing.Size(233, 32);
+            modernCheckBox.Size = new System.Drawing.Size(213, 30);
             modernCheckBox.SwitchStyle = PowerTools.ModernControls.ModernCheckBox.ModernCheckBoxStyle.Rounded;
             modernCheckBox.TabIndex = 3;
-            modernCheckBox.Text = "modernCheck";
+            modernCheckBox.Text = "Different Text";
             modernCheckBox.TextRenderPosition = PowerTools.ModernControls.ModernCheckBox.TextPosition.Right;
+            modernCheckBox.ThreeState = true;
             modernCheckBox.UseVisualStyleBackColor = true;
             modernCheckBox.CheckedChanged += modernCheckBox_CheckedChanged;
             // 

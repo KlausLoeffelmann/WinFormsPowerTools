@@ -90,22 +90,44 @@ public class ModernCheckBox : CheckBox
 
         var textSize = TextRenderer.MeasureText(Text, Font);
         var totalHeight = Math.Max(textSize.Height, switchHeight);
-
-        int switchY = (totalHeight - switchHeight) / 2;
-        int textY = (totalHeight - textSize.Height) / 2;
+        var totalWidth = textSize.Width + switchWidth + Padding.Horizontal;
 
         g.Clear(this.BackColor);
 
-        if (_textPosition == TextPosition.Right)
+        Rectangle switchRect, textRect;
+
+        switch (CheckAlign)
         {
-            RenderSwitch(g, new Rectangle(0, switchY, switchWidth, switchHeight), circleDiameter);
-            RenderText(g, new Point(switchWidth + 10 * _dpiScale, textY));
+            case ContentAlignment.TopRight:
+                switchRect = new Rectangle(Padding.Left, Padding.Top, switchWidth, switchHeight);
+                textRect = new Rectangle(switchWidth + Padding.Left + 10 * _dpiScale, Padding.Top, textSize.Width, textSize.Height);
+                break;
+            case ContentAlignment.MiddleRight:
+                switchRect = new Rectangle(Padding.Left, (totalHeight - switchHeight) / 2 + Padding.Top, switchWidth, switchHeight);
+                textRect = new Rectangle(switchWidth + Padding.Left + 10 * _dpiScale, (totalHeight - textSize.Height) / 2 + Padding.Top, textSize.Width, textSize.Height);
+                break;
+            case ContentAlignment.BottomRight:
+                switchRect = new Rectangle(Padding.Left, totalHeight - switchHeight + Padding.Top, switchWidth, switchHeight);
+                textRect = new Rectangle(switchWidth + Padding.Left + 10 * _dpiScale, totalHeight - textSize.Height + Padding.Top, textSize.Width, textSize.Height);
+                break;
+            case ContentAlignment.TopLeft:
+                textRect = new Rectangle(Padding.Left, Padding.Top, textSize.Width, textSize.Height);
+                switchRect = new Rectangle(textSize.Width + Padding.Left + 10 * _dpiScale, Padding.Top, switchWidth, switchHeight);
+                break;
+            case ContentAlignment.MiddleLeft:
+                textRect = new Rectangle(Padding.Left, (totalHeight - textSize.Height) / 2 + Padding.Top, textSize.Width, textSize.Height);
+                switchRect = new Rectangle(textSize.Width + Padding.Left + 10 * _dpiScale, (totalHeight - switchHeight) / 2 + Padding.Top, switchWidth, switchHeight);
+                break;
+            case ContentAlignment.BottomLeft:
+                textRect = new Rectangle(Padding.Left, totalHeight - textSize.Height + Padding.Top, textSize.Width, textSize.Height);
+                switchRect = new Rectangle(textSize.Width + Padding.Left + 10 * _dpiScale, totalHeight - switchHeight + Padding.Top, switchWidth, switchHeight);
+                break;
+            default:
+                throw new NotSupportedException($"CheckAlign {CheckAlign} is not supported.");
         }
-        else
-        {
-            RenderText(g, new Point(0, textY));
-            RenderSwitch(g, new Rectangle(textSize.Width + 10 * _dpiScale, switchY, switchWidth, switchHeight), circleDiameter);
-        }
+
+        RenderSwitch(g, switchRect, circleDiameter);
+        RenderText(g, textRect.Location);
     }
 
     private void RenderSwitch(Graphics g, Rectangle rect, int circleDiameter)
@@ -171,8 +193,8 @@ public class ModernCheckBox : CheckBox
         var textSize = TextRenderer.MeasureText(Text, Font);
         int switchWidth = 50 * _dpiScale;
         int switchHeight = 25 * _dpiScale;
-        int totalWidth = textSize.Width + switchWidth + 20 * _dpiScale; // 10 dpi padding on each side
-        int totalHeight = Math.Max(textSize.Height, switchHeight);
+        int totalWidth = textSize.Width + switchWidth + Padding.Horizontal + 10 * _dpiScale; // 10 dpi padding
+        int totalHeight = Math.Max(textSize.Height, switchHeight) + Padding.Vertical;
         return new Size(totalWidth, totalHeight);
     }
 }
