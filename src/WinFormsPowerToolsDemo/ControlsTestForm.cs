@@ -16,5 +16,10 @@ namespace WinForms.PowerToolsDemo
         {
             InitializeComponent();
         }
+
+        private void modernCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
