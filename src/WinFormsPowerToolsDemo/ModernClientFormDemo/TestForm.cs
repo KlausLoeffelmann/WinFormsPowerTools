@@ -121,14 +121,38 @@ public class ThemedChildForm : Form
         Invalidate();
     }
 
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+
+        // Get the client area rectangle
+        Rectangle clientRect = ClientRectangle;
+
+        // Calculate the smaller rectangle
+        Rectangle smallerRect = new Rectangle(clientRect.X + 1, clientRect.Y + 1, clientRect.Width - 2, clientRect.Height - 2);
+
+        // Draw the smaller rectangle
+        e.Graphics.DrawRectangle(Pens.Red, smallerRect);
+    }
+
+    protected override void SetClientSizeCore(int x, int y)
+    {
+        base.SetClientSizeCore(x, y);
+    }
+
+    protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
+    {
+        base.SetBoundsCore(x, y, width, height, specified);
+    }
+
     protected override void OnClientSizeChanged(EventArgs e)
     {
-        if (_clientSize == Size)
-        {
-            var clientWidth = Width - _fixedFormPadding.Left - _fixedFormPadding.Right;
-            var clientHeight = Height - _fixedFormPadding.Top - _fixedFormPadding.Bottom - _titleBarHeight;
-            _clientSize = new Size(clientWidth, clientHeight);
+        var clientWidth = Width - _fixedFormPadding.Left - _fixedFormPadding.Right;
+        var clientHeight = Height - _fixedFormPadding.Top - _fixedFormPadding.Bottom - _titleBarHeight;
+        _clientSize = new Size(clientWidth, clientHeight);
 
+        if (ClientSize != _clientSize)
+        {
             base.UpdateBounds(
                 Location.X,
                 Location.Y,
