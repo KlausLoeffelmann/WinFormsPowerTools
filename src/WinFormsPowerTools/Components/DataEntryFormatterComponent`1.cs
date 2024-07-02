@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows.Forms.DataEntryForms.Controls;
 using System.Windows.Forms.DataEntryForms.EntryFormatters;
 
@@ -11,7 +10,7 @@ namespace System.Windows.Forms.DataEntryForms.Components
         ErrorProvider, IExtenderProvider, IDataEntryFormatterComponent
     {
         private readonly Dictionary<Control, IDataEntryFormatter<T>> _propertyStorage = new();
-        private readonly Dictionary<Control, T> _valueStorage = new();
+        private readonly Dictionary<Control, T?> _valueStorage = new();
 
         public DataEntryFormatterComponent()
             => InitializeComponent();
@@ -28,9 +27,9 @@ namespace System.Windows.Forms.DataEntryForms.Components
 
         protected abstract bool CanExtendProperties(DataEntry dataEntry);
 
-        protected T GetValueInternal(DataEntry dataEntry)
+        protected T? GetValueInternal(DataEntry dataEntry)
         {
-            if (_valueStorage.TryGetValue(dataEntry, out T value))
+            if (_valueStorage.TryGetValue(dataEntry, out T? value))
             {
                 return value;
             }
@@ -38,7 +37,7 @@ namespace System.Windows.Forms.DataEntryForms.Components
             return default;
         }
 
-        protected void SetValueInternal(DataEntry dataEntry, T value)
+        protected void SetValueInternal(DataEntry dataEntry, T? value)
         {
             if (!_valueStorage.TryAdd(dataEntry, value))
             {
@@ -56,9 +55,9 @@ namespace System.Windows.Forms.DataEntryForms.Components
 
         [DisplayName("Entry Formatting")]
         [ParenthesizePropertyName(true)]
-        public IDataEntryFormatter<T> GetFormattingProperties(Control dataEntry)
+        public IDataEntryFormatter<T>? GetFormattingProperties(Control dataEntry)
         {
-            if (_propertyStorage.TryGetValue(dataEntry, out IDataEntryFormatter<T> value))
+            if (_propertyStorage.TryGetValue(dataEntry, out IDataEntryFormatter<T>? value))
             {
                 return value;
             }
@@ -71,23 +70,27 @@ namespace System.Windows.Forms.DataEntryForms.Components
 
         [DisplayName("Entry Value")]
         [ParenthesizePropertyName(true)]
-        abstract public T GetValue(Control dataEntry);
+        abstract public T? GetValue(Control dataEntry);
 
-        abstract public void SetValue(Control dataEntry, T value);
+        abstract public void SetValue(Control dataEntry, T? value);
 
-        object IDataEntryFormatterComponent.GetValue(DataEntry dataEntry) 
+        object? IDataEntryFormatterComponent.GetValue(DataEntry dataEntry) 
             => GetValue(dataEntry);
 
-        void IDataEntryFormatterComponent.SetValue(DataEntry dataEntry, object value)
-            => SetValue(dataEntry, (T) value);
+        void IDataEntryFormatterComponent.SetValue(DataEntry dataEntry, object? value)
+            => SetValue(dataEntry, (T?) value);
 
-        public bool TryConvertToValue(DataEntry dataEntry, string stringValue)
+        public bool TryConvertToValue(DataEntry dataEntry, string? stringValue)
         {
-            T valueTemp;
+            T? valueTemp;
             
             try
             {
-                valueTemp = GetFormattingProperties(dataEntry).ConvertToValue(stringValue);
+                IDataEntryFormatter<T>? temp = GetFormattingProperties(dataEntry);
+
+                valueTemp = temp is null 
+                    ? default 
+                    : temp.ConvertToValue(stringValue);
             }
             catch (System.Exception)
             {
@@ -99,10 +102,10 @@ namespace System.Windows.Forms.DataEntryForms.Components
             return true;
         }
 
-        public string ConvertToDisplay(DataEntry dataEntry) 
+        public string? ConvertToDisplay(DataEntry dataEntry) 
             =>  GetFormattingProperties(dataEntry)?.ConvertToDisplay(GetValue(dataEntry));
 
-        public string InitializeEditedValue(DataEntry dataEntry) 
+        public string? InitializeEditedValue(DataEntry dataEntry) 
             => GetFormattingProperties(dataEntry)?.InitializeEditedValue(GetValue(dataEntry));
 
         void IDataEntryFormatterComponent.SetDefaultFormatterInstanceOnDemand(DataEntry dataEntry)
@@ -110,14 +113,14 @@ namespace System.Windows.Forms.DataEntryForms.Components
             SetFormattingProperties(dataEntry, GetDefaultFormatterInstance());
         }
 
-        object IDataEntryFormatterComponent.GetDefaultValue()
+        object? IDataEntryFormatterComponent.GetDefaultValue()
         {
             return GetDefaultValue();
         }
 
         abstract protected IDataEntryFormatter<T> GetDefaultFormatterInstance();
         
-        protected virtual object GetDefaultValue()
+        protected virtual object? GetDefaultValue()
         {
             return default(T);
         }

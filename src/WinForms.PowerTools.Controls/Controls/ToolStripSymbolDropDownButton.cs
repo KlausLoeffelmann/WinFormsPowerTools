@@ -9,7 +9,7 @@ namespace WinForms.PowerTools.Controls;
 [ToolboxBitmap(typeof(ToolStripMenuItem))]
 public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStripItemSymbolProvider
 {
-    private Color DefaultSymbolColor = Application.SystemColors.ControlDarkDark;
+    private Color DefaultSymbolColor = Application.ApplicationColors.ControlDarkDark;
 
     private Color? _symbolColor = default;
     private static readonly Color s_transparentColor = Color.Transparent;

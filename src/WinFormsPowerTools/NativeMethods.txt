@@ -9,8 +9,6 @@ SetScrollRange
 GetUpdateRgn
 EnableScrollBar
 
-RegionScope
-
 ScrollWindowEx
 
 SCROLLINFO

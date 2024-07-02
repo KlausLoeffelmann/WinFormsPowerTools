@@ -30,7 +30,7 @@ internal interface IToolStripItemSymbolProvider
     event EventHandler? SymbolScalingChanged;
 
     private static readonly Color s_transparentColor = Color.Transparent;
-    private static readonly Color s_defaultSymbolColor = Application.SystemColors.ControlDarkDark;
+    private static readonly Color s_defaultSymbolColor = Application.ApplicationColors.ControlDarkDark;
 
     /// <summary>
     ///  Gets or sets the symbol character.

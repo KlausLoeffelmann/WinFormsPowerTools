@@ -435,7 +435,7 @@ public abstract class DocumentControl<TDoc, TDocItem> : Control, IDocumentContro
     {
         // The lParam is handle of the sending scrollbar, or NULL when
         // the scrollbar sending the message is the "form" scrollbar.
-        if ((nint)m.LParam != 0)
+        if (m.LParam != 0)
         {
             base.WndProc(ref m);
             return;

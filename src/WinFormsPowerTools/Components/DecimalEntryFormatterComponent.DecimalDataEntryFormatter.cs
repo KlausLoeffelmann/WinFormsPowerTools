@@ -11,7 +11,7 @@ namespace System.Windows.Forms.DataEntryForms.Components
         public class DecimalDataEntryFormatter : DataEntryFormatter<decimal>
         {
             // Backing fields. We implement INotifyPropertyChanged, so we can't use AutoProperties.
-            private string _currencySymbol;
+            private string? _currencySymbol;
             private int _decimalPlaces;
             private bool _hasThousandsSeparator;
             private bool _placeCurrencySymbolUpFront;
@@ -28,7 +28,7 @@ namespace System.Windows.Forms.DataEntryForms.Components
             EditorBrowsable(EditorBrowsableState.Advanced),
             Browsable(true), DefaultValue(DefaultCurrencySymbol)
             ]
-            public string CurrencySymbol
+            public string? CurrencySymbol
             {
                 get
                 {
@@ -155,17 +155,13 @@ namespace System.Windows.Forms.DataEntryForms.Components
                 return value.ToString(GetFormatString());
             }
 
-            public override decimal ConvertToValue(string stringValue)
-            {
-                return decimal.Parse(stringValue);
-            }
+            public override decimal ConvertToValue(string? stringValue) => 
+                stringValue is null ? 0 : decimal.Parse(stringValue);
 
-            public override string InitializeEditedValue(decimal value)
-            {
-                return value.ToString();
-            }
+            public override string? InitializeEditedValue(decimal value) => 
+                value.ToString();
 
-            public string GetFormatString()
+            public string? GetFormatString()
             {
                 var formatString = new StringBuilder();
 

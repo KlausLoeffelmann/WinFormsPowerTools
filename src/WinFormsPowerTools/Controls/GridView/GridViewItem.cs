@@ -44,7 +44,7 @@ public class GridViewItem : AsyncDocumentItem
             }
             else
             {
-                DeviceContext = DeviceContext ??= await Graphics.FromHwndAsync(ParentControlHandle, bounds).ConfigureAwait(false);
+                DeviceContext = DeviceContext ??= Graphics.FromHwnd(ParentControlHandle);
                 graphics = (Graphics)DeviceContext;
             }
 

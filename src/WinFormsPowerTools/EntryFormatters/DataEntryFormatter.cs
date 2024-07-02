@@ -12,7 +12,7 @@ namespace System.Windows.Forms.DataEntryForms
         /// <summary>
         /// event for property change notifications.
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Checks if a property already matches a desired value.  Sets the property and notifies
@@ -31,8 +31,8 @@ namespace System.Windows.Forms.DataEntryForms
         protected bool SetProperty<PropType>(
             ref PropType storage,
             PropType value,
-            [CallerMemberName] string propertyName = null,
-            Func<bool> actionOnValidate = null)
+            [CallerMemberName] string? propertyName = null,
+            Func<bool>? actionOnValidate = null)
         {
             if (object.Equals(storage, value))
             {
@@ -55,13 +55,13 @@ namespace System.Windows.Forms.DataEntryForms
         /// <param name="propertyName">Name of the property used to notify listeners.  This value
         /// is optional and can be provided automatically when invoked from compilers that support
         /// <see cref="CallerMemberNameAttribute"/>.</param>
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public abstract T ConvertToValue(string stringValue);
-        public abstract string ConvertToDisplay(T value);
-        public abstract string InitializeEditedValue(T value);
+        public abstract T? ConvertToValue(string? stringValue);
+        public abstract string? ConvertToDisplay(T? value);
+        public abstract string? InitializeEditedValue(T? value);
     }
 }

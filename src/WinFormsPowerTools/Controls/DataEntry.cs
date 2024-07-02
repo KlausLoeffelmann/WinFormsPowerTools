@@ -9,7 +9,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
     [ToolboxBitmap(typeof(DataEntry),"DataEntry.bmp")]
     public class DataEntry : TextBox, ISupportInitialize
     {
-        public event EventHandler ObjectValueChanged;
+        public event EventHandler? ObjectValueChanged;
         
         private const bool DoFocusEmphasizeDefaultSetting = true;
 
@@ -23,11 +23,11 @@ namespace System.Windows.Forms.DataEntryForms.Controls
         private bool _changingValueInternally;
 
         private Color _myOriginalBackColor;
-        private string _editedValue;
-        private object _valueInternal;
+        private string? _editedValue;
+        private object? _valueInternal;
         private bool _hasError;
         private Guid _valueProcessCycle;
-        private IDataEntryFormatterComponent _formatter;
+        private IDataEntryFormatterComponent? _formatter;
 
         public DataEntry()
         {
@@ -51,7 +51,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
             Debug.Print($"{_valueProcessCycle}: OnGotFocus ({this.Name})");
 
             _hasFocus = true;
-            Text = _editedValue;
+            Text = _editedValue!;
 
             HandleFocusEmphasizing(!_hasError);
 
@@ -61,7 +61,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
                     SelectAll();
                     break;
                 case FocusSelectionBehaviors.PlaceCaretAtEnd:
-                    SelectionStart = Text.Length;
+                    SelectionStart = Text!.Length;
                     SelectionLength = 0;
                     break;
                 default:
@@ -187,7 +187,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
             _initializing = false;
             if (Formatter != null)
             {
-                _formatter.SetDefaultFormatterInstanceOnDemand(this);
+                Formatter.SetDefaultFormatterInstanceOnDemand(this);
                 _editedValue = Formatter.InitializeEditedValue(this);
                 UpdateDisplay();
             }
@@ -201,7 +201,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
             }
             else
             {
-                Text = Formatter.ConvertToDisplay(this);
+                Text = Formatter?.ConvertToDisplay(this);
             }
         }
 
@@ -273,7 +273,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
         public FocusSelectionBehaviors FocusSelectionBehavior { get; set; }
 
         [RefreshProperties(RefreshProperties.All)]
-        public IDataEntryFormatterComponent Formatter
+        public IDataEntryFormatterComponent? Formatter
         {
             get => _formatter;
             set
@@ -288,8 +288,8 @@ namespace System.Windows.Forms.DataEntryForms.Controls
                         {
                             _formatter.SetDefaultFormatterInstanceOnDemand(this);
                             _valueInternal = _formatter.GetDefaultValue();
-                            Formatter.SetValue(this, _valueInternal);
-                            _editedValue = Formatter.InitializeEditedValue(this);
+                            Formatter?.SetValue(this, _valueInternal);
+                            _editedValue = Formatter?.InitializeEditedValue(this);
                             UpdateDisplay();
                         }
                     }
@@ -302,7 +302,7 @@ namespace System.Windows.Forms.DataEntryForms.Controls
         Browsable(false),
         DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)
         ]
-        public object ObjectValue
+        public object? ObjectValue
         {
             get
             {

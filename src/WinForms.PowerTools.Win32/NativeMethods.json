@@ -1,0 +1,12 @@
+{
+  "$schema": "https://aka.ms/CsWin32.schema.json",
+  "className": "PInvokeCore",
+  "public": true,
+  "allowMarshaling": false,
+  "useSafeHandles": false,
+  "comInterop": {
+    "preserveSigMethods": [
+      "*"
+    ]
+  }
+}
