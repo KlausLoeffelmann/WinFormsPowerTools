@@ -1,7 +1,14 @@
-﻿CreateDC
+﻿COLORREF
+CombineRgn
+CreateDC
 CreatePen
 CreateRectRgn
+CreateRoundRectRgn
 CreateSolidBrush
+
+FillRect
+FillRgn
+
 GetClientRect
 GetClipRgn
 GetDC
@@ -12,6 +19,7 @@ GetForegroundWindow
 GetViewportExtEx
 GetViewportOrgEx
 GetWindowDC
+
 HBITMAP
 HBMMENU_*
 HBRUSH
@@ -27,6 +35,12 @@ HPROPSHEETPAGE
 HRGN
 HWND
 HWND_*
+
 IDI_*
 IEnumUnknown
+
+ReleaseDC
+
+SelectClipRgn
+
 WIN32_ERROR
