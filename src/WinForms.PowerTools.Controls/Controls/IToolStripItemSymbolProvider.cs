@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using static System.Windows.Forms.Control;
 
 namespace WinForms.PowerTools.Controls;
 
@@ -30,7 +31,7 @@ internal interface IToolStripItemSymbolProvider
     event EventHandler? SymbolScalingChanged;
 
     private static readonly Color s_transparentColor = Color.Transparent;
-    private static readonly Color s_defaultSymbolColor = Application.ApplicationColors.ControlDarkDark;
+    private static readonly Color s_defaultSymbolColor = SystemColors.ControlDarkDark;
 
     /// <summary>
     ///  Gets or sets the symbol character.

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using static System.Windows.Forms.Control;
 
 namespace WinForms.PowerTools.Controls;
 
@@ -9,7 +10,7 @@ namespace WinForms.PowerTools.Controls;
 [ToolboxBitmap(typeof(ToolStripMenuItem))]
 public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStripItemSymbolProvider
 {
-    private Color DefaultSymbolColor = Application.ApplicationColors.ControlDarkDark;
+    private Color DefaultSymbolColor = SystemColors.ControlDarkDark;
 
     private Color? _symbolColor = default;
     private static readonly Color s_transparentColor = Color.Transparent;
@@ -104,7 +105,7 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
 
     private void ResetSymbol() => Symbol = null;
 
-    /// <inheritdoc/>
+    [DefaultValue(100)]
     public int SymbolScaling
     {
         get => _symbolScaling;
@@ -115,7 +116,7 @@ public class ToolStripSymbolDropDownButton : ToolStripDropDownButton, IToolStrip
             ref _symbolScaling);
     }
 
-    /// <inheritdoc/>
+    [DefaultValue(typeof(Color), "ControlDarkDark")]
     public Color SymbolColor
     {
         get => IToolStripItemSymbolProvider.GetSymbolColor(_symbolColor, this.Owner);
