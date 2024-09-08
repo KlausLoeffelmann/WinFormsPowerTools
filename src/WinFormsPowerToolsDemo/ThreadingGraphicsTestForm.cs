@@ -54,9 +54,7 @@ public class CustomPanel : Panel
             {
                 var innerRenderTask = Task.Run(async () =>
                 {
-                    Graphics taskGraphics = await Graphics.FromHwndAsync(
-                        handle: handle,
-                        threadConfiningBounds: areaItem).ConfigureAwait(false);
+                    Graphics taskGraphics = Graphics.FromHwnd(handle);
 
                     var backgroundColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
                     var foregroundColor = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));

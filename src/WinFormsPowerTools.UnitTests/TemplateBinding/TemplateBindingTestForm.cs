@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Forms.TemplateBinding;
 
@@ -19,11 +20,10 @@ namespace WinFormsPowerTools.UnitTests.TemplateBinding
             string propertyPath = $"{nameof(Employee)}.{nameof(Employee.Contact)}.{nameof(Employee.Contact.Address)}.{nameof(Employee.Contact.Address.City)}";
         }
 
+        [DefaultValue(null)]
         public new Employee? DataContext
         {
-            get => (Employee?)(_chain is null
-                ? null
-                : _chain.DataContext);
+            get => (Employee?)(_chain?.DataContext);
 
             set
             {

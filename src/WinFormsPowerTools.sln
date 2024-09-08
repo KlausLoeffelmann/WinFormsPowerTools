@@ -27,6 +27,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Win32", "Win32", "{70520E0E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinForms.PowerTools.Win32", "WinForms.PowerTools.Win32\WinForms.PowerTools.Win32.csproj", "{37283982-944D-44C0-8DE6-5DCC2EA03592}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinForms.PowerToolsDemo", "WinFormsPowerToolsDemo\WinForms.PowerToolsDemo.csproj", "{F46DDC6B-70C5-431C-A774-93503EC9C41D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinForms.PowerTools.UnitTests", "WinFormsPowerTools.UnitTests\WinForms.PowerTools.UnitTests.csproj", "{6A5F7BBB-3DD5-4656-81A8-D234364E1779}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +65,14 @@ Global
 		{37283982-944D-44C0-8DE6-5DCC2EA03592}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37283982-944D-44C0-8DE6-5DCC2EA03592}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37283982-944D-44C0-8DE6-5DCC2EA03592}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F46DDC6B-70C5-431C-A774-93503EC9C41D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F46DDC6B-70C5-431C-A774-93503EC9C41D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F46DDC6B-70C5-431C-A774-93503EC9C41D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F46DDC6B-70C5-431C-A774-93503EC9C41D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A5F7BBB-3DD5-4656-81A8-D234364E1779}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A5F7BBB-3DD5-4656-81A8-D234364E1779}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A5F7BBB-3DD5-4656-81A8-D234364E1779}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A5F7BBB-3DD5-4656-81A8-D234364E1779}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +85,8 @@ Global
 		{26B07E0D-CC37-4493-8AD0-9548F0C19EC1} = {A6C52EAC-DC9F-4A43-B2F5-A685E9BAA058}
 		{A7CB7A48-F60B-4342-9A4F-7DC061AD8FB3} = {A6C52EAC-DC9F-4A43-B2F5-A685E9BAA058}
 		{37283982-944D-44C0-8DE6-5DCC2EA03592} = {70520E0E-7CFE-44CA-B9C0-2489805F5755}
+		{F46DDC6B-70C5-431C-A774-93503EC9C41D} = {F9490545-0313-44DD-A3F7-849FB5258E64}
+		{6A5F7BBB-3DD5-4656-81A8-D234364E1779} = {F9490545-0313-44DD-A3F7-849FB5258E64}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {942E4F15-B7AF-4D69-B288-5726FBA46079}

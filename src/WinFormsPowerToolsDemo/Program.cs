@@ -1,4 +1,5 @@
 using System;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 using WinForms.PowerToolsDemo;
 using WinFormsPowerTools.AutoLayout;
@@ -17,7 +18,7 @@ namespace WinFormsPowerToolsDemo
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Application.SetDefaultDarkMode(DarkMode.Enabled);
+            Application.SetColorMode(SystemColorMode.Dark);
 
             Application.Run(new GridViewTestForm());
         }
