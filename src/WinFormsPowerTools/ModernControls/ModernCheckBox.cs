@@ -1,4 +1,5 @@
-﻿using System.Drawing.Drawing2D;
+﻿using System.ComponentModel;
+using System.Drawing.Drawing2D;
 using Timer = System.Windows.Forms.Timer;
 
 namespace WinForms.PowerTools.ModernControls;
@@ -25,12 +26,14 @@ public class ModernCheckBox : CheckBox
         Right
     }
 
+    [DefaultValue(ModernCheckBoxStyle.Rounded)]
     public ModernCheckBoxStyle SwitchStyle
     {
         get => _switchStyle;
         set { _switchStyle = value; Invalidate(); }
     }
 
+    [DefaultValue(TextPosition.Left)]
     public TextPosition TextRenderPosition
     {
         get => _textPosition;

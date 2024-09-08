@@ -273,6 +273,8 @@ namespace System.Windows.Forms.DataEntryForms.Controls
         public FocusSelectionBehaviors FocusSelectionBehavior { get; set; }
 
         [RefreshProperties(RefreshProperties.All)]
+
+        [DefaultValue(null)]
         public IDataEntryFormatterComponent? Formatter
         {
             get => _formatter;

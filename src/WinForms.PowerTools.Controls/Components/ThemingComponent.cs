@@ -19,6 +19,7 @@ public partial class ThemingComponent : BindableComponent, ISupportInitialize
     /// <summary>
     /// Gets or sets the parent form.
     /// </summary>
+    [DefaultValue(null)]
     public ContainerControl? ParentContainer
     {
         get => _parentContainer;
@@ -31,6 +32,7 @@ public partial class ThemingComponent : BindableComponent, ISupportInitialize
     /// <summary>
     ///  Overrides the Site property to capture the ParentForm at design-time.
     /// </summary>
+    [DefaultValue(null)]
     public override ISite? Site
     {
         set
