@@ -19,6 +19,10 @@ public partial class ThemingComponent : BindableComponent, ISupportInitialize
     /// <summary>
     /// Gets or sets the parent form.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+    /// <summary>
+    /// Gets or sets the parent form.
+    /// </summary>
     public ContainerControl? ParentContainer
     {
         get => _parentContainer;
@@ -31,6 +35,7 @@ public partial class ThemingComponent : BindableComponent, ISupportInitialize
     /// <summary>
     ///  Overrides the Site property to capture the ParentForm at design-time.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override ISite? Site
     {
         set
