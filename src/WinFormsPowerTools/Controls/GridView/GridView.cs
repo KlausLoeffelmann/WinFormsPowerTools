@@ -29,6 +29,7 @@ public partial class GridView
         MainDocument = new GridViewDocument(this);
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Type? ViewTemplate
     {
         get => _viewTemplateType;
@@ -46,6 +47,7 @@ public partial class GridView
         }
     }
 
+    [DefaultValue(Orientation.Horizontal)]
     public Orientation Orientation
     {
         get => _orientation;
@@ -62,6 +64,7 @@ public partial class GridView
         }
     }
 
+    [DefaultValue(1)]
     public int MinimumAdjacentItemsCount
     {
         get => _minimumAdjacentItemsCount;
