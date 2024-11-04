@@ -44,11 +44,9 @@ namespace WinFormsPowerToolsDemo
             _gridView.Location = new System.Drawing.Point(12, 43);
             _gridView.MinimumAdjacentItemsCount = 1;
             _gridView.Name = "_gridView";
-            _gridView.Orientation = System.Windows.Forms.Orientation.Horizontal;
             _gridView.Size = new System.Drawing.Size(1082, 551);
             _gridView.TabIndex = 0;
             _gridView.Text = "gridView1";
-            _gridView.ViewTemplate = null;
             // 
             // menuStrip1
             // 
@@ -58,20 +56,20 @@ namespace WinFormsPowerToolsDemo
             menuStrip1.Location = new System.Drawing.Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            menuStrip1.Size = new System.Drawing.Size(1106, 31);
+            menuStrip1.Size = new System.Drawing.Size(1106, 38);
             menuStrip1.TabIndex = 1;
             menuStrip1.Text = "menuStrip1";
             // 
             // test1ToolStripMenuItem
             // 
             test1ToolStripMenuItem.Name = "test1ToolStripMenuItem";
-            test1ToolStripMenuItem.Size = new System.Drawing.Size(67, 27);
+            test1ToolStripMenuItem.Size = new System.Drawing.Size(82, 34);
             test1ToolStripMenuItem.Text = "Test &1";
             test1ToolStripMenuItem.Click += test1ToolStripMenuItem_Click;
             // 
             // GridViewTestForm
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(9F, 23F);
+            AutoScaleDimensions = new System.Drawing.SizeF(11F, 28F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1106, 606);
             Controls.Add(_gridView);
@@ -80,6 +78,7 @@ namespace WinFormsPowerToolsDemo
             MainMenuStrip = menuStrip1;
             Name = "GridViewTestForm";
             Text = "DocumentFormTest";
+            Load += GridViewTestForm_Load;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);

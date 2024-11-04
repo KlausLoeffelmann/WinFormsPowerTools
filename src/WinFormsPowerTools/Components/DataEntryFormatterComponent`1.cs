@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms.DataEntryForms.Controls;
 using System.Windows.Forms.DataEntryForms.EntryFormatters;
+using WinForms.PowerTools.Controls;
 
 namespace System.Windows.Forms.DataEntryForms.Components
 {
@@ -22,8 +23,26 @@ namespace System.Windows.Forms.DataEntryForms.Components
         }
 
         bool IExtenderProvider.CanExtend(object extendee)
-            => extendee is DataEntry dataEntry 
+        {
+            // We want to extend the TextBox but only, if it is a child of a DataEntryPanel
+            // which a) had extended the TextBox itself and b) the TextBox has used the
+            // extender property and assigned a DataEntryFormatterComponent to it.
+            if (extendee is TextBox textBox
+                && GetAncestorOf<DataEntryPanel>(textBox) is DataEntryPanel panel)
+            {
+                return (panel).CanDataEntryComponentExtend(textBox);
+            }
+
+            return extendee is DataEntry dataEntry
                 && CanExtendProperties(dataEntry);
+        }
+
+        private static TControl? GetAncestorOf<TControl>(Control? control) where TControl : Control 
+            => control is null 
+                ? null 
+                : control is TControl ancestor 
+                    ? ancestor 
+                    : GetAncestorOf<TControl>(control.Parent);
 
         protected abstract bool CanExtendProperties(DataEntry dataEntry);
 
@@ -68,7 +87,7 @@ namespace System.Windows.Forms.DataEntryForms.Components
         public void SetFormattingProperties(Control dataEntry, IDataEntryFormatter<T> value)
             => _propertyStorage.TryAdd(dataEntry, value);
 
-        [DisplayName("Entry Value")]
+        [DisplayName("EntryValue")]
         [ParenthesizePropertyName(true)]
         abstract public T? GetValue(Control dataEntry);
 

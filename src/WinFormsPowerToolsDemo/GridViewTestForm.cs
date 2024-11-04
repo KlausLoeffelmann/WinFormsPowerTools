@@ -20,4 +20,9 @@ public partial class GridViewTestForm : Form
 
         _gridView.ResumeLayout();
     }
+
+    private void GridViewTestForm_Load(object sender, System.EventArgs e)
+    {
+
+    }
 }
