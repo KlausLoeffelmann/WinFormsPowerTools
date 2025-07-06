@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Warp.AutoLayout;
+using WinFormsPowerTools.CodeGen;
 
 namespace Warp.CodeGen;
 
@@ -41,9 +42,7 @@ public class AutoLayoutGen : IIncrementalGenerator
     }
 
     private static bool IsClassWithAttributes(SyntaxNode node)
-    {
-        return node is ClassDeclarationSyntax { AttributeLists.Count: > 0 } classDeclaration;
-    }
+        => node is ClassDeclarationSyntax { AttributeLists.Count: > 0 } classDeclaration;
 
     private static ViewModelClassInfo? GetViewControllerClass(GeneratorSyntaxContext context)
     {
@@ -169,7 +168,7 @@ public class AutoLayoutGen : IIncrementalGenerator
 
                 AttributeData? viewControllerAttribute = viewControllerSymbol?.GetAttributes()
                     .OfType<AttributeData>()
-                    .Where(attributeData => attributeData.AttributeClass is { } attribute 
+                    .Where(attributeData => attributeData.AttributeClass is { } attribute
                         && attribute.Name == nameof(ViewControllerAttribute))
                     .FirstOrDefault();
 
@@ -191,7 +190,7 @@ public class AutoLayoutGen : IIncrementalGenerator
                 }
 
                 string cacheTypeName = $"{viewModelItem.ClassDeclaration.Identifier.Text}_Cache";
-                
+
                 StringBuilder viewModelCachingClass = new();
                 viewModelCachingClass.AppendLine($"{In1}file class {cacheTypeName}");
                 viewModelCachingClass.AppendLine($"{In1}{{");
@@ -202,13 +201,13 @@ public class AutoLayoutGen : IIncrementalGenerator
                 viewModelCachingClass.AppendLine($"{In2}{{");
                 viewModelCachingClass.AppendLine($"{In2}    return _instance ??= new {cacheTypeName}();");
                 viewModelCachingClass.AppendLine($"{In2}}}");
-                
+
                 StringBuilder extensionClass = new();
                 extensionClass.AppendLine($"using System;");
                 extensionClass.AppendLine($"using System.Collections.Generic;");
                 extensionClass.AppendLine($"using System.Collections.ObjectModel;");
                 extensionClass.AppendLine($"using System.Runtime.CompilerServices;");
-                extensionClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
+                extensionClass.AppendLine($"using {InternalConstants.BaseNamespace}.AutoLayout;");
                 extensionClass.AppendLine();
                 extensionClass.AppendLine($"namespace {viewControllerNamespace}");
                 extensionClass.AppendLine($"{{");
@@ -219,8 +218,8 @@ public class AutoLayoutGen : IIncrementalGenerator
                 viewModelClass.AppendLine($"using System;");
                 viewModelClass.AppendLine($"using System.ComponentModel;");
                 viewModelClass.AppendLine($"using System.Runtime.CompilerServices;");
-                viewModelClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
-                viewModelClass.AppendLine($"using WinFormsPowerTools.StandardLib.ViewControllerBaseClasses;");
+                viewModelClass.AppendLine($"using {InternalConstants.BaseNamespace}.AutoLayout;");
+                viewModelClass.AppendLine($"using {InternalConstants.BaseNamespace}.StandardLib.ViewControllerBaseClasses;");
                 viewModelClass.AppendLine();
                 viewModelClass.AppendLine($"namespace {viewControllerNamespace}");
                 viewModelClass.AppendLine($"{{");
@@ -229,7 +228,7 @@ public class AutoLayoutGen : IIncrementalGenerator
 
                 StringBuilder bindingExtensionClass = new();
                 bindingExtensionClass.AppendLine($"using System;");
-                bindingExtensionClass.AppendLine($"using WinFormsPowerTools.AutoLayout;");
+                bindingExtensionClass.AppendLine($"using {InternalConstants.BaseNamespace}.AutoLayout;");
                 bindingExtensionClass.AppendLine();
                 bindingExtensionClass.AppendLine($"namespace {viewControllerNamespace}");
                 bindingExtensionClass.AppendLine($"{{");
@@ -244,7 +243,7 @@ public class AutoLayoutGen : IIncrementalGenerator
                 {
                     CommandMappingAttribute mappingAttribute = GetCommandMappingAttribute(commandMethodInfo.Key, commandMethodInfo.Value.CommandAttribute);
                     string? displayName = mappingAttribute.DisplayName;
-                    
+
                     // We only allow MenuItems and Buttons to be bound to commands.
                     mappingAttribute.TargetHint = mappingAttribute.TargetHint switch
                     {
@@ -399,13 +398,13 @@ public class AutoLayoutGen : IIncrementalGenerator
         StringBuilder bindingExtensionClassSourceCode,
         string propertyName,
         string backingFieldName,
-        StringBuilder? viewModelRelayCommandInitializerSourceCode=default,
-        (IMethodSymbol executeCommand, IMethodSymbol? canExecuteCommand)? commandMethods=default,
+        StringBuilder? viewModelRelayCommandInitializerSourceCode = default,
+        (IMethodSymbol executeCommand, IMethodSymbol? canExecuteCommand)? commandMethods = default,
         string indentString = In2,
         bool createBackingField = false,
         string? defaultValueAssignment = null,
         AutoLayoutTarget autoLayoutTarget = AutoLayoutTarget.Implicit,
-        string? forcedTextPropertyContentInExtensionMethod=default)
+        string? forcedTextPropertyContentInExtensionMethod = default)
     {
         if (createBackingField)
         {
@@ -478,7 +477,7 @@ public class AutoLayoutGen : IIncrementalGenerator
         bindingExtensionClassSourceCode.AppendLine($"{In2}}}");
         bindingExtensionClassSourceCode.AppendLine();
 
-        if (autoLayoutTarget==AutoLayoutTarget.Implicit)
+        if (autoLayoutTarget == AutoLayoutTarget.Implicit)
         {
             autoLayoutTarget = GetTargetFromType(propertyType);
         }
@@ -620,7 +619,7 @@ public class AutoLayoutGen : IIncrementalGenerator
                 fieldName);
         }
 
-        PropertyMappingAttribute attributeToReturn = new PropertyMappingAttribute();
+        PropertyMappingAttribute attributeToReturn = new();
 
         if (attributeData.NamedArguments.Length > 0)
         {
@@ -702,7 +701,7 @@ public class AutoLayoutGen : IIncrementalGenerator
                 fieldName);
         }
 
-        CommandMappingAttribute attributeToReturn = new CommandMappingAttribute();
+        CommandMappingAttribute attributeToReturn = new();
 
         if (attributeData.NamedArguments.Length > 0)
         {

@@ -9,8 +9,11 @@ public class PcmTree<T>
     // TODO: Make protected when tested.
     public PcmTree(T? rootValue, EventHandler<NodeValueChangedEventArgs<T>> nodeValueChangedAction)
     {
-        RootNode = new PcmTreeNode<T>(rootValue, null, null);
-        RootNode.NodeValueChangedAction = nodeValueChangedAction;
+        RootNode = new PcmTreeNode<T>(rootValue, null, null)
+        {
+            NodeValueChangedAction = nodeValueChangedAction
+        };
+
         RootNode.NodeValueChanged += RootNode.NodeValueChangedAction;
     }
 

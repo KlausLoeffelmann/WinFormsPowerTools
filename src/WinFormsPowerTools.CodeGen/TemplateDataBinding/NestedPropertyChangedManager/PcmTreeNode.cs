@@ -67,8 +67,10 @@ public class PcmTreeNode<T> : IEnumerable<PcmTreeNode<T>>
 
     public PcmTreeNode<T> AddNode(T? nodeValue, Action<PcmTreeNode<T>>? removeAction, Action<PcmTreeNode<T>, T?>? valueChangedAction)
     {
-        var node = new PcmTreeNode<T>(nodeValue, removeAction, valueChangedAction);
-        node.ParentNode = this;
+        var node = new PcmTreeNode<T>(nodeValue, removeAction, valueChangedAction)
+        {
+            ParentNode = this
+        };
         node.NodeValueChangedAction = node.ParentNode.NodeValueChangedAction;
         node.NodeValueChanged += node.NodeValueChangedAction;
         
