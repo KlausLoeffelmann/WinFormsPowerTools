@@ -1,5 +1,6 @@
 using System.Windows.Forms;
 using System.Windows.Forms.TemplateBinding;
+using System.ComponentModel;
 
 namespace WinFormsPowerTools.UnitTests.TemplateBinding
 {
@@ -10,8 +11,10 @@ namespace WinFormsPowerTools.UnitTests.TemplateBinding
             InitializeComponent();
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         internal NestedPropertyChangedManager? PcmTree { get; set; }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Employee? DataContext
         {
             get => (Employee?)PcmTree?.RootNode.Value;

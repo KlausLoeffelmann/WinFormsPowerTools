@@ -47,6 +47,7 @@ namespace System.Windows.Forms.Documents
             MainDocument = new Document();
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public Document? MainDocument
         {
             get => _mainDocument;

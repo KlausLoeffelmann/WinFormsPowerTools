@@ -152,6 +152,7 @@ public abstract class AutoLayoutUserControl<T> : UserControl where T : INotifyPr
         _bindingSource.DataSource = DataContext;
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new T? DataContext
     {
         get => (T?)base.DataContext;

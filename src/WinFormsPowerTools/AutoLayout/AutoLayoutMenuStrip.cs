@@ -65,6 +65,7 @@ public abstract class AutoLayoutMenuStrip<T> : MenuStrip where T : INotifyProper
         _bindingSource.DataSource = DataContext;
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new T? DataContext
     {
         get => (T?)base.DataContext;
