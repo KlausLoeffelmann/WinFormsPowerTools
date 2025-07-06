@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace WinFormsPowerTools.UnitTests.TemplateBinding
+namespace Warp.UnitTests.TemplateBinding
 {
     /// <summary>
     /// Implementation of <see cref="INotifyPropertyChanged"/> to simplify models.

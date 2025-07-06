@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public abstract class AutoLayoutTypedContainer<T, U> :
         AutoLayoutComponent<T>, IAutoLayoutContainer<T> 

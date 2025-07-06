@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     /// <summary>
     /// Just as an idea.

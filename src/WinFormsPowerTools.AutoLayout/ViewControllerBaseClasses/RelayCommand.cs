@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace WinFormsPowerTools.StandardLib.ViewControllerBaseClasses
+namespace Warp.StandardLib.ViewControllerBaseClasses
 {
     /// <summary>
     ///  Defines a command in a ViewModel/UI-Controller which can be bound to a property of type 

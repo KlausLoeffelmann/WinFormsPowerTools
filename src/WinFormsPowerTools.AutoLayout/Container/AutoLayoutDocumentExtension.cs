@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Threading;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public static class AutoLayoutDocumentExtension
     {

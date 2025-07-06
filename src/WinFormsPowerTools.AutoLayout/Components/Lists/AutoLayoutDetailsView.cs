@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public class AutoLayoutTableView<T, U>
         : AutoLayoutComponent<T>

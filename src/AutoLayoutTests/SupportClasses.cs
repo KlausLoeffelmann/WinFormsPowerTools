@@ -1,7 +1,7 @@
-﻿using WinFormsPowerTools.AutoLayout;
-using WinFormsPowerTools.StandardLib.ViewControllerBaseClasses;
+﻿using Warp.AutoLayout;
+using Warp.StandardLib.ViewControllerBaseClasses;
 
-namespace WinFormsPowerTools.UnitTests.Support
+namespace Warp.UnitTests.Support
 {
     [ViewController]
     public partial class ContactController : ObservableObject

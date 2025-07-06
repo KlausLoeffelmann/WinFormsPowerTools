@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using WinFormsPowerTools.AutoLayout;
+using Warp.AutoLayout;
 
-namespace WinFormsPowerTools.CodeGen;
+namespace Warp.CodeGen;
 
 internal class AutoLayoutSyntaxReceiver : ISyntaxContextReceiver
 {

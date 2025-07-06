@@ -1,3 +1,3 @@
-﻿namespace WinFormsPowerTools.AutoLayout
+﻿namespace Warp.AutoLayout
 {
 }

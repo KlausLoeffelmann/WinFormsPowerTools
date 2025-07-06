@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WinFormsPowerTools.UnitTests.TemplateBinding
+namespace Warp.UnitTests.TemplateBinding
 {
     public class Contact : BindableBase
     {

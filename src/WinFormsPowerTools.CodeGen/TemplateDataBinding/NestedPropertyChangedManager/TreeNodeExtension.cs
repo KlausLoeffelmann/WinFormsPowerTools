@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms.TemplateBinding;
 
-namespace WinFormsPowerTools.CodeGen.TemplateDataBinding.NestedPropertyChangedManager;
+namespace Warp.CodeGen.TemplateDataBinding.NestedPropertyChangedManager;
 
 public static class TreeNodeExtension
 {

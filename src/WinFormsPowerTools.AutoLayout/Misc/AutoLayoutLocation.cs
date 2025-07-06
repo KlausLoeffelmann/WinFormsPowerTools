@@ -1,4 +1,4 @@
-﻿namespace WinFormsPowerTools.AutoLayout
+﻿namespace Warp.AutoLayout
 {
     public record struct AutoLayoutPosition
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public abstract class AutoLayoutComponent<T>
         : IAutoLayoutElement<T> where T : INotifyPropertyChanged

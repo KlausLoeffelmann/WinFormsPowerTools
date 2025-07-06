@@ -2,7 +2,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.TemplateBinding;
 using System.ComponentModel;
 
-namespace WinFormsPowerTools.UnitTests.TemplateBinding
+namespace Warp.UnitTests.TemplateBinding
 {
     public partial class TemplateBindingTestForm : Form
     {

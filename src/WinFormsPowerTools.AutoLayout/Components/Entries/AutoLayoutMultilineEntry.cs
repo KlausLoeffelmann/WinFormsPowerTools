@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public class AutoLayoutMultilineEntry<T>
         : AutoLayoutTextEntry<T> where T : INotifyPropertyChanged

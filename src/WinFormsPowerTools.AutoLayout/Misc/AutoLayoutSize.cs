@@ -1,4 +1,4 @@
-﻿namespace WinFormsPowerTools.AutoLayout;
+﻿namespace Warp.AutoLayout;
 
 public readonly record struct AutoLayoutSize
 {

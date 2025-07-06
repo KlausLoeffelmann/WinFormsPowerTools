@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using WinFormsPowerTools.AutoLayout;
-using WinFormsPowerTools.StandardLib.ViewControllerBaseClasses;
+using Warp.AutoLayout;
+using Warp.StandardLib.ViewControllerBaseClasses;
 
 namespace WinFormsPowerToolsDemo
 {

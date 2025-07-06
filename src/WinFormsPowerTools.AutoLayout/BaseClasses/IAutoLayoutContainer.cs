@@ -2,7 +2,7 @@
 using System.ComponentModel;
 
 // Contains the data structure foundation of the AutoLayout concept.
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public interface IAutoLayoutContainer<T>
         : IAutoLayoutElement<T> where T : INotifyPropertyChanged

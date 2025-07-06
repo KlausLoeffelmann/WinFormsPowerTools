@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public class AutoLayoutColumnDefinitions : List<AutoLayoutColumnDefinition>
     {

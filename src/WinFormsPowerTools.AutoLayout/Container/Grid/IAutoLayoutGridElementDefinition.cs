@@ -1,4 +1,4 @@
-﻿namespace WinFormsPowerTools.AutoLayout
+﻿namespace Warp.AutoLayout
 {
     public interface IAutoLayoutGridElementDefinition<TSelf> where TSelf : IAutoLayoutGridElementDefinition<TSelf>, new()
     {

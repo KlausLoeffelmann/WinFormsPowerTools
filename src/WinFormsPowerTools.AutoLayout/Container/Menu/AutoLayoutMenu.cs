@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public class AutoLayoutMenu<T> : AutoLayoutTypedContainer<T, AutoLayoutMenuItem<T>>
         where T : INotifyPropertyChanged

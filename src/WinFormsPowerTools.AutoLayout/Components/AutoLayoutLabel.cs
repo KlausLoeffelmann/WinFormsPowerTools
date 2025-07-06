@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public class AutoLayoutLabel<T>
         : AutoLayoutComponent<T> where T : INotifyPropertyChanged

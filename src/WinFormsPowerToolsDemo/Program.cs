@@ -1,7 +1,7 @@
 using AutoLayoutDemo;
 using System;
 using System.Windows.Forms;
-using WinFormsPowerTools.AutoLayout;
+using Warp.AutoLayout;
 
 namespace WinFormsPowerToolsDemo
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public class AutoLayoutIntegerEntry<T>
         : AutoLayoutTextEntry<T> where T : INotifyPropertyChanged

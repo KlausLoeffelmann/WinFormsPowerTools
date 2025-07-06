@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Input;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public class AutoLayoutMenuItem<T>
      : AutoLayoutTypedContainer<T, AutoLayoutMenuItem<T>>

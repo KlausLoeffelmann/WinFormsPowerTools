@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 
-namespace WinFormsPowerTools.CodeGen;
+namespace Warp.CodeGen;
 
 internal class ViewModelClassInfo
 {

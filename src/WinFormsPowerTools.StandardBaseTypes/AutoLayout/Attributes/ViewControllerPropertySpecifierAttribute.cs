@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]
     public class ViewControllerPropertySpecifierAttribute : Attribute

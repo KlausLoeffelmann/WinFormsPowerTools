@@ -6,9 +6,9 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using WinFormsPowerTools.AutoLayout;
+using Warp.AutoLayout;
 
-namespace WinFormsPowerTools.CodeGen;
+namespace Warp.CodeGen;
 
 [Generator]
 public class AutoLayoutGen : IIncrementalGenerator

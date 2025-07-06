@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WinFormsPowerTools.Resources {
+namespace Warp.Resources {
     using System;
     
     

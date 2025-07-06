@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public class CommandMappingAttribute : Attribute
     {

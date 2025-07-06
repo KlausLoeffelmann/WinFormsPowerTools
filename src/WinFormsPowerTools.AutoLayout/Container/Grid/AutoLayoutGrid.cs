@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public partial class AutoLayoutGrid<T>
         : AutoLayoutContainer<T> where T : INotifyPropertyChanged

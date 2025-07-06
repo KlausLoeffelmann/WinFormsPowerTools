@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
-namespace WinFormsPowerTools.AutoLayout
+namespace Warp.AutoLayout
 {
     public class AutoLayoutDocuments<T>
         : Dictionary<string, AutoLayoutDocument<T>> where T : INotifyPropertyChanged

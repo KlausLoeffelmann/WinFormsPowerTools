@@ -1,7 +1,7 @@
-﻿using WinFormsPowerTools.AutoLayout;
-using WinFormsPowerTools.UnitTests.Support;
+﻿using Warp.AutoLayout;
+using Warp.UnitTests.Support;
 
-namespace WinFormsPowerTools.UnitTests.AutoLayout
+namespace Warp.UnitTests.AutoLayout
 {
     internal class AutoLayoutElementTests
     {

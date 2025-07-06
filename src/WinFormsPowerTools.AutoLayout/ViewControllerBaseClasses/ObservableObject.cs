@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace WinFormsPowerTools.StandardLib.ViewControllerBaseClasses
+namespace Warp.StandardLib.ViewControllerBaseClasses
 {
     /// <summary>
     /// Implementation of <see cref="INotifyPropertyChanged"/> to simplify models.
