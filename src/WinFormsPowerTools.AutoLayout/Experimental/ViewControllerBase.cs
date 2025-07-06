@@ -15,16 +15,16 @@ namespace WinFormsPowerTools.AutoLayout
     {
         private double _foo;
 
-        [PropertyMapping(AutoLayoutTarget.TextEntry,"First Name")] private string? _firstName;
-        [PropertyMapping(propertyName: "LastName", displayName: "Last name:")] private string? _lstName;
-        [PropertyMapping(displayName: "First name", mapsToModelProperty: nameof(TestModelFoo.FirstName))] private string? _firstNameDisplayName;
+        [PropertyMapping(AutoLayoutTarget.TextEntry,"First Name")] private readonly string? _firstName;
+        [PropertyMapping(propertyName: "LastName", displayName: "Last name:")] private readonly string? _lstName;
+        [PropertyMapping(displayName: "First name", mapsToModelProperty: nameof(TestModelFoo.FirstName))] private readonly string? _firstNameDisplayName;
 
         public string? ExistingProperty { get; set; }
     }
 
     public partial class TestFormsController 
     {
-        private double _bar;
+        private readonly double _bar;
 
         public double Foo
         {
@@ -44,18 +44,8 @@ namespace WinFormsPowerTools.AutoLayout
         }
 
         private PropertyChangedEventArgs? __fooPropertyChangedEventArgs;
-        private PropertyChangedEventArgs FooPropertyChangedEventArgs
-        {
-            get
-            {
-                if (__fooPropertyChangedEventArgs is null)
-                {
-                    __fooPropertyChangedEventArgs = new PropertyChangedEventArgs("Foo");
-                }
-                return __fooPropertyChangedEventArgs;
-            }
-        }
         
-
+        private PropertyChangedEventArgs FooPropertyChangedEventArgs 
+            => __fooPropertyChangedEventArgs ??= new PropertyChangedEventArgs(nameof(Foo));
     }
 }

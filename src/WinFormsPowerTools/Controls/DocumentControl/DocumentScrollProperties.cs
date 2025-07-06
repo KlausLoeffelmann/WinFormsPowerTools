@@ -15,7 +15,7 @@ namespace System.Windows.Forms.Documents
     /// <summary>
     ///  Basic Properties for Scrollbars.
     /// </summary>
-    public abstract class DocumentScrollProperties
+    public abstract class DocumentScrollProperties(DocumentControl? container)
     {
         internal int _minimum;
         internal int _maximum = 100;
@@ -26,17 +26,10 @@ namespace System.Windows.Forms.Documents
         internal bool _smallChangeSetExternally;
         internal bool _largeChangeSetExternally;
 
-        private readonly DocumentControl? _parent;
-
-        protected DocumentControl? ParentControl => _parent;
+        protected DocumentControl? ParentControl => container;
 
         internal bool _visible;
         private bool _enabled = true;
-
-        protected DocumentScrollProperties(DocumentControl? container)
-        {
-            _parent = container;
-        }
 
         /// <summary>
         ///  Gets or sets a bool value controlling whether the scrollbar is enabled.
@@ -48,7 +41,7 @@ namespace System.Windows.Forms.Documents
             get => _enabled;
             set
             {
-                if (_parent is not null)
+                if (container is not null)
                 {
                     return;
                 }
@@ -56,11 +49,11 @@ namespace System.Windows.Forms.Documents
                 if (value != _enabled)
                 {
                     _enabled = value;
-                    if (_parent is not null)
+                    if (container is not null)
                     {
                         PInvoke.EnableScrollBar(
-                            new HWND(_parent.Handle),
-                            Orientation,
+                            new HWND(container.Handle),
+                            (uint) Orientation,
                             value
                                 ? ENABLE_SCROLL_BAR_ARROWS.ESB_ENABLE_BOTH
                                 : ENABLE_SCROLL_BAR_ARROWS.ESB_DISABLE_BOTH);
@@ -93,8 +86,8 @@ namespace System.Windows.Forms.Documents
                     if (value < 0)
                     {
                         throw new ArgumentOutOfRangeException(
-                            nameof(value), 
-                            string.Format("Value for large change is too small.", 
+                            paramName: nameof(value),
+                            message: string.Format("Value for large change is too small.",
                             nameof(LargeChange), 
                             value, 
                             0));
@@ -118,7 +111,7 @@ namespace System.Windows.Forms.Documents
             get => _maximum;
             set
             {
-                if (_parent is not null)
+                if (container is not null)
                 {
                     return;
                 }
@@ -153,7 +146,7 @@ namespace System.Windows.Forms.Documents
             get => _minimum;
             set
             {
-                if (_parent is not null)
+                if (container is not null)
                 {
                     return;
                 }
@@ -272,7 +265,7 @@ namespace System.Windows.Forms.Documents
             get => _visible;
             set
             {
-                if (_parent is not null)
+                if (container is not null)
                 {
                     return;
                 }
@@ -289,7 +282,7 @@ namespace System.Windows.Forms.Documents
 
         internal unsafe void UpdateScrollInfo()
         {
-            if (_parent is not null && _parent.IsHandleCreated && _visible)
+            if (container is not null && container.IsHandleCreated && _visible)
             {
                 SCROLLINFO si = new()
                 {
@@ -297,25 +290,25 @@ namespace System.Windows.Forms.Documents
                     fMask = SCROLLINFO_MASK.SIF_ALL,
                     nMin = _minimum,
                     nMax = _maximum,
-                    nPage = (uint)GetPageSize(_parent),
+                    nPage = (uint)GetPageSize(container),
                     nPos = _value,
                     nTrackPos = 0
                 };
 
-                PInvoke.SetScrollInfo(new HWND(_parent.Handle), Orientation, si, new BOOL(true));
+                PInvoke.SetScrollInfo(new HWND(container.Handle), Orientation, si, new BOOL(true));
             }
         }
 
         private void UpdateDisplayPosition()
         {
-            if (_parent is null)
+            if (container is null)
             {
                 return;
             }
 
-            int horizontal = GetHorizontalDisplayPosition(_parent);
-            int vertical = GetVerticalDisplayPosition(_parent);
-            _parent.SetDisplayFromScrollProps(horizontal, vertical);
+            int horizontal = GetHorizontalDisplayPosition(container);
+            int vertical = GetVerticalDisplayPosition(container);
+            container.SetDisplayFromScrollProps(horizontal, vertical);
         }
     }
 }

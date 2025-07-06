@@ -5,100 +5,99 @@ using System.Diagnostics;
 using System.Linq;
 using WinFormsPowerTools.AutoLayout;
 
-namespace WinFormsPowerTools.CodeGen
+namespace WinFormsPowerTools.CodeGen;
+
+internal class AutoLayoutSyntaxReceiver : ISyntaxContextReceiver
 {
-    internal class AutoLayoutSyntaxReceiver : ISyntaxContextReceiver
+    private readonly string ShortenedViewControllerAttributeName = nameof(ViewControllerAttribute).Replace("Attribute", string.Empty);
+    private readonly string ShortenedViewControllerMappingAttributeName = nameof(PropertyMappingAttribute).Replace("Attribute", string.Empty);
+    private readonly string ShortenedCommandMappingAttributeName = nameof(CommandMappingAttribute).Replace("Attribute", string.Empty);
+
+    private const string CanExecute = nameof(CanExecute);
+    private const string Execute = nameof(Execute);
+    private readonly int CanExecuteLength = CanExecute.Length;
+    private readonly int ExecuteLength = Execute.Length;
+
+    internal List<ViewModelClassInfo> viewModelClassesInfo = new();
+
+    public void OnVisitSyntaxNode(GeneratorSyntaxContext syntaxContext)
     {
-        private readonly string ShortenedViewControllerAttributeName = nameof(ViewControllerAttribute).Replace("Attribute", string.Empty);
-        private readonly string ShortenedViewControllerMappingAttributeName = nameof(PropertyMappingAttribute).Replace("Attribute", string.Empty);
-        private readonly string ShortenedCommandMappingAttributeName = nameof(CommandMappingAttribute).Replace("Attribute", string.Empty);
+        var syntaxNode = syntaxContext.Node;
 
-        private const string CanExecute = nameof(CanExecute);
-        private const string Execute = nameof(Execute);
-        private readonly int CanExecuteLength = CanExecute.Length;
-        private readonly int ExecuteLength = Execute.Length;
-
-        internal List<ViewModelClassInfo> viewModelClassesInfo = new();
-
-        public void OnVisitSyntaxNode(GeneratorSyntaxContext syntaxContext)
+        if (syntaxNode is ClassDeclarationSyntax classDeclaration && classDeclaration.AttributeLists.Count > 0)
         {
-            var syntaxNode = syntaxContext.Node;
+            var viewControllerAttribute = classDeclaration
+                .AttributeLists
+                .SelectMany(lists => lists.Attributes)
+                .FirstOrDefault(attribute => TestAttributeName(attribute, ShortenedViewControllerAttributeName));
 
-            if (syntaxNode is ClassDeclarationSyntax classDeclaration && classDeclaration.AttributeLists.Count > 0)
+            if (viewControllerAttribute is not null)
             {
-                var viewControllerAttribute = classDeclaration
-                    .AttributeLists
-                    .SelectMany(lists => lists.Attributes)
-                    .FirstOrDefault(attribute => TestAttributeName(attribute, ShortenedViewControllerAttributeName));
+                Dictionary<IFieldSymbol, AttributeData> fieldDictionary = new(SymbolEqualityComparer.Default);
+                Dictionary<string, CommandInfo> methodDictionary = new();
+                // Dictionary<string, IMethodSymbol> methodLookupList = new();
 
-                if (viewControllerAttribute is not null)
+                viewModelClassesInfo.Add(new(
+                    classDeclaration,
+                    viewControllerAttribute,
+                    syntaxNode.SyntaxTree,
+                    fieldDictionary,
+                    methodDictionary));
+
+                var viewControllerSymbol = (INamedTypeSymbol)syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration)!;
+
+                foreach (var memberSymbol in viewControllerSymbol.GetMembers())
                 {
-                    Dictionary<IFieldSymbol, AttributeData> fieldDictionary = new(SymbolEqualityComparer.Default);
-                    Dictionary<string, CommandInfo> methodDictionary = new();
-                    // Dictionary<string, IMethodSymbol> methodLookupList = new();
-
-                    viewModelClassesInfo.Add(new(
-                        classDeclaration,
-                        viewControllerAttribute,
-                        syntaxNode.SyntaxTree,
-                        fieldDictionary,
-                        methodDictionary));
-
-                    var viewControllerSymbol = (INamedTypeSymbol)syntaxContext.SemanticModel.GetDeclaredSymbol(classDeclaration)!;
-
-                    foreach (var memberSymbol in viewControllerSymbol.GetMembers())
+                    if (memberSymbol is IFieldSymbol fieldSymbol)
                     {
-                        if (memberSymbol is IFieldSymbol fieldSymbol)
-                        {
-                            var fieldViewControllerMappingAttribute = fieldSymbol.GetAttributes()
-                                .FirstOrDefault(attribute => attribute?.AttributeClass?.Name == nameof(PropertyMappingAttribute));
+                        var fieldViewControllerMappingAttribute = fieldSymbol.GetAttributes()
+                            .FirstOrDefault(attribute => attribute?.AttributeClass?.Name == nameof(PropertyMappingAttribute));
 
-                            if (fieldViewControllerMappingAttribute is not null)
-                            {
-                                fieldDictionary.Add(fieldSymbol, fieldViewControllerMappingAttribute);
-                            }
+                        if (fieldViewControllerMappingAttribute is not null)
+                        {
+                            fieldDictionary.Add(fieldSymbol, fieldViewControllerMappingAttribute);
+                        }
+                    }
+
+                    // Let's find all methods which are attributed with the CommandMappingAttribute.
+                    if (memberSymbol is IMethodSymbol methodSymbol)
+                    {
+                        if (Debugger.IsAttached)
+                        {
+                            Debugger.Break();
                         }
 
-                        // Let's find all methods which are attributed with the CommandMappingAttribute.
-                        if (memberSymbol is IMethodSymbol methodSymbol)
+                        if (methodSymbol.Parameters.Length == 1 &&
+                            methodSymbol.Parameters[0].Type.SpecialType == SpecialType.System_Object)
                         {
-                            if (Debugger.IsAttached)
-                            {
-                                Debugger.Break();
-                            }
+                            var commandMappingAttribute = methodSymbol.GetAttributes()
+                                .FirstOrDefault(attribute => attribute?.AttributeClass?.Name == nameof(CommandMappingAttribute));
 
-                            if (methodSymbol.Parameters.Length == 1 &&
-                                methodSymbol.Parameters[0].Type.SpecialType == SpecialType.System_Object)
+                            if (commandMappingAttribute is not null)
                             {
-                                var commandMappingAttribute = methodSymbol.GetAttributes()
-                                    .FirstOrDefault(attribute => attribute?.AttributeClass?.Name == nameof(CommandMappingAttribute));
+                                string baseLineName;
 
-                                if (commandMappingAttribute is not null)
+                                if (methodSymbol.Name.StartsWith(CanExecute))
                                 {
-                                    string baseLineName;
-
-                                    if (methodSymbol.Name.StartsWith(CanExecute))
+                                    // Check if method returns bool.
+                                    // TODO: We would need an analyzer which points out that this doesn't have the correct signature.
+                                    if (methodSymbol.ReturnType.SpecialType == SpecialType.System_Boolean)
                                     {
-                                        // Check if method returns bool.
-                                        // TODO: We would need an analyzer which points out that this doesn't have the correct signature.
-                                        if (methodSymbol.ReturnType.SpecialType == SpecialType.System_Boolean)
-                                        {
-                                            baseLineName = methodSymbol.Name[CanExecuteLength..];
-                                            var commandInfo = GetOrAddCommandInfo(methodDictionary, commandMappingAttribute, baseLineName);
-                                            commandInfo.CanExecuteMethodSymbol = methodSymbol;
-                                        }
+                                        baseLineName = methodSymbol.Name[CanExecuteLength..];
+                                        var commandInfo = GetOrAddCommandInfo(methodDictionary, commandMappingAttribute, baseLineName);
+                                        commandInfo.CanExecuteMethodSymbol = methodSymbol;
                                     }
+                                }
 
-                                    if (methodSymbol.Name.StartsWith(Execute))
+                                if (methodSymbol.Name.StartsWith(Execute))
+                                {
+                                    // Check if method returns void.
+                                    // TODO: We would need an analyzer which points out that this doesn't have the correct signature.
+                                    if (methodSymbol.ReturnType.SpecialType == SpecialType.System_Void)
                                     {
-                                        // Check if method returns void.
-                                        // TODO: We would need an analyzer which points out that this doesn't have the correct signature.
-                                        if (methodSymbol.ReturnType.SpecialType == SpecialType.System_Void)
-                                        {
-                                            baseLineName = methodSymbol.Name[ExecuteLength..];
-                                            var commandInfo = GetOrAddCommandInfo(methodDictionary, commandMappingAttribute, baseLineName);
-                                            commandInfo.ExecuteMethodSymbol = methodSymbol;
-                                        }
+                                        baseLineName = methodSymbol.Name[ExecuteLength..];
+                                        var commandInfo = GetOrAddCommandInfo(methodDictionary, commandMappingAttribute, baseLineName);
+                                        commandInfo.ExecuteMethodSymbol = methodSymbol;
                                     }
                                 }
                             }
@@ -106,32 +105,32 @@ namespace WinFormsPowerTools.CodeGen
                     }
                 }
             }
+        }
 
-            static bool TestAttributeName(AttributeSyntax attribute, string name)
+        static bool TestAttributeName(AttributeSyntax attribute, string name)
+        {
+            if (attribute is null || attribute.Name is not IdentifierNameSyntax identifierName)
             {
-                if (attribute is null || attribute.Name is not IdentifierNameSyntax identifierName)
-                {
-                    return false;
-                }
-
-                return identifierName.Identifier.ValueText == name;
+                return false;
             }
 
-            static CommandInfo GetOrAddCommandInfo(Dictionary<string, CommandInfo> methodDictionary, AttributeData commandMappingAttribute, string baseLineName)
+            return identifierName.Identifier.ValueText == name;
+        }
+
+        static CommandInfo GetOrAddCommandInfo(Dictionary<string, CommandInfo> methodDictionary, AttributeData commandMappingAttribute, string baseLineName)
+        {
+            CommandInfo commandInfo;
+
+            if (methodDictionary.TryGetValue(baseLineName, out commandInfo))
             {
-                CommandInfo commandInfo;
-
-                if (methodDictionary.TryGetValue(baseLineName, out commandInfo))
-                {
-                }
-                else
-                {
-                    commandInfo = new(baseLineName, commandMappingAttribute, null, null, null);
-                    methodDictionary.Add(baseLineName, commandInfo);
-                }
-
-                return commandInfo;
             }
+            else
+            {
+                commandInfo = new(baseLineName, commandMappingAttribute, null, null, null);
+                methodDictionary.Add(baseLineName, commandInfo);
+            }
+
+            return commandInfo;
         }
     }
 }
