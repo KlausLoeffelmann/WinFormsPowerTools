@@ -1,3 +1,0 @@
-﻿namespace Warp.AutoLayout
-{
-}
